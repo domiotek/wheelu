@@ -1,0 +1,27 @@
+.SplashScreen {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column!important;
+	justify-content: center;
+	align-items: center;
+	opacity: 1;
+	transition: opacity 0.4s;
+	z-index: 9999;
+}
+
+.SplashScreenLogo {
+	border-radius: 2em;
+    margin-bottom: 1.5em;
+}
+
+.Intermediate {
+	opacity: 0;
+}
+
+.AlwaysHidden, .Hide {
+	display: none!important;
+}
