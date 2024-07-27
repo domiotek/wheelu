@@ -1,0 +1,137 @@
+.Header {
+	position: sticky!important;
+	height: 3lh;
+	padding: 0.5em;
+	flex-direction: row!important;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.Header img {
+	height: 48px;
+    aspect-ratio: 1 / 1;
+    border-radius: 0.75em;
+}
+
+.TitleSection {
+	padding: 2em 0 4em;
+}
+
+.Underline {
+	border-width: medium!important;
+    max-width: 380px;
+}
+
+.CategoriesSection {
+	padding: 1.5em 0 2em;
+	flex: 1;
+}
+
+.CategoriesSection > div {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.CardGridWrapper {
+	margin: 2em auto;
+	gap: 1em;
+	width: 140px!important;
+}
+
+.CardGridWrapper  > div {
+	aspect-ratio: 16 / 9;
+	width: 140px;
+}
+
+.CardGridWrapper > div > button {
+	padding: 3em;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 1em;
+	height: 100%;
+	width: 100%;
+}
+
+.CardGridWrapper > div i {
+	font-size: 2.5em;
+}
+
+.CategoryInfoPanel {
+	padding: 0.5em;
+	display: flex;
+    flex-direction: column;
+}
+
+.FooterItemWrapper {
+	flex-direction: column;
+    gap: 1em;
+}
+
+.FooterItemWrapper img {
+	max-width: 100px;
+    margin: 1.5em auto 0em;
+    border-radius: 2em;
+}
+
+.FooterItem {
+	align-items: center;
+}
+
+.FooterItem:first-of-type {
+	margin-bottom: 2em;
+}
+
+.CopyrightDisclaimer {
+	text-align: center;
+	margin-top: 1.5em!important;
+}
+
+@media (min-width: calc(2 * 140px + 3em)) {
+	.CardGridWrapper {
+		width: calc(2 * 140px + 1em)!important;
+	}
+}
+
+@media (min-width: calc(3 * 140px + 5em)) {
+	.CardGridWrapper {
+		width: calc(3 * 140px + 2em)!important;
+	}
+}
+
+@media (min-width: calc(4 * 140px + 7em)) {
+	.CardGridWrapper {
+		width: calc(4 * 140px + 3em)!important;
+	}
+}
+
+@media (min-width: calc(5 * 140px + 9em)) {
+	.CardGridWrapper {
+		width: calc(5 * 140px + 4em)!important;
+	}
+}
+
+@media (min-width: calc(6 * 140px + 11em)) {
+	.CardGridWrapper {
+		width: calc(6 * 140px + 5em)!important;
+	}
+}
+
+@media (min-width: 1025px) {
+	.FooterItemWrapper {
+		flex-direction: row!important;
+		align-items: center;
+		justify-content: center;
+		padding: 1em 0 0;
+	}
+
+	.FooterItemWrapper img {
+		margin: 0;
+	}
+
+	.FooterItem:first-of-type {
+		margin-bottom: 0;
+	}
+}

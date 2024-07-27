@@ -9,16 +9,18 @@ import { callAPI, resolveClasses as c, OutsideContextNotifier} from './modules/u
 import { Outlet } from 'react-router-dom';
 import { App as AppNm } from './types/app';
 
+
 interface IProps {
 	useSplash: boolean
 }
 
-const lightTheme = createTheme({palette: {primary: {main: "#f67280"}}});
+const lightTheme = createTheme({palette: {primary: {main: "#f67280"}, secondary: {main: "#5882C0"}}});
 
 const darkTheme = createTheme({
 	palette: {
 	  mode: 'dark',
-	  primary: {main: "#f67280"}
+	  primary: {main: "#f67280"},
+	  secondary: {main: "#3f608e"}
 	}
 });
 
@@ -43,38 +45,38 @@ export default function App({useSplash}: IProps) {
 
 	return (
 		<AppContext.Provider value={{lightTheme, darkTheme, activeTheme: darkMode?"dark":"light", setTheme: (theme)=>setDarkMode(theme=="dark")}}>
-			<ThemeProvider theme={darkMode?darkTheme:lightTheme}>
-				<CssBaseline>
-					<Outlet />
+				<ThemeProvider theme={darkMode?darkTheme:lightTheme}>
+					<CssBaseline>
+						<Outlet />
 
-					<Grid container className={c(
-						[
-							classes.SplashScreen, 
-							[classes.AlwaysHidden, !useSplash],
-							[classes.Intermediate, data!=undefined],
-							[classes.Hide, splashHidden]
-						]
-					)} sx={{background: (darkMode?darkTheme:lightTheme).palette.background.default}}>
+						<Grid container className={c(
+							[
+								classes.SplashScreen, 
+								[classes.AlwaysHidden, !useSplash],
+								[classes.Intermediate, data!=undefined],
+								[classes.Hide, splashHidden]
+							]
+						)} sx={{background: (darkMode?darkTheme:lightTheme).palette.background.default}}>
 
-						<img className={classes.SplashScreenLogo} src={Logo} alt="App logo"/>
-						{
-							error?
-								<>
-									<Typography variant='h6'>
-										Something went wrong
-									</Typography>
-									<Typography variant="body2">
-										Try reloading the application.
-									</Typography>
-								</>
-							:
-							<Typography variant='h6'>
-								Hang on a second...
-							</Typography>
-						}
-					</Grid>
-				</CssBaseline>
-			</ThemeProvider>
+							<img className={classes.SplashScreenLogo} src={Logo} alt="App logo"/>
+							{
+								error?
+									<>
+										<Typography variant='h6'>
+											Something went wrong
+										</Typography>
+										<Typography variant="body2">
+											Try reloading the application.
+										</Typography>
+									</>
+								:
+								<Typography variant='h6'>
+									Hang on a second...
+								</Typography>
+							}
+						</Grid>
+					</CssBaseline>
+				</ThemeProvider>
 		</AppContext.Provider>
 	)
 }

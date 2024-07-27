@@ -1,10 +1,3 @@
-.DrawerHeader {
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
-	padding: 0.5em;
-}
-
 .HomeLink {
 	height: 48px;
 	margin-right: auto;
@@ -15,16 +8,6 @@
 	height: 100%;
 	border-radius: 0.75em;
 	aspect-ratio: 1 / 1;
-}
-
-.NavHomeLink {
-	opacity: 0;
-	transition: opacity 0.2s;
-}
-
-.NavHomeLink.Visible {
-	opacity: 1;
-	transition: opacity 0.4s;
 }
 
 @media (min-width: 600px) {

@@ -1,0 +1,12 @@
+.RegisterPanel {
+	width: 100%;
+	max-width: 420px;
+
+}
+
+
+@media (min-width: 769px) {
+	.RegisterPanel {
+		max-width: 620px;
+	}
+}
