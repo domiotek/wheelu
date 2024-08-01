@@ -84,7 +84,7 @@ app.UseStaticFiles(new StaticFileOptions {
 });
 
 using (var scope = app.Services.CreateScope()) {
-	IdentityRoleSetup.Initialize(scope.ServiceProvider).Wait();
+	DBSetup.Initialize(scope.ServiceProvider, builder.Configuration).Wait();
 }
 
 app.MapControllers();
