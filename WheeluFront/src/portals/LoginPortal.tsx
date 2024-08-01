@@ -2,7 +2,7 @@ import { Alert, Button, Card, Checkbox, FormControlLabel, Link, Stack, TextField
 import commonClasses from "./Common.module.css";
 import { useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { callAPI, resolveClasses } from "../modules/utils";
 import { API } from "../types/api";
 import { useState } from "react";
@@ -28,11 +28,13 @@ export default function LoginPortal() {
 
 	const [errorState, setErrorState] = useState<API.Auth.SignIn.IEndpoint["errCodes"] | null>(null);
 
+	const queryClient = useQueryClient();
 
 	const submitMutation = useMutation<API.Auth.SignIn.IResponse, API.Auth.SignIn.IEndpoint["error"], API.Auth.SignIn.IRequestData>({
         mutationFn: data=>callAPI<API.Auth.SignIn.IEndpoint>("POST","/api/v1/auth/signin",data, null, true),
         onSuccess: async data=>{
 			localStorage.setItem("token", data.token);
+			queryClient.invalidateQueries({queryKey: ["User"]});
 			navigate("/");
 		},
 		onError: (err=>setErrorState(err.code))
@@ -84,7 +86,8 @@ export default function LoginPortal() {
 						control={control}
 						rules={{required: true}}
 						render={({field})=> 
-							<TextField 
+							<TextField
+								color="secondary"
 								className={commonClasses.Input} 
 								variant="filled" 
 								label="Password"

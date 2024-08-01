@@ -1,6 +1,7 @@
 import { ExitToApp } from "@mui/icons-material";
 import { Avatar, Card, Collapse, Divider, List, ListItemButton, ListItemIcon, ListItemText, Paper, Stack, Typography } from "@mui/material";
 import { MouseEvent, useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface IProps {
 	open: boolean
@@ -11,6 +12,8 @@ export default function AccountPanel({open, setOpen}: IProps) {
 	const anchorRef = useRef<HTMLDivElement>(null);
 
 	const [menuOpen, setMenuOpen] = useState(false);
+
+	const navigate = useNavigate();
 
 
 	const menuOpenHandler = useCallback((e: MouseEvent<HTMLDivElement>)=>{
@@ -44,7 +47,7 @@ export default function AccountPanel({open, setOpen}: IProps) {
 
 						<Divider />
 
-						<ListItemButton>
+						<ListItemButton onClick={()=>navigate("/logout")}>
 							<ListItemIcon>
 								<ExitToApp />
 							</ListItemIcon>

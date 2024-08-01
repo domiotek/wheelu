@@ -29,7 +29,7 @@ export const AppContext = createContext<AppNm.IAppContext>({lightTheme, darkThem
 
 export default function App({useSplash}: IProps) {
 	const {error, data, isFetching} = useQuery<API.UserData.IResponseData, API.UserData.IEndpoint["error"]>({
-        queryKey: ["UserData"],
+        queryKey: ["User"],
         queryFn: ()=>callAPI<API.UserData.IEndpoint>("GET","/api/v1/auth/identify"),
         retry: false,
 		staleTime: 60000
@@ -44,7 +44,7 @@ export default function App({useSplash}: IProps) {
 	useEffect(()=>{
 		if(!isFetching) {
 			const currentURL = location.pathname;
-			const anonymousRoutes = ["/start"];
+			const anonymousRoutes = ["/start", "/logout"];
 			const unauthenticatedRoutes = ["/login", "/register"];
 			const isAuthenticated = error==null;
 
@@ -60,7 +60,7 @@ export default function App({useSplash}: IProps) {
 			setTimeout(()=>setSplashHidden(true), 400);
 		}
 
-	},[data, error]);
+	},[data, error, location]);
 
 	return (
 		<AppContext.Provider value={{lightTheme, darkTheme, activeTheme: darkMode?"dark":"light", setTheme: (theme)=>setDarkMode(theme=="dark")}}>
@@ -79,7 +79,7 @@ export default function App({useSplash}: IProps) {
 
 							<img className={classes.SplashScreenLogo} src={Logo} alt="App logo"/>
 							{
-								error?
+								error&&error.code!="Unauthorized"?
 									<>
 										<Typography variant='h6'>
 											Something went wrong
