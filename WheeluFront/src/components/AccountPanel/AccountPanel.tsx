@@ -1,7 +1,8 @@
 import { ExitToApp } from "@mui/icons-material";
 import { Avatar, Card, Collapse, Divider, List, ListItemButton, ListItemIcon, ListItemText, Paper, Stack, Typography } from "@mui/material";
-import { MouseEvent, useCallback, useEffect, useRef, useState } from "react";
+import { MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AppContext } from "../../App";
 
 interface IProps {
 	open: boolean
@@ -14,6 +15,8 @@ export default function AccountPanel({open, setOpen}: IProps) {
 	const [menuOpen, setMenuOpen] = useState(false);
 
 	const navigate = useNavigate();
+
+	const {userDetails} = useContext(AppContext);
 
 
 	const menuOpenHandler = useCallback((e: MouseEvent<HTMLDivElement>)=>{
@@ -31,8 +34,8 @@ export default function AccountPanel({open, setOpen}: IProps) {
 			<Stack ref={anchorRef} direction="row" onClick={menuOpenHandler}>
 				<Avatar />
 				<Stack sx={{ml: 2}}>
-					<Typography variant="body1">Test Account</Typography>
-					<Typography variant="caption">Student</Typography>
+					<Typography variant="body1">{userDetails?.name} {userDetails?.surname}</Typography>
+					<Typography variant="caption">{userDetails?.role}</Typography>
 				</Stack>
 			</Stack>
 			<Collapse in={menuOpen}>

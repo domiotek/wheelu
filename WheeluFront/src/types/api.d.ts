@@ -1,3 +1,5 @@
+import { App } from "./app";
+
 export namespace API {
 	namespace _ {
         type TCommonServerErrorCodes = "InternalError" | "BadRequest" | "ServerUnavailable" | "MalformedResponse" | "Unauthorized";
@@ -50,12 +52,7 @@ export namespace API {
 
 	namespace UserData {
 		
-		interface IResponseData {
-			userId: number
-			name: string
-			surname: string
-			role: string
-		}
+		type IResponseData = App.Models.IUser;
 
 		type IEndpoint = _.IBuildAPIEndpoint<"GET","/api/v1/auth/identify",IResponseData>
 	}

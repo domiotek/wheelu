@@ -25,7 +25,15 @@ const darkTheme = createTheme({
 });
 
 
-export const AppContext = createContext<AppNm.IAppContext>({lightTheme, darkTheme, activeTheme: "" as any, setTheme: OutsideContextNotifier});
+export const AppContext = createContext<AppNm.IAppContext>(
+	{
+		lightTheme, 
+		darkTheme, 
+		activeTheme: "" as any, 
+		setTheme: OutsideContextNotifier,
+		userDetails: null
+	}
+);
 
 export default function App({useSplash}: IProps) {
 	const {error, data, isFetching} = useQuery<API.UserData.IResponseData, API.UserData.IEndpoint["error"]>({
@@ -63,7 +71,14 @@ export default function App({useSplash}: IProps) {
 	},[data, error, location]);
 
 	return (
-		<AppContext.Provider value={{lightTheme, darkTheme, activeTheme: darkMode?"dark":"light", setTheme: (theme)=>setDarkMode(theme=="dark")}}>
+		<AppContext.Provider value={{
+				lightTheme, 
+				darkTheme, 
+				activeTheme: darkMode?"dark":"light", 
+				setTheme: (theme)=>setDarkMode(theme=="dark"),
+				userDetails: data ?? null
+			}}
+		>
 				<ThemeProvider theme={darkMode?darkTheme:lightTheme}>
 					<CssBaseline>
 						<Outlet />
