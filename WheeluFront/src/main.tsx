@@ -34,7 +34,7 @@ root.render(
 						</Route>
 
 						<Route path="login" element={<PortalLayout />}>
-							<Route index element={<LoginPortal />} />
+							<Route index element={<LoginPortal />}/>
 						</Route> 
 
 						<Route path="register" element={<PortalLayout />}>

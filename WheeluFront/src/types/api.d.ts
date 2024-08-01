@@ -51,11 +51,39 @@ export namespace API {
 	namespace UserData {
 		
 		interface IResponseData {
-			id: number
+			userId: number
 			name: string
+			surname: string
 			role: string
 		}
 
-		type IEndpoint = _.IBuildAPIEndpoint<"GET","/api/v1/me/basic",IResponseData>
+		type IEndpoint = _.IBuildAPIEndpoint<"GET","/api/v1/auth/identify",IResponseData>
+	}
+
+	namespace Auth {
+		namespace SignUp {
+			interface IRequestData extends Record<string, string> {
+				Username: string
+				Password: string
+				Name: string
+				Surname: string
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<"POST", "/api/v1/auth/signup", null, "PasswordRequirementsNotMet" | "EmailAlreadyTaken", IRequestData>
+		}
+
+		namespace SignIn {
+			interface IRequestData extends Record<string, string> {
+				Username: string
+				Password: string
+				RememberMe: string
+			}
+
+			interface IResponse {
+				token: string
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<"POST", "/api/v1/auth/signin", IResponse, "InvalidCredentials", IRequestData>
+		}
 	}
 }

@@ -6,7 +6,7 @@ import { CssBaseline, Grid, ThemeProvider, Typography, createTheme } from '@mui/
 import Logo from "./assets/logo.png";
 import { API } from './types/api';
 import { callAPI, resolveClasses as c, OutsideContextNotifier} from './modules/utils';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { App as AppNm } from './types/app';
 
 
@@ -30,7 +30,7 @@ export const AppContext = createContext<AppNm.IAppContext>({lightTheme, darkThem
 export default function App({useSplash}: IProps) {
 	const {error, data, isFetching} = useQuery<API.UserData.IResponseData, API.UserData.IEndpoint["error"]>({
         queryKey: ["UserData"],
-        queryFn: ()=>callAPI<API.UserData.IEndpoint>("GET","/api/v1/me/basic"),
+        queryFn: ()=>callAPI<API.UserData.IEndpoint>("GET","/api/v1/auth/identify"),
         retry: false,
 		staleTime: 60000
     });
@@ -38,10 +38,29 @@ export default function App({useSplash}: IProps) {
 	const [splashHidden, setSplashHidden] = useState<boolean>(false);
 	const [darkMode, setDarkMode] = useState<boolean>(false);
 
+	const navigate = useNavigate();
+	const location = useLocation();
+
 	useEffect(()=>{
-		if(!isFetching)
+		if(!isFetching) {
+			const currentURL = location.pathname;
+			const anonymousRoutes = ["/start"];
+			const unauthenticatedRoutes = ["/login", "/register"];
+			const isAuthenticated = error==null;
+
+
+			if(!isAuthenticated&&!unauthenticatedRoutes.includes(currentURL)&&!anonymousRoutes.includes(currentURL)) {
+				navigate("/login");
+				return;
+			}else if(isAuthenticated&&unauthenticatedRoutes.includes(currentURL)) {
+				navigate("/");
+				return;
+			}
+
 			setTimeout(()=>setSplashHidden(true), 400);
-	},[data]);
+		}
+
+	},[data, error]);
 
 	return (
 		<AppContext.Provider value={{lightTheme, darkTheme, activeTheme: darkMode?"dark":"light", setTheme: (theme)=>setDarkMode(theme=="dark")}}>

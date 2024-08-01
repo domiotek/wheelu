@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: WheeluDB
+    environment:
+      POSTGRES_USER: wheeludbadmin
+      POSTGRES_PASSWORD: wheeluDB
+      POSTGRES_DB: wheelu
+    ports:
+      - "5432:5432"
+    volumes:
+      - wheelu_db_data:/var/lib/postgresql/data
+
+volumes:
+  wheelu_db_data:

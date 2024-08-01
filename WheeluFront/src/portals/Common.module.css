@@ -5,6 +5,18 @@
 	margin-bottom: 3em;
 }
 
+.Form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+}
+
+.Form > button {
+	width: -moz-fit-content;
+	width: fit-content;
+}
+
 .InputContainer {
 	width: 100%;
 	gap: 1em;
@@ -15,6 +27,15 @@
 	margin-bottom: 0.75em!important;
 }
 
+.ErrorPanel {
+	width: 100%;
+	margin: 2em 0;
+	display: none;
+}
+
+.ErrorPanel.Visible {
+	display: flex;
+}
 
 @media (min-width: 769px) {
 	.InputContainer {

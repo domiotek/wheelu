@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { API } from "../types/api";
 
-const API_SERVER_HOST = "localhost:9000";
+const API_SERVER_HOST = "localhost:9090";
 
 export function callAPI<T extends API._.IBaseAPIEndpoint>(
 	method: T["method"],
@@ -29,15 +29,14 @@ export function callAPI<T extends API._.IBaseAPIEndpoint>(
 
 			axios.request({
 				method,
-				url: `http://${API_SERVER_HOST}${endpointURL}`,
+				url: `https://${API_SERVER_HOST}${endpointURL}`,
 				headers: {
 					Authorization: token?`Bearer ${token}`:undefined
 				},
 				params: method=="GET"?requestData:undefined,
 				data: method!="GET"?requestData:undefined
 			}).then(response=>{
-				const data = response.data as API._.ISuccessGetResponse<T["requestData"]>;
-				res(data.data);
+				res(response.data);
 			}).catch((error: AxiosError<T["returnPacket"]>)=>{
 				let errCode: T["errCodes"];
 
@@ -47,7 +46,7 @@ export function callAPI<T extends API._.IBaseAPIEndpoint>(
 					case error.code=="ERR_NETWORK":
 						errCode = "ServerUnavailable";
 					break;
-					case error.response?.status==401&&serverErrorData?.code!="BadCredentials":
+					case error.response?.status==401&&serverErrorData?.code!="InvalidCredentials":
 						errCode = "Unauthorized";
 					break;
 					case serverErrorData!=undefined:
