@@ -1,10 +1,11 @@
 import { Person } from "@mui/icons-material";
-import { AppBar, Button, Stack, Typography } from "@mui/material";
+import { AppBar, Button, Link, Stack, Typography } from "@mui/material";
 import { Outlet, useNavigate } from "react-router-dom";
 
 import classes from "./AnonymousLayout.module.css";
-import { useContext } from "react";
+import { Suspense, useContext } from "react";
 import { AppContext } from "../App";
+import LoadingScreen from "../components/LoadingScreen/LoadingScreen";
 
 export default function AnonymousLayout() {
 
@@ -22,7 +23,9 @@ export default function AnonymousLayout() {
 				</Button>
 			</AppBar>
 			
-			<Outlet />
+			<Suspense fallback={<LoadingScreen />}>
+				<Outlet />
+			</Suspense>
 
 			<Stack sx={{background: theme=>theme.palette.grey[800], color: theme=>theme.palette.getContrastText(theme.palette.grey[800])}}>
 					<Stack className={classes.FooterItemWrapper}>
@@ -34,11 +37,15 @@ export default function AnonymousLayout() {
 						
 						<Stack className={classes.FooterItem}>
 							<Typography variant="body1">Kontakt</Typography>
-							<Typography variant="body2">wheelu@omiotech.pl</Typography>
+							<Typography variant="body2">
+								<Link href="mailto:wheelu@omiotech.pl">wheelu@omiotech.pl</Link>
+							</Typography>
 						</Stack>
 						<Stack className={classes.FooterItem}>
 							<Typography variant="body1">Jesteś właścicielem szkoły jazdy?</Typography>
-							<Typography variant="body2">Sprawdź jak dołączyć</Typography>
+							<Typography variant="body2">
+								<Link onClick={()=>navigate("/apply")}>Sprawdź jak dołączyć</Link>
+							</Typography>
 						</Stack>
 						<Stack className={classes.FooterItem}>
 							<Typography variant="body1">Użyte zasoby</Typography>

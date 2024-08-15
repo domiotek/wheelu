@@ -3,7 +3,7 @@ import commonClasses from "./Common.module.css";
 import { useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { callAPI, resolveClasses } from "../modules/utils";
+import { callAPI, c } from "../modules/utils";
 import { API } from "../types/api";
 import { useState } from "react";
 
@@ -35,7 +35,7 @@ export default function LoginPortal() {
         onSuccess: async data=>{
 			localStorage.setItem("token", data.token);
 			queryClient.invalidateQueries({queryKey: ["User"]});
-			navigate("/");
+			navigate("/home");
 		},
 		onError: (err=>setErrorState(err.code))
     });
@@ -58,7 +58,7 @@ export default function LoginPortal() {
 				<Typography variant="h5">Zaloguj się</Typography>
 
 				<form className={commonClasses.Form} onSubmit={handleSubmit(onSubmit)}>
-					<Alert className={resolveClasses([commonClasses.ErrorPanel, [commonClasses.Visible, errorState!=null] ])} severity="error">
+					<Alert className={c([commonClasses.ErrorPanel, [commonClasses.Visible, errorState!=null] ])} severity="error">
 						{
 							errorState=="InvalidCredentials"?"Niepoprawny login lub hasło.":"Nie mogliśmy Cię teraz zalogować."
 						}

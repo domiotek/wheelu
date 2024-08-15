@@ -30,13 +30,13 @@ root.render(
 			<Routes>
 					<Route path="*" element={<App useSplash={false} />}>
 						<Route path="*" element={<AnonymousLayout />}>
-							<Route path='start' element={<LandingPage />}/>
-							<Route path="register-school" element={<RegisterSchoolPage />}/>
+							<Route path='' element={<LandingPage />}/>
+							<Route path="apply" element={<RegisterSchoolPage />}/>
 						</Route>
 					</Route>
 					<Route path="*" element={<App useSplash={true} />}>
 						<Route path="*" element={<MainLayout />}>
-							<Route path='*' element={<Dashboard />} />
+							<Route path='home' element={<Dashboard />} />
 						</Route>
 
 						<Route path="login" element={<PortalLayout />}>

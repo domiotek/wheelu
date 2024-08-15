@@ -5,7 +5,7 @@ import { CssBaseline, Grid, ThemeProvider, Typography, createTheme } from '@mui/
 
 import Logo from "./assets/logo.png";
 import { API } from './types/api';
-import { callAPI, resolveClasses as c, OutsideContextNotifier} from './modules/utils';
+import { callAPI, c, OutsideContextNotifier} from './modules/utils';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { App as AppNm } from './types/app';
 
@@ -52,7 +52,7 @@ export default function App({useSplash}: IProps) {
 	useEffect(()=>{
 		if(!isFetching) {
 			const currentURL = location.pathname;
-			const anonymousRoutes = ["/start", "/logout"];
+			const anonymousRoutes = ["/", "/register-school", "/logout"];
 			const unauthenticatedRoutes = ["/login", "/register"];
 			const isAuthenticated = error==null;
 
@@ -61,7 +61,7 @@ export default function App({useSplash}: IProps) {
 				navigate("/login");
 				return;
 			}else if(isAuthenticated&&unauthenticatedRoutes.includes(currentURL)) {
-				navigate("/");
+				navigate("/home");
 				return;
 			}
 

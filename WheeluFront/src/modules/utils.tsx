@@ -1,5 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { API } from "../types/api";
+import { FieldError } from "react-hook-form";
 
 const API_SERVER_HOST = "localhost:9090";
 
@@ -65,7 +66,7 @@ export function callAPI<T extends API._.IBaseAPIEndpoint>(
 		});
 }
 
-export function resolveClasses(classes: string | (string | [string, boolean])[]): string {
+function resolveClasses(classes: string | (string | [string, boolean])[]): string {
 	if(typeof classes=="string") return classes;
 
 	if(Array.isArray(classes)) {
@@ -107,3 +108,34 @@ export function processFormData(form: HTMLFormElement, ignoreList?: string[], st
 
 	return formData;
 }
+
+interface IFieldErrorContext {
+	pattern: string
+	minLength: string
+	maxLength: string
+	min: number
+	max: number
+}
+
+export function prepareFieldErrorMessage(error: FieldError | undefined, context?: Partial<IFieldErrorContext>) {
+	switch(error?.type) {
+		case "required": return "To pole jest wymagane.";
+		case "pattern": return context?.pattern ?? "Niewłaściwy format.";
+		case "minLength": return context?.minLength?`Wprowadź przynajmniej ${context.minLength}.`:"Wprowadzony tekst jest za krótki.";
+		case "maxLength": return context?.maxLength?`Wprowadź maksymalnie ${context.maxLength}.`:"Wprowardzony tekst jest za długi.";
+		case "min": return context?.min?`Wartość nie może być mniejsza niż ${context.min}.`:"Wprowadzona wartość jest za mała.";
+		case "max": return context?.max?`Wartość nie może być większa niż ${context.max}.`:"Wprowadzona wartość jest za duża.";
+	}
+}
+
+export function translateGenericErrorCodes(error: API._.TCommonServerErrorCodes) {
+	switch(error) {
+		case "BadRequest": return "Wystąpił problem z tym żądaniem.";
+		case "InternalError": return "Wystąpiły nieoczekiwane problemy z naszymi systemami.";
+		case "MalformedResponse": return "Serwer zwrócił nieoczekiwaną odpowiedź.";
+		case "ServerUnavailable": return "Serwer jest obecnie niedostępny, sprawdź połączenie z internetem.";
+		case "Unauthorized": return "Nie masz uprawnień, aby uzyskać dostęp do tych zasobów.";
+	}
+}
+
+export {resolveClasses as c};

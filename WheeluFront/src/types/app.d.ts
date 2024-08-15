@@ -7,6 +7,11 @@ export namespace App {
 			surname: string
 			role: string
 		}
+
+		interface ICity {
+			Id: number
+			name: string
+		}
 	}
 	
 

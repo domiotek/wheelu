@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using WheeluAPI.helpers;
 
@@ -7,11 +8,6 @@ public class BaseAPIController: ControllerBase {
 
 	public static readonly int MaxPageSize = 50;
 	public static readonly int DefaultPageSize = 15;
-
-	protected bool ValidateCredentials(bool isProtected=false) {
-		return User.Identity?.IsAuthenticated ?? false && ((isProtected && User.IsInRole("Administrator")) || !isProtected);
-	}
-
 	protected OkObjectResult Paginated<T>(List<T> results, int totalItems, int pageSize) {
 		return Ok(new PagingResponse<T> {
 			Entries = results,
@@ -33,5 +29,11 @@ public class BaseAPIController: ControllerBase {
 		return query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
 	}
 
+	public IActionResult ValidationProblem(IDictionary<string, string[]> errors) {
+		return base.ValidationProblem(new ValidationProblemDetails { 
+			Errors = errors, 
+			Extensions = new Dictionary<string, object?> { {"traceId", HttpContext.TraceIdentifier}}
+		});
+	}
 
 }

@@ -5,7 +5,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import AccountPanel from "../AccountPanel/AccountPanel";
 import { useContext, useState } from "react";
 import { AppContext } from "../../App";
-import { resolveClasses as c } from "../../modules/utils";
+import { c } from "../../modules/utils";
 
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';

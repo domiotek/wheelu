@@ -1,0 +1,74 @@
+.RegisterSchoolForm {
+	display: flex;
+    flex-direction: column;
+	flex: 1;
+    max-width: 500px;
+    margin: auto;
+	align-items: center;
+	padding: 4em 1em;
+}
+
+.RegisterSchoolForm h2 {
+	text-align: center;
+	margin-bottom: 0.75em;
+}
+
+.RegisterSchoolForm h5 {
+	text-align: center;
+	font-weight: 400;
+}
+
+.RegisterSchoolForm h4 {
+	margin-top: 2em;
+	margin-bottom: 1em;
+}
+
+.InputGroup {
+	display: flex;
+    flex-direction: column;
+    gap: 1.5em;
+    margin-bottom: 1.5em;
+    width: 100%;
+}
+
+.SearchCityInput {
+	width: 100%;
+	margin-top: 1em;
+}
+
+.ContactInputs {
+	margin-top: 1em;
+}
+
+.SubmitButton {
+	margin-top: 4em!important;
+	align-self: flex-end;
+}
+
+@media (min-width: 769px) {
+	.RegisterSchoolForm {
+		max-width: 700px;
+	}
+
+	.InputGroup {
+		flex-direction: row;
+		justify-content: space-between;
+		gap: 1em;
+	}
+
+	.InputGroup > * {
+		width: 100%;
+	}
+
+	.AddressInputGroup > *:nth-child(1) {
+		flex: 0.66;
+	}
+
+	.AddressInputGroup > *:nth-child(2) {
+		flex: 0.33;
+	}
+
+	.AddressInputGroup > *:nth-child(3) {
+		flex: 0.3;
+	}
+}

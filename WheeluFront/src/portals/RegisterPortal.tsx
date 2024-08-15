@@ -5,7 +5,7 @@ import commonClasses from "./Common.module.css";
 import classes from "./RegisterPortal.module.css";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import { callAPI, resolveClasses } from "../modules/utils";
+import { callAPI, c } from "../modules/utils";
 import { API } from '../types/api';
 import { useMemo, useState } from "react";
 
@@ -71,7 +71,7 @@ export default function RegisterPortal() {
 				<img className={commonClasses.Logo} src="/logo.png" alt="Wheelu Logo" />
 				<Typography variant="h5">Zarejestruj się</Typography>
 				<form className={commonClasses.Form} onSubmit={handleSubmit(onSubmit)}>
-					<Alert className={resolveClasses([commonClasses.ErrorPanel, [commonClasses.Visible, errorState!=null] ])} severity="error">
+					<Alert className={c([commonClasses.ErrorPanel, [commonClasses.Visible, errorState!=null] ])} severity="error">
 						{
 							errorMessage
 						}

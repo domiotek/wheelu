@@ -7,7 +7,7 @@ public class SchoolApplication {
 
 	public required string NIP { get; set; }
 
-	public required DateTime Established { get; set; }
+	public required DateOnly Established { get; set; }
 
 	public required DateTime AppliedAt { get; set; }
 
@@ -19,8 +19,16 @@ public class SchoolApplication {
 
 	public required string OwnerSurname { get; set; }
 
-	public required Address Address { get; set; }
+	public required string Street { get; set; }
 
-	public required List<City> NearbyCities { get; set; }
+	public required string BuildingNumber { get; set; }
+
+	public int SubBuildingNumber { get; set; }
+
+	public required string ZipCode { get; set; }
+
+	public required string City { get; set; }
+
+	public required List<string> NearbyCities { get; set; }
 
 }

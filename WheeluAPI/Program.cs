@@ -6,10 +6,10 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using WheeluAPI.helpers;
 using WheeluAPI.models;
+using WheeluAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
 builder.Services.AddControllers().AddNewtonsoftJson(
 	options => {
@@ -48,6 +48,8 @@ builder.Services.AddAuthentication(options=> {
 });
 
 builder.Services.AddScoped<IJwtHandler, JwtHandler>();
+builder.Services.AddScoped<ISchoolApplicationService, SchoolApplicationService>();
+builder.Services.AddScoped<ISchoolService, Schoolervice>();
 
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowSpecificOrigin",

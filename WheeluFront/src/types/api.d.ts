@@ -83,4 +83,35 @@ export namespace API {
 			type IEndpoint = _.IBuildAPIEndpoint<"POST", "/api/v1/auth/signin", IResponse, "InvalidCredentials", IRequestData>
 		}
 	}
+
+	namespace City {
+		namespace GetAll {
+			type IResponse = App.Models.ICity[]
+
+			type IEndpoint = _.IBuildAPIEndpoint<"GET", "/api/v1/cities", IResponse>;
+		}
+	}
+
+	namespace Application {
+		namespace PostNew {
+
+			interface IRequestData extends Record<string, string> {
+				schoolName: string
+				nip: string
+				ownerName: string
+				ownerSurname: string
+				establishedDate: string
+				street: string
+				buildingNumber: string
+				subBuildingNumber: string
+				zipCode: string
+				city: string
+				nearbyCities: string
+				email: string
+				phoneNumber: string
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<"POST","/api/v1/applications", null, "ApplicationAlreadyFiled" | "SchoolExists", IRequestData>
+		}
+	}
 }
