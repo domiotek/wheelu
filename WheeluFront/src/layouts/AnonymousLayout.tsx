@@ -1,11 +1,13 @@
 import { Person } from "@mui/icons-material";
-import { AppBar, Button, Link, Stack, Typography } from "@mui/material";
+import { Button, Link, Stack, Theme, Typography } from "@mui/material";
 import { Outlet, useNavigate } from "react-router-dom";
 
 import classes from "./AnonymousLayout.module.css";
 import { Suspense, useContext } from "react";
 import { AppContext } from "../App";
 import LoadingScreen from "../components/LoadingScreen/LoadingScreen";
+import ElevatedHeader from "../components/ElevatedHeader/ElevatedHeader";
+import { useTheme } from "@emotion/react";
 
 export default function AnonymousLayout() {
 
@@ -13,15 +15,17 @@ export default function AnonymousLayout() {
 
 	const {userDetails} = useContext(AppContext);
 
+	const theme = useTheme() as Theme;
+
 	return (
 		<>
-			<AppBar className={classes.Header} elevation={0} sx={{background: theme=>theme.palette.background.default }}>
+			<ElevatedHeader className={classes.Header} sx={{background: theme.palette.background.default }}>
 				<img src="/logo.png" alt="Wheelu logo"/>
 
 				<Button startIcon={<Person />} variant="outlined" color="secondary" onClick={()=>navigate("/login")}>
 					{userDetails?`Cześć ${userDetails.name}`:"Zaloguj się"}
 				</Button>
-			</AppBar>
+			</ElevatedHeader>
 			
 			<Suspense fallback={<LoadingScreen />}>
 				<Outlet />

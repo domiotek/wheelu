@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import { Box, Theme, Button} from "@mui/material";
+import { Box, Theme, Button, Toolbar} from "@mui/material";
 
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -24,18 +24,20 @@ export default function MainLayout() {
 		<Box sx={{ display: 'flex' }} >
 			<Drawer open={drawerOpen} setOpen={setDrawerOpen} />
 			
-			<Box component="main" sx={{ flexGrow: 1, p: 3, paddingTop: 8 }}>
+			<Box component="main" sx={{ flexGrow: 1, p: 3}}>
 
 				<ElevatedHeader sx={{background: theme.palette.background.default}}>
-					<IconButton onClick={()=>setDrawerOpen(!drawerOpen)}>
-						<MenuIcon />
-					</IconButton>
-					<Link className={classes.HomeLink} to={"/Dashboard"}>
-						<img src="/logo.png" alt="Logo"/>
-					</Link>
-					<Button onClick={()=>setTheme(activeTheme=="dark"?"light":"dark")}>
-						Toggle theme
-					</Button>	
+					<Toolbar>
+						<IconButton onClick={()=>setDrawerOpen(!drawerOpen)}>
+							<MenuIcon />
+						</IconButton>
+						<Link className={classes.HomeLink} to={"/home"}>
+							<img src="/logo.png" alt="Logo"/>
+						</Link>
+						<Button onClick={()=>setTheme(activeTheme=="dark"?"light":"dark")}>
+							Toggle theme
+						</Button>
+					</Toolbar>
 				</ElevatedHeader>
 
 				<Outlet />

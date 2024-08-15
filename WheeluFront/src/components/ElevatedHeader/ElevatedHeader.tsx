@@ -2,14 +2,16 @@ import { SxProps } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
+import { useEffect } from 'react';
 
 interface IProps {
 	children?: JSX.Element | JSX.Element[]
+	className?: string
 	sx?: SxProps
 }
 
 
-export default function ElevatedHeader({children, sx}: IProps) {
+export default function ElevatedHeader({className, children, sx}: IProps) {
 
 	const trigger = useScrollTrigger({
 		disableHysteresis: true,
@@ -17,11 +19,17 @@ export default function ElevatedHeader({children, sx}: IProps) {
 		target: window
 	});
 	
+	useEffect(()=>{
+		console.log(trigger);
+	},[trigger]);
+
 	return (
-		<AppBar elevation={trigger?4:0} sx={sx}>
-			<Toolbar>
+		<>
+			<Toolbar className={className} />
+			<AppBar className={className} elevation={trigger?4:0} sx={sx}>
 				{children}
-			</Toolbar>
-		</AppBar>
+			</AppBar>
+		</>
+		
 	);
 }
