@@ -84,8 +84,6 @@ public class SecurityController(UserManager<User> users, SignInManager<User> sig
 	[Produces("application/json")]
 	[Authorize]
 	public async Task<IActionResult> IdentifyUser() {
-		
-		bool isAdmin = User.IsInRole("Administrator");
 
 		var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
 

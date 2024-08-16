@@ -1,6 +1,8 @@
 namespace WheeluAPI.Controllers;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WheeluAPI.DTO.SchoolApplication;
 using WheeluAPI.helpers;
 using WheeluAPI.Services;
@@ -30,6 +32,22 @@ public class SchoolApplicationController(ISchoolApplicationService service, ISch
 		}
 
 		return StatusCode(204);
+	}
+
+	[HttpGet]
+	[Authorize(Roles = "Administrator")]
+	public async Task<IActionResult> GetAllApplications([FromQuery] OptionalPagingMetadata pagingMeta) {
+		if(pagingMeta.PageNumber!=null) {
+			int appliedPageSize;
+
+			PagingMetadata metadata = new() {PageNumber = (int)pagingMeta.PageNumber, PageSize = pagingMeta.PageSize };
+
+			var results = await service.GetApplications(metadata,out appliedPageSize).ToListAsync();
+
+			return Paginated(results, await service.Count(),appliedPageSize);
+		}
+
+		return Ok(await service.GetAllApplications());
 	}
 
 }

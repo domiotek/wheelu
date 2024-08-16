@@ -1,20 +1,29 @@
 import { useQuery } from '@tanstack/react-query'
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react';
 import classes from "./App.module.css";
 import { CssBaseline, Grid, ThemeProvider, Typography, createTheme } from '@mui/material';
+import { plPL as plPLc} from '@mui/material/locale';
+import { plPL as plPLx } from "@mui/x-data-grid/locales/plPL";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 import Logo from "./assets/logo.png";
 import { API } from './types/api';
 import { callAPI, c, OutsideContextNotifier} from './modules/utils';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { App as AppNm } from './types/app';
+import { App as AppNm } from "./types/app";
+import { AccessLevel } from './modules/enums';
 
 
 interface IProps {
 	useSplash: boolean
 }
 
-const lightTheme = createTheme({palette: {primary: {main: "#f67280"}, secondary: {main: "#5882C0"}}});
+const lightTheme = createTheme({
+	palette: {
+		primary: {main: "#f67280"}, 
+		secondary: {main: "#5882C0"}
+	}
+}, plPLc, plPLx);
 
 const darkTheme = createTheme({
 	palette: {
@@ -22,7 +31,7 @@ const darkTheme = createTheme({
 	  primary: {main: "#f67280"},
 	  secondary: {main: "#3f608e"}
 	}
-});
+}, plPLc, plPLx);
 
 
 export const AppContext = createContext<AppNm.IAppContext>(
@@ -31,7 +40,8 @@ export const AppContext = createContext<AppNm.IAppContext>(
 		darkTheme, 
 		activeTheme: "" as any, 
 		setTheme: OutsideContextNotifier,
-		userDetails: null
+		userDetails: null,
+		accessLevel: AccessLevel.Anonymous
 	}
 );
 
@@ -70,47 +80,57 @@ export default function App({useSplash}: IProps) {
 
 	},[data, error, location]);
 
+	const accessLevel = useMemo(()=>{
+		switch(data?.role) {
+			case "Administrator": return AccessLevel.Administrator;
+			case "Student": return AccessLevel.Student;
+			default: return AccessLevel.Anonymous;
+		}
+	},[data]);
+
 	return (
 		<AppContext.Provider value={{
 				lightTheme, 
 				darkTheme, 
 				activeTheme: darkMode?"dark":"light", 
 				setTheme: (theme)=>setDarkMode(theme=="dark"),
-				userDetails: data ?? null
+				userDetails: data ?? null,
+				accessLevel
 			}}
 		>
-				<ThemeProvider theme={darkMode?darkTheme:lightTheme}>
-					<CssBaseline>
-						<Outlet />
+			<ThemeProvider theme={darkMode?darkTheme:lightTheme}>
+				<CssBaseline>
+					<Outlet />
 
-						<Grid container className={c(
-							[
-								classes.SplashScreen, 
-								[classes.AlwaysHidden, !useSplash],
-								[classes.Intermediate, data!=undefined],
-								[classes.Hide, splashHidden]
-							]
-						)} sx={{background: (darkMode?darkTheme:lightTheme).palette.background.default}}>
+					<Grid container className={c(
+						[
+							classes.SplashScreen, 
+							[classes.AlwaysHidden, !useSplash],
+							[classes.Intermediate, data!=undefined],
+							[classes.Hide, splashHidden]
+						]
+					)} sx={{background: (darkMode?darkTheme:lightTheme).palette.background.default}}>
 
-							<img className={classes.SplashScreenLogo} src={Logo} alt="App logo"/>
-							{
-								error&&error.code!="Unauthorized"?
-									<>
-										<Typography variant='h6'>
-											Something went wrong
-										</Typography>
-										<Typography variant="body2">
-											Try reloading the application.
-										</Typography>
-									</>
-								:
-								<Typography variant='h6'>
-									Hang on a second...
-								</Typography>
-							}
-						</Grid>
-					</CssBaseline>
-				</ThemeProvider>
+						<img className={classes.SplashScreenLogo} src={Logo} alt="App logo"/>
+						{
+							error&&error.code!="Unauthorized"?
+								<>
+									<Typography variant='h6'>
+										Coś poszło nie tak
+									</Typography>
+									<Typography variant="body2">
+										Spróbuj przeładować aplikację
+									</Typography>
+								</>
+							:
+							<Typography variant='h6'>
+								Jeszcze chwila...
+							</Typography>
+						}
+					</Grid>
+				</CssBaseline>
+			</ThemeProvider>
+			<ReactQueryDevtools initialIsOpen={false} />
 		</AppContext.Provider>
 	)
 }

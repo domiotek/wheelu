@@ -18,10 +18,6 @@ export default function ElevatedHeader({className, children, sx}: IProps) {
 		threshold: 0,
 		target: window
 	});
-	
-	useEffect(()=>{
-		console.log(trigger);
-	},[trigger]);
 
 	return (
 		<>

@@ -1,9 +1,9 @@
 import { CSSObject, ThemeProvider } from "@emotion/react";
 import { Box, Drawer as MuiDrawer, Collapse, List, ListItemButton, ListItemIcon, ListItemText, Theme, styled, useMediaQuery } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SchoolIcon from '@mui/icons-material/School';
 import AccountPanel from "../AccountPanel/AccountPanel";
-import { useContext, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { AppContext } from "../../App";
 import { c } from "../../modules/utils";
 
@@ -13,6 +13,9 @@ import FolderIcon from '@mui/icons-material/Folder';
 import ClassIcon from '@mui/icons-material/Class';
 
 import classes from "./Drawer.module.css";
+import { App } from "../../types/app";
+import { Security } from "@mui/icons-material";
+import { AccessLevel } from "../../modules/enums";
 
 interface IProps {
 	open: boolean
@@ -69,9 +72,11 @@ export default function Drawer({open, setOpen}: IProps) {
 	const [offerSectionOpen, setOfferSectionOpen] = useState<boolean>(false);
 	const [accountSectionOpen, setAccountSectionOpen] = useState<boolean>(false);
 
-	const {darkTheme} = useContext(AppContext);
+	const {darkTheme, accessLevel} = useContext(AppContext);
 
 	const isDesktop = useMediaQuery(darkTheme.breakpoints.up("sm"));
+
+	const navigate = useNavigate();
 
 	const handleDrawer = () => {
 		if(open) {
@@ -95,12 +100,28 @@ export default function Drawer({open, setOpen}: IProps) {
 		setAccountSectionOpen(state);
 	}
 
+	const dynamicNavOptions = useMemo(()=>{
+		const result: App.UI.Navigation.INavOptionDef[] = [];
+
+		switch(accessLevel) {
+			case AccessLevel.Administrator:
+				result.push({
+					icon: <Security />,
+					name: "Admin Panel",
+					link: "/panel"
+				});
+			break;
+		}
+
+
+		return result;
+	},[accessLevel]);
 
 	return (
 		<ThemeProvider theme={darkTheme}>
-				<StyledDrawer className={classes.Drawer} variant={isDesktop?"permanent":"temporary"} open={open} ModalProps={{keepMounted: true}} onClose={()=>setOpen(false)}>
+				<StyledDrawer variant={isDesktop?"permanent":"temporary"} open={open} ModalProps={{keepMounted: true}} onClose={()=>setOpen(false)}>
 					<Box className={classes.DrawerHeader}>
-						<Link className={c([classes.HomeLink, classes.NavHomeLink, [classes.Visible, open]])} to={"/Dashboard"}>
+						<Link className={c([classes.HomeLink, classes.NavHomeLink, [classes.Visible, open]])} to={"/home"}>
 							<img src="/logo.png" alt="Logo"/>
 						</Link>
 						<IconButton onClick={handleDrawer} sx={{mr: 1}}>
@@ -132,6 +153,14 @@ export default function Drawer({open, setOpen}: IProps) {
 								</ListItemButton>
 							</List>
 						</Collapse>
+						{
+							dynamicNavOptions.map(opt=> 
+								<ListItemButton key={opt.name} sx={{ pl: 3 }} onClick={()=>navigate(opt.link)}>
+									<ListItemIcon>{opt.icon}</ListItemIcon>
+									<ListItemText>{opt.name}</ListItemText>
+								</ListItemButton>
+							)
+						}
 					</List>
 					<Box sx={{mt: "auto"}}>
 						<AccountPanel open={accountSectionOpen} setOpen={handleAccountMenu}/>

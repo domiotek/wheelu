@@ -24,7 +24,7 @@ export default function MainLayout() {
 		<Box sx={{ display: 'flex' }} >
 			<Drawer open={drawerOpen} setOpen={setDrawerOpen} />
 			
-			<Box component="main" sx={{ flexGrow: 1, p: 3}}>
+			<Box component="main" sx={{ flexGrow: 1, p: 3, minWidth: 0}}>
 
 				<ElevatedHeader sx={{background: theme.palette.background.default}}>
 					<Toolbar>

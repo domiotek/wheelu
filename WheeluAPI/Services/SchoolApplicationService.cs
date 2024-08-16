@@ -6,7 +6,7 @@ using WheeluAPI.models;
 
 namespace WheeluAPI.Services;
 
-public class SchoolApplicationService(ApplicationDbContext dbContext): ISchoolApplicationService {
+public class SchoolApplicationService(ApplicationDbContext dbContext): BaseService, ISchoolApplicationService {
 
 	public ValidationDictionary ValidateApplicationData(SchoolApplicationData applicationData) {
 		var result = new ValidationDictionary();
@@ -64,6 +64,22 @@ public class SchoolApplicationService(ApplicationDbContext dbContext): ISchoolAp
 	public Task<SchoolApplication?> FindExistingApplication(SchoolApplicationData applicationData) {
 		return dbContext.SchoolApplications.Where(a=>a.NIP==applicationData.NIP || a.Email==applicationData.Email).SingleOrDefaultAsync();
 	}
+
+	public Task<List<SchoolApplication>> GetAllApplications() {
+		return dbContext.SchoolApplications.ToListAsync();
+	}
+
+	public IQueryable<SchoolApplication> GetApplications(PagingMetadata meta, out int appliedPageSize) {
+		var results = ApplyPaging(dbContext.SchoolApplications.AsQueryable(), meta, out int actualPageSize);
+
+		appliedPageSize =  actualPageSize;
+
+		return results;
+	}
+
+	public Task<int> Count() {
+		return dbContext.SchoolApplications.CountAsync();
+	}
 }
 
 
@@ -75,4 +91,10 @@ public interface ISchoolApplicationService {
 	ValueTask<SchoolApplication?> GetApplicationByID(int id);
 
 	Task<SchoolApplication?> FindExistingApplication(SchoolApplicationData applicationData);
+
+	Task<List<SchoolApplication>> GetAllApplications();
+
+	IQueryable<SchoolApplication> GetApplications(PagingMetadata pagingMetadata, out int appliedPageSize);
+
+	Task<int> Count();
 }

@@ -48,6 +48,18 @@ export namespace API {
 			code: T
 			message?: string
 		}
+
+		interface IPagingRequest extends Record<string, number> {
+			PageNumber: number
+			PagingSize?: number
+		}
+
+		type IPaginatedResponse<T> = {
+			entries: T[]
+			totalCount: number
+			pageSize: number
+			pagesCount: number
+		}
     }
 
 	namespace UserData {
@@ -93,25 +105,18 @@ export namespace API {
 	}
 
 	namespace Application {
+
 		namespace PostNew {
 
-			interface IRequestData extends Record<string, string> {
-				schoolName: string
-				nip: string
-				ownerName: string
-				ownerSurname: string
-				establishedDate: string
-				street: string
-				buildingNumber: string
-				subBuildingNumber: string
-				zipCode: string
-				city: string
-				nearbyCities: string
-				email: string
-				phoneNumber: string
-			}
+			interface IRequestData extends App.Models.IApplication, Record<string, string> {}
 
 			type IEndpoint = _.IBuildAPIEndpoint<"POST","/api/v1/applications", null, "ApplicationAlreadyFiled" | "SchoolExists", IRequestData>
+		}
+
+		namespace GetAll {
+			type IResponse = _.IPaginatedResponse<App.Models.IApplication>
+
+			type IEndpoint = _.IBuildAPIEndpoint<"GET","/api/v1/applications",IResponse, _.TCommonServerErrorCodes, _.IPagingRequest>
 		}
 	}
 }

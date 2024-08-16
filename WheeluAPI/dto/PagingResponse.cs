@@ -7,8 +7,6 @@ public class PagingResponse<T> {
 
 	public required int PageSize { get; set; }
 
-	public required int MaxPageSize { get; set; }
-
 	public required int PagesCount { get; set; }
 	
 }
