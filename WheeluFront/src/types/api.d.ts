@@ -102,6 +102,14 @@ export namespace API {
 
 			type IEndpoint = _.IBuildAPIEndpoint<"POST", "/api/v1/auth/resend-activation", null, _.TCommonServerErrorCodes, IRequestData>	
 		}
+
+		namespace ActivateAccount {
+			interface IRequestData extends Record<string, string> {
+				Token: string
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<"POST", "/api/v1/auth/activate-account", null, _.TCommonServerErrorCodes, IRequestData>
+		}
 	}
 
 	namespace City {

@@ -8,6 +8,7 @@ import PortalLayout from './layouts/PortalLayout.tsx'
 import AnonymousLayout from './layouts/AnonymousLayout.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import ResendActivationPortal from './portals/ResendActivationPortal.tsx'
+import ActivateAccountPortal from './portals/ActivateAccountPortal.tsx'
 
 
 const LandingPage = React.lazy(()=>import("./pages/LandingPage.tsx"));
@@ -48,6 +49,7 @@ root.render(
 						<Route path='register' element={<RegisterPortal />} />
 						<Route path="logout" element={<LogoutPortal />} />
 						<Route path="resend-activation-link" element={<ResendActivationPortal />} />
+						<Route path="activate-account" element={<ActivateAccountPortal />} />
 					</Route>
 				</Route>
 			</Routes>

@@ -93,6 +93,8 @@ public class SecurityController(IJwtHandler jwtHandler, IUserService service) : 
 	}
 
 	[HttpPost("activate-account")]
+	[ProducesResponseType(typeof(UserIdentifyResponse), StatusCodes.Status200OK)]
+	[ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
 	public async Task<IActionResult> ActivateAccount([FromBody] ActivationRequest data) {
 
 		var result = await service.ActivateAccountAsync(data.Token);

@@ -17,7 +17,7 @@ export default function RegisterSuccess() {
 				</Typography>
 
 				<Typography variant="body2">
-					W skrzynce pusto? <Link component={<RouterLink to={"/resend-activation-link"}/> as any}>Wyślij jeszcze raz</Link>
+					W skrzynce pusto? <Link component={RouterLink} to={"/resend-activation-link"}>Wyślij jeszcze raz</Link>
 				</Typography>
 			</Stack>
 		</Card>
