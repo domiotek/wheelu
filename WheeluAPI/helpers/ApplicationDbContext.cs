@@ -13,6 +13,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
 	public DbSet<SchoolApplication> SchoolApplications { get; set; }
 
+	public DbSet<ActivationToken> ActivationTokens { get; set; }
+
 	protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder) {
 		configurationBuilder.Properties<DateTime>().HaveConversion(typeof(UtcValueConverter));
 	}

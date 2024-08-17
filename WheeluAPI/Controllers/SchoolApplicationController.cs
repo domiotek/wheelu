@@ -3,6 +3,7 @@ namespace WheeluAPI.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WheeluAPI.DTO.Errors;
 using WheeluAPI.DTO.SchoolApplication;
 using WheeluAPI.helpers;
 using WheeluAPI.Services;
@@ -20,10 +21,10 @@ public class SchoolApplicationController(ISchoolApplicationService service, ISch
 		}
 
 		if(await service.FindExistingApplication(application)!=null) 
-			return BadRequest(new APIError<ErrorCodes> {Code=ErrorCodes.ApplicationAlreadyFiled});
+			return BadRequest(new APIError<SchoolApplicationErrorCodes> {Code=SchoolApplicationErrorCodes.ApplicationAlreadyFiled});
 
 		if(await schoolService.FindExistingSchool(application)!=null)
-			return BadRequest(new APIError<ErrorCodes> {Code=ErrorCodes.SchoolExists});
+			return BadRequest(new APIError<SchoolApplicationErrorCodes> {Code=SchoolApplicationErrorCodes.SchoolExists});
 
 		try {
 			await service.CreateApplication(application);

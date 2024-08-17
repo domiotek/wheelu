@@ -13,7 +13,7 @@ const LandingPage = React.lazy(()=>import("./pages/LandingPage.tsx"));
 const RegisterSchoolPage = React.lazy(()=>import("./pages/RegisterSchoolPage.tsx"));
 
 const LoginPortal = React.lazy(()=>import("./portals/LoginPortal.tsx"));
-const RegisterPortal = React.lazy(()=>import("./portals/RegisterPortal.tsx"));
+const RegisterPortal = React.lazy(()=>import("./portals/RegisterPortal/RegisterPortal.tsx"));
 const LogoutPortal = React.lazy(()=>import("./portals/LogoutPortal.tsx"));
 
 const DashboardPage = React.lazy(()=>import("./pages/Dashboard.tsx"));

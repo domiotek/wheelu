@@ -1,7 +1,8 @@
 namespace WheeluAPI.DTO;
 
 public enum UserSignInErrorCode {
-	InvalidCredentials
+	InvalidCredentials,
+	AccountNotActivated
 }
 
 public class UserSignInResponse {

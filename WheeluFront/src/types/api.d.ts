@@ -78,7 +78,7 @@ export namespace API {
 				Surname: string
 			}
 
-			type IEndpoint = _.IBuildAPIEndpoint<"POST", "/api/v1/auth/signup", null, "PasswordRequirementsNotMet" | "EmailAlreadyTaken", IRequestData>
+			type IEndpoint = _.IBuildAPIEndpoint<"POST", "/api/v1/auth/signup", null, "PasswordRequirementsNotMet" | "EmailAlreadyTaken" | "EmailDeliveryProblem", IRequestData>
 		}
 
 		namespace SignIn {
@@ -92,7 +92,7 @@ export namespace API {
 				token: string
 			}
 
-			type IEndpoint = _.IBuildAPIEndpoint<"POST", "/api/v1/auth/signin", IResponse, "InvalidCredentials", IRequestData>
+			type IEndpoint = _.IBuildAPIEndpoint<"POST", "/api/v1/auth/signin", IResponse, "InvalidCredentials" | "AccountNotActivated", IRequestData>
 		}
 	}
 

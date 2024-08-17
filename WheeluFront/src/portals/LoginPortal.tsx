@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { callAPI, c } from "../modules/utils";
 import { API } from "../types/api";
 import { useState } from "react";
+import AuthService from "../services/Auth";
 
 interface IFormFields {
 	email: string
@@ -60,7 +61,7 @@ export default function LoginPortal() {
 				<form className={commonClasses.Form} onSubmit={handleSubmit(onSubmit)}>
 					<Alert className={c([commonClasses.ErrorPanel, [commonClasses.Visible, errorState!=null] ])} severity="error">
 						{
-							errorState=="InvalidCredentials"?"Niepoprawny login lub hasło.":"Nie mogliśmy Cię teraz zalogować."
+							AuthService.translateSignInErrorCode(errorState as NonNullable<typeof errorState>)
 						}
 					</Alert>
 					<Controller
@@ -111,7 +112,7 @@ export default function LoginPortal() {
 						}
 					/>
 
-					<Button type="submit" variant="contained" sx={{mb: 1}}>Zaloguj się</Button>
+					<Button type="submit" variant="contained" sx={{mb: 1}} disabled={submitMutation.isPending}>Zaloguj się</Button>
 				</form>
 
 				<Typography variant="body2">

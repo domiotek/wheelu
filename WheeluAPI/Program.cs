@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Serialization;
 using WheeluAPI.helpers;
 using WheeluAPI.models;
 using WheeluAPI.Services;
@@ -15,6 +16,7 @@ builder.Services.AddControllers().AddNewtonsoftJson(
 	options => {
 		options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 		options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+		options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
     }
 );
 
@@ -48,8 +50,10 @@ builder.Services.AddAuthentication(options=> {
 });
 
 builder.Services.AddScoped<IJwtHandler, JwtHandler>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISchoolApplicationService, SchoolApplicationService>();
 builder.Services.AddScoped<ISchoolService, Schoolervice>();
+builder.Services.AddSingleton<IMailService, MailService>();
 
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowSpecificOrigin",

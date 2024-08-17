@@ -1,77 +1,53 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WheeluAPI.DTO;
 using WheeluAPI.helpers;
-using WheeluAPI.models;
+using WheeluAPI.Services;
 
 namespace WheeluAPI.Controllers;
 
 [ApiController]
 [Route("/api/v1/auth")]
-public class SecurityController(UserManager<User> users, SignInManager<User> signInManager, IJwtHandler jwtHandler) : BaseAPIController {
+public class SecurityController(IJwtHandler jwtHandler, IUserService service) : BaseAPIController {
 
 	[HttpPost("signup")]
 	[ProducesResponseType(StatusCodes.Status201Created)]
-	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
 	[Produces("application/json")]
 	public async Task<IActionResult> CreateStudentAccount([FromBody] UserSignUpRequest requestData) {
-		var newUser = new User {
-			Email = requestData.Username,
-			UserName = requestData.Username,
-			Name = requestData.Name,
-			Surname = requestData.Surname,
-			CreatedAt = DateTime.UtcNow
-		};
+		var result = await service.CreateAccountAsync(requestData, UserRole.Student);
 
-		var result = await users.CreateAsync(newUser, requestData.Password);
-
-		if(result.Succeeded) {
-			result = await users.AddToRoleAsync(newUser, UserRole.Student.ToString());
-
-			if(result.Succeeded) return StatusCode(201);
-			else await users.DeleteAsync(newUser);
-		}
-
-		var errorCodes = new List<string>();
-
-		var passwordValid = true;
-
-		foreach(var error in result.Errors) {
-			if(error.Code.Contains("Password"))
-				passwordValid = false;
+		if(result.IsSuccess && result.User != null) {
+			var deliveryResult = await service.SendActivationEmailAsync(result.User, "confirm-registration");
 			
-			errorCodes.Add(error.Code);
+			if(!deliveryResult.IsSuccess) {
+				await service.DeleteUserAsync(result.User);
+				return BadRequest(new APIError<UserSignUpErrorCode> {Code = UserSignUpErrorCode.EmailDeliveryProblem, Details = [deliveryResult.ErrorCode.ToString()]});
+			}
+			return StatusCode(201);
 		}
 
-		if(!passwordValid)
-			return BadRequest(new APIError<UserSignUpErrorCode> {Code=UserSignUpErrorCode.PasswordRequirementsNotMet, Details=errorCodes});
-
-		if(errorCodes.Contains("DuplicateUserName"))
-			return BadRequest(new APIError<UserSignUpErrorCode> {Code=UserSignUpErrorCode.EmailAlreadyTaken});
-
-		return BadRequest(new APIError {Code=APIErrorCode.UnexpectedError, Details=errorCodes});
+		return BadRequest(new APIError<UserSignUpErrorCode> {Code = result.ErrorCode, Details = result.Details});
 	}
 
 	[HttpPost("signin")]
 	[ProducesResponseType(typeof(UserSignInResponse), StatusCodes.Status200OK)]
 	[ProducesResponseType(typeof(APIError), StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[Produces("application/json")]
 	public async Task<IActionResult> Login([FromBody] UserSignInRequest requestData) {
-		var result = await signInManager.PasswordSignInAsync(
-			requestData.Username, 
-			requestData.Password, 
-			requestData.RememberMe, 
-			lockoutOnFailure: false
-		);
 
-		if(result.Succeeded) {
+		var result = await service.TrySignInAsync(requestData);
+		if(result.IsSuccess) {
 			var token = await jwtHandler.GenerateJwtToken(requestData.Username);
 
 			return Ok(new UserSignInResponse {Token = token});
 		}
+
+		if(result.ErrorCode == UserSignInErrorCode.AccountNotActivated) 
+			return BadRequest(new APIError<UserSignInErrorCode> {Code = UserSignInErrorCode.AccountNotActivated});
 
 		return Unauthorized(new APIError<UserSignInErrorCode> {Code=UserSignInErrorCode.InvalidCredentials});
 	}
@@ -87,7 +63,7 @@ public class SecurityController(UserManager<User> users, SignInManager<User> sig
 
 		var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-		var user = await users.FindByEmailAsync(userID ?? "-1");
+		var user = await service.GetUserByEmailAsync(userID ?? "");
 
 		if(user==null) return BadRequest(new APIError {Code=APIErrorCode.UnexpectedError, Details=["Invalid user"]});
 

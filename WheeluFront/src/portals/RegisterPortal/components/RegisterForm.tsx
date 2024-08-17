@@ -1,12 +1,12 @@
 import { Button, TextField, Typography, Link, Card, Stack, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-import commonClasses from "./Common.module.css";
-import classes from "./RegisterPortal.module.css";
+import commonClasses from "../../Common.module.css";
+import classes from "../RegisterPortal.module.css";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import { callAPI, c } from "../modules/utils";
-import { API } from '../types/api';
+import { callAPI, c } from "../../../modules/utils";
+import { API } from '../../../types/api';
 import { useMemo, useState } from "react";
 
 
@@ -19,8 +19,12 @@ interface IFormFields {
 	cpassword: string
 }
 
-export default function RegisterPortal() {
+interface IProps {
+	onSuccess: ()=>void
+}
 
+export default function RegisterForm({onSuccess}: IProps) {
+  
 	const {
 		control,
 		handleSubmit,
@@ -40,9 +44,7 @@ export default function RegisterPortal() {
 
 	const submitMutation = useMutation<null,API.Auth.SignUp.IEndpoint["error"], API.Auth.SignUp.IRequestData>({
         mutationFn: data=>callAPI<API.Auth.SignUp.IEndpoint>("POST","/api/v1/auth/signup",data, null, true),
-        onSuccess: async ()=>{
-			navigate("/login");
-		},
+        onSuccess,
 		onError: (err=>{
 			setErrorState(err.code);
 		})
@@ -207,7 +209,7 @@ export default function RegisterPortal() {
 						</Stack>
 					</Stack>
 				
-					<Button type="submit" variant="contained" sx={{mb: 1}}>Zarejestruj się</Button>
+					<Button type="submit" variant="contained" sx={{mb: 1}} disabled={submitMutation.isPending}>Zarejestruj się</Button>
 				</form>
 
 				<Typography variant="body2">
