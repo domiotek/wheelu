@@ -11,3 +11,8 @@ public enum SendActivationEmailErrorCodes {
 	InvalidTemplate,
 	MailServiceProblem
 }
+
+public enum ActivationTokenValidationErrors {
+	DBError = ActivationTokenFetchErrors.DBError,
+	InvalidToken
+}

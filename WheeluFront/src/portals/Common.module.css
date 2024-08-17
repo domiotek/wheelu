@@ -30,11 +30,11 @@
 .ErrorPanel {
 	width: 100%;
 	margin: 2em 0;
-	display: none;
+	display: none!important;
 }
 
 .ErrorPanel.Visible {
-	display: flex;
+	display: flex!important;
 }
 
 @media (min-width: 769px) {

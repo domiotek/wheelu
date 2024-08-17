@@ -2,6 +2,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WheeluAPI.DTO;
+using WheeluAPI.DTO.Errors;
+using WheeluAPI.DTO.User;
 using WheeluAPI.helpers;
 using WheeluAPI.Services;
 
@@ -73,5 +75,32 @@ public class SecurityController(IJwtHandler jwtHandler, IUserService service) : 
                     .ToList();
 
 		return Ok(new UserIdentifyResponse {UserId=user.Id, Name=user.Name, Surname=user.Surname, Role=roles[0]});
+	}
+
+	[HttpPost("resend-activation")]
+	[ProducesResponseType(typeof(UserIdentifyResponse), StatusCodes.Status200OK)]
+	public async Task<IActionResult> ResendActivationEmail([FromBody] ActivationResendRequest data) {
+		var user = await service.GetUserByEmailAsync(data.Email);
+
+		if(user == null) {
+			await Task.Delay(2000);	
+			return Ok();
+		}
+
+		await service.SendActivationEmailAsync(user,"confirm-registration");
+
+		return Ok();
+	}
+
+	[HttpPost("activate-account")]
+	public async Task<IActionResult> ActivateAccount([FromBody] ActivationRequest data) {
+
+		var result = await service.ActivateAccountAsync(data.Token);
+
+		if(!result.IsSuccess)
+			return BadRequest(new APIError<ActivationTokenValidationErrors> {Code = result.ErrorCode});
+
+
+		return Ok();
 	}
 }

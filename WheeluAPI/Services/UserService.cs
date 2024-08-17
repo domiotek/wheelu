@@ -78,7 +78,7 @@ public class UserService(UserManager<User> users, SignInManager<User> signInMana
 		return new ServiceActionResult<UserSignInErrorCode> {IsSuccess = true};
 	}
 
-	public async Task<ActivationTokenFetchResult> GetActivationTokenASync(User user) {
+	public async Task<ActivationTokenFetchResult> GetActivationTokenAsync(User user) {
 		if(user.EmailConfirmed) return new ActivationTokenFetchResult {ErrorCode = ActivationTokenFetchErrors.AlreadyActivated};
 
 		var existingToken = await dbContext.ActivationTokens.Include(t=>t.User).Where(t=>t.User.Id == user.Id).SingleOrDefaultAsync();
@@ -112,7 +112,7 @@ public class UserService(UserManager<User> users, SignInManager<User> signInMana
 		if(template == null) 
 			return new ServiceActionResult<SendActivationEmailErrorCodes> {};
 
-		var tokenFetchResult = await GetActivationTokenASync(user);
+		var tokenFetchResult = await GetActivationTokenAsync(user);
 
 		if(!tokenFetchResult.IsSuccess) 
 			return new ServiceActionResult<SendActivationEmailErrorCodes> {ErrorCode = (SendActivationEmailErrorCodes)tokenFetchResult.ErrorCode };
@@ -126,6 +126,25 @@ public class UserService(UserManager<User> users, SignInManager<User> signInMana
 		
 		return new ServiceActionResult<SendActivationEmailErrorCodes> {IsSuccess = true};
 	}
+
+	public async Task<ServiceActionResult<ActivationTokenValidationErrors>> ActivateAccountAsync(string tokenID) {
+		var token = dbContext.ActivationTokens.Include(t=>t.User).FirstOrDefault(t=>t.Id == Guid.Parse(tokenID));
+
+		if(token == null || DateTime.UtcNow > token.CreatedAt.AddHours(24))
+			return new ServiceActionResult<ActivationTokenValidationErrors> {ErrorCode = ActivationTokenValidationErrors.InvalidToken};
+
+		token.User.EmailConfirmed = true;
+
+		dbContext.Users.Update(token.User);
+		dbContext.ActivationTokens.Remove(token);
+
+		var written = await dbContext.SaveChangesAsync();
+
+		if(written != 2) 
+			return new ServiceActionResult<ActivationTokenValidationErrors> {ErrorCode = ActivationTokenValidationErrors.DBError};
+		
+		return new ServiceActionResult<ActivationTokenValidationErrors> {IsSuccess = true};
+	}
 }
 
 public interface IUserService {
@@ -133,7 +152,9 @@ public interface IUserService {
 
 	Task<ServiceActionResult<SendActivationEmailErrorCodes>> SendActivationEmailAsync(User user, string templateID);
 
-	Task<ActivationTokenFetchResult> GetActivationTokenASync(User user);
+	Task<ActivationTokenFetchResult> GetActivationTokenAsync(User user);
+
+	Task<ServiceActionResult<ActivationTokenValidationErrors>> ActivateAccountAsync(string tokenID);
 
 	Task<ServiceActionResult<UserSignInErrorCode>> TrySignInAsync(UserSignInRequest requestData);
 

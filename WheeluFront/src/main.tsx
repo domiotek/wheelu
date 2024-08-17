@@ -7,6 +7,7 @@ import MainLayout from './layouts/MainLayout.tsx'
 import PortalLayout from './layouts/PortalLayout.tsx'
 import AnonymousLayout from './layouts/AnonymousLayout.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import ResendActivationPortal from './portals/ResendActivationPortal.tsx'
 
 
 const LandingPage = React.lazy(()=>import("./pages/LandingPage.tsx"));
@@ -30,24 +31,25 @@ root.render(
 		<BrowserRouter>
 			<QueryClientProvider client={qClient}>
 			<Routes>
-					<Route path="*" element={<App useSplash={false} />}>
-						<Route path="*" element={<AnonymousLayout />}>
-							<Route path='' element={<LandingPage />}/>
-							<Route path="apply" element={<RegisterSchoolPage />}/>
-						</Route>
+				<Route path="*" element={<App useSplash={false} />}>
+					<Route path="*" element={<AnonymousLayout />}>
+						<Route path='' element={<LandingPage />}/>
+						<Route path="apply" element={<RegisterSchoolPage />}/>
 					</Route>
-					<Route path="*" element={<App useSplash={true} />}>
-						<Route path="*" element={<MainLayout />}>
-							<Route path='home' element={<DashboardPage />} />
-							<Route path='panel' element={<AdminPanelPage />} />
-						</Route>
+				</Route>
+				<Route path="*" element={<App useSplash={true} />}>
+					<Route path="*" element={<MainLayout />}>
+						<Route path='home' element={<DashboardPage />} />
+						<Route path='panel' element={<AdminPanelPage />} />
+					</Route>
 
-						<Route path='*' element={<PortalLayout />}>
-							<Route path='login' element={<LoginPortal />} />
-							<Route path='register' element={<RegisterPortal />} />
-							<Route path="logout" element={<LogoutPortal />} />
-						</Route>
+					<Route path='*' element={<PortalLayout />}>
+						<Route path='login' element={<LoginPortal />} />
+						<Route path='register' element={<RegisterPortal />} />
+						<Route path="logout" element={<LogoutPortal />} />
+						<Route path="resend-activation-link" element={<ResendActivationPortal />} />
 					</Route>
+				</Route>
 			</Routes>
 			</QueryClientProvider>
 		</BrowserRouter>

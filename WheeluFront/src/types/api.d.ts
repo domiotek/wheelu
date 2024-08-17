@@ -94,6 +94,14 @@ export namespace API {
 
 			type IEndpoint = _.IBuildAPIEndpoint<"POST", "/api/v1/auth/signin", IResponse, "InvalidCredentials" | "AccountNotActivated", IRequestData>
 		}
+
+		namespace ResendActivation {
+			interface IRequestData extends Record<string, string> {
+				Email: string
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<"POST", "/api/v1/auth/resend-activation", null, _.TCommonServerErrorCodes, IRequestData>	
+		}
 	}
 
 	namespace City {

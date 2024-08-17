@@ -1,13 +1,10 @@
 import { Card, Link, Stack, Typography } from "@mui/material";
+import { Link as RouterLink} from "react-router-dom";
 
 import classes from "../RegisterPortal.module.css"
 import commonClasses from "../../Common.module.css"
-import { useNavigate } from "react-router-dom";
-
 
 export default function RegisterSuccess() {
-
-	const navigate = useNavigate();
 
 	return (
 		<Card className={classes.RegisterPanel} sx={{m: 2, p: {xs: 2, sm: 4}}}>
@@ -20,7 +17,7 @@ export default function RegisterSuccess() {
 				</Typography>
 
 				<Typography variant="body2">
-					W skrzynce pusto? <Link onClick={()=>navigate("/login")}>Wyślij jeszcze raz</Link>
+					W skrzynce pusto? <Link component={<RouterLink to={"/resend-activation-link"}/> as any}>Wyślij jeszcze raz</Link>
 				</Typography>
 			</Stack>
 		</Card>
