@@ -35,7 +35,8 @@ public class DBSetup {
 					UserName = configuration["Administrator:Email"],
 					Name = configuration["Administrator:Name"] ?? "",
 					Surname = configuration["Administrator:Surname"] ?? "",
-					CreatedAt = DateTime.UtcNow
+					CreatedAt = DateTime.UtcNow,
+					EmailConfirmed = true
 				};
 
 				string password = configuration["Administrator:Password"] ?? throw new NullReferenceException("Failed creating admin account. No Password provided.");
