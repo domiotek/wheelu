@@ -36,7 +36,7 @@ export namespace App {
 			phoneNumber: string
 			appliedAt?: string
 			id?: string
-			status?: string
+			status?: "pending" | "rejected" | "accepted"
 			resolvedAt?: string
 		}
 	}

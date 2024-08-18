@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { API } from '../../../../types/api';
 import { callAPI } from '../../../../modules/utils';
 import { App } from '../../../../types/app';
+import SchoolApplicationService from '../../../../services/SchoolApplication';
 
 export default function ApplicationsTable() {
 	const [paginationModel, setPaginationModel] = useState({
@@ -21,16 +22,18 @@ export default function ApplicationsTable() {
 	const columns = useMemo(()=>{
 		const result: GridColDef<App.Models.IApplication>[] = [
 			{field: "id", headerName: "ID", width: 35, type: "number"},
-			{field: "nip", headerName: "NIP", width: 125, type: "number"},
+			{field: "status", headerName: "Status", width: 120, type: "string", valueGetter: (value)=>SchoolApplicationService.translateApplicationStatus(value)},
+			{field: "nip", headerName: "NIP", width: 125, type: "number", headerAlign: "left"},
 			{field: "schoolName", headerName: "Nazwa szkoły", width: 150, type: "string"},
 			{field: "owner", headerName: "Właściciel", width: 150, valueGetter: (_value, row)=>{
 				return `${row.ownerName} ${row.ownerSurname}`;
 			}},
 			{field: "address", headerName: "Adres", width: 250, valueGetter: (_value, row)=>{
-				return `${row.street} ${row.buildingNumber}${row.subBuildingNumber ?? 0 > 0?`/${row.subBuildingNumber}`:""}, ${row.zipCode} ${row.city}`
+				return `${row.street} ${row.buildingNumber}${row.subBuildingNumber ?? 0 > 0?`/${row.subBuildingNumber}`:""}, ${row.zipCode} ${row.city}(${row.state})`
 			}},
-			{field: "appliedAt", headerName: "Złożono", width: 250, type: "dateTime", valueGetter: (value=>new Date(value))},
-			{field: "actions", type: "actions", flex: 1, align: 'right', getActions: params=>{
+			{field: "appliedAt", headerName: "Data złożenia", width: 250, type: "dateTime", valueGetter: (value=>new Date(value))},
+			{field: "resolvedAt", headerName: "Data rozpatrzenia", width: 250, type: "custom", valueGetter: (value=>value!=undefined?new Date(value):"Nie rozpatrzono")},
+			{field: "actions", headerName: "Akcje", renderHeader: ()=>"", type: "actions", flex: 1, align: 'right', getActions: params=>{
 				return [
 					<GridActionsCellItem label="Rozpatrz" showInMenu />,
 					<GridActionsCellItem label="Odrzuć" showInMenu />,
@@ -52,6 +55,7 @@ export default function ApplicationsTable() {
 			loading={isFetching}
 			autoHeight={true}
 			rowCount={data?.totalCount ?? 0}
+			disableColumnFilter={true}
 		/>
 	)
 }

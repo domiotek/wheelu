@@ -1,5 +1,6 @@
 import { translateGenericErrorCodes } from "../modules/utils";
 import { API } from "../types/api";
+import { App } from "../types/app";
 
 export default class SchoolApplicationService {
 
@@ -14,6 +15,15 @@ export default class SchoolApplicationService {
 			break;
 			default:
 				return translateGenericErrorCodes(errCode);
+		}
+	}
+
+	public static translateApplicationStatus(status: App.Models.IApplication["status"]) {
+		switch(status) {
+			case "pending": return "Oczekująca";
+			case "rejected": return "Odrzucona";
+			case "accepted": return "Zaakceptowana";
+			default: return	"?";
 		}
 	}
 }
