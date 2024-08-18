@@ -22,7 +22,7 @@ export default function ApplicationsTable() {
 		const result: GridColDef<App.Models.IApplication>[] = [
 			{field: "id", headerName: "ID", width: 35, type: "number"},
 			{field: "nip", headerName: "NIP", width: 125, type: "number"},
-			{field: "name", headerName: "Nazwa szkoły", width: 150, type: "string"},
+			{field: "schoolName", headerName: "Nazwa szkoły", width: 150, type: "string"},
 			{field: "owner", headerName: "Właściciel", width: 150, valueGetter: (_value, row)=>{
 				return `${row.ownerName} ${row.ownerSurname}`;
 			}},

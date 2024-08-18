@@ -9,6 +9,9 @@ export default class SchoolApplicationService {
 				return "Ta szkoła została już zgłoszona do programu.";
 			case "SchoolExists":
 				return "Ta szkoła znajduje sie już w programie.";
+			case "RejectedTooSoon":
+				return "Twój poprzedni wniosek został odrzucony zbyt niedawno. Musi minąć conajmniej 7 dni od daty odrzucenia wniosku, zanim będziesz mógł/mogła złożyć kolejny.";
+			break;
 			default:
 				return translateGenericErrorCodes(errCode);
 		}

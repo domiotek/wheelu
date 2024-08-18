@@ -1,7 +1,6 @@
 namespace WheeluAPI.Services;
 
 using System.Net;
-using Microsoft.OpenApi.Any;
 using RestSharp;
 using WheeluAPI.Mail;
 using WheeluAPI.Mail.Templates;
@@ -10,11 +9,13 @@ public class MailService: IMailService {
 	private RestClient _client;
 	private string _accessToken;
 	private IDictionary<string, Sender> _senders =  new Dictionary<string, Sender> {
-		{"accounts", new Sender {Email = "accounts@omiotech.pl", Name = "System kont Wheelu"}}
+		{"accounts", new Sender {Email = "accounts@omiotech.pl", Name = "System kont Wheelu"}},
+		{"applications", new Sender {Email = "applications@omiotech.pl", Name = "Wheelu - Platforma Szkół Jazdy"}}
 	};
 
 	private IDictionary<string, ITemplate> _templates = new Dictionary<string, ITemplate> {
-		{"confirm-registration", new ConfirmRegistrationTemplate()}
+		{"confirm-registration", new ConfirmRegistrationTemplate()},
+		{"school-application-initial", new SchoolApplicationInitialTemplate()}
 	};
 
 	public MailService(IConfiguration configuration) {

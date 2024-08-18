@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WheeluAPI.helpers;
@@ -12,9 +13,11 @@ using WheeluAPI.helpers;
 namespace WheeluAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240818111256_ImprovedSchoolApplications")]
+    partial class ImprovedSchoolApplications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -215,12 +218,7 @@ namespace WheeluAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("StateId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("StateId");
 
                     b.ToTable("Cities");
                 });
@@ -322,11 +320,7 @@ namespace WheeluAPI.Migrations
                     b.Property<DateTime?>("ResolvedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("State")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Status")
+                    b.Property<int>("State")
                         .HasColumnType("integer");
 
                     b.Property<string>("Street")
@@ -343,23 +337,6 @@ namespace WheeluAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SchoolApplications");
-                });
-
-            modelBuilder.Entity("WheeluAPI.models.State", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("States");
                 });
 
             modelBuilder.Entity("WheeluAPI.models.User", b =>
@@ -530,17 +507,6 @@ namespace WheeluAPI.Migrations
                     b.Navigation("ZipCode");
                 });
 
-            modelBuilder.Entity("WheeluAPI.models.City", b =>
-                {
-                    b.HasOne("WheeluAPI.models.State", "State")
-                        .WithMany("Cities")
-                        .HasForeignKey("StateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("State");
-                });
-
             modelBuilder.Entity("WheeluAPI.models.School", b =>
                 {
                     b.HasOne("WheeluAPI.models.Address", "Address")
@@ -572,11 +538,6 @@ namespace WheeluAPI.Migrations
             modelBuilder.Entity("WheeluAPI.models.City", b =>
                 {
                     b.Navigation("ZipCodes");
-                });
-
-            modelBuilder.Entity("WheeluAPI.models.State", b =>
-                {
-                    b.Navigation("Cities");
                 });
 #pragma warning restore 612, 618
         }

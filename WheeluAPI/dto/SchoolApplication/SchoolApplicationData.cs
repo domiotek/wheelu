@@ -23,6 +23,7 @@ public class SchoolApplicationData {
 
 	[StringLength(maximumLength: 50, MinimumLength = 2)]
 	public required string OwnerSurname { get; set; }
+	public required DateOnly OwnerBirthday { get; set; }
 
 	[StringLength(maximumLength: 75, MinimumLength = 2)]
 	public required string Street { get; set; }
@@ -38,6 +39,15 @@ public class SchoolApplicationData {
 	[StringLength(maximumLength: 50, MinimumLength = 2)]
 	public required string City { get; set; }
 
+	public required string State { get; set; }
+
 	public required List<string> NearbyCities { get; set; }
 
+}
+
+public class SchoolApplicationResponse: SchoolApplicationData {
+	public required int Id { get; set; }
+	public required string Status { get; set; }
+	public DateTime? ResolvedAt { get; set; }
+	public required DateTime AppliedAt { get; set; }
 }

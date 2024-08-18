@@ -120,13 +120,21 @@ export namespace API {
 		}
 	}
 
+	namespace State {
+		namespace GetAll {
+			type IResponse = App.Models.IState[]
+
+			type IEndpoint = _.IBuildAPIEndpoint<"GET", "/api/v1/states", IResponse>;
+		}
+	}
+
 	namespace Application {
 
 		namespace PostNew {
 
 			interface IRequestData extends App.Models.IApplication, Record<string, string> {}
 
-			type IEndpoint = _.IBuildAPIEndpoint<"POST","/api/v1/applications", null, "ApplicationAlreadyFiled" | "SchoolExists", IRequestData>
+			type IEndpoint = _.IBuildAPIEndpoint<"POST","/api/v1/applications", null, "ApplicationAlreadyFiled" | "SchoolExists" | "RejectedTooSoon", IRequestData>
 		}
 
 		namespace GetAll {

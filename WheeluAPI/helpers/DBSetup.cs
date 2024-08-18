@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using WheeluAPI.models;
 
 namespace WheeluAPI.helpers;
@@ -52,6 +53,27 @@ public class DBSetup {
 			}else Console.WriteLine("[Administrator Account Configuration] No action required. Account exists.");
 		}
 
+		ApplicationDbContext dbContext = provider.GetRequiredService<ApplicationDbContext>();
+
+		if(!await dbContext.States.AnyAsync()) {
+			
+			List<string> states = [
+				"dolnośląskie", "kujawsko-pomorskie", "lubelskie", "lubuskie", 
+				"łódzkie", "małopolskie", "mazowieckie", "opolskie",
+				"podkarpackie", "podlaskie", "pomorskie", "śląskie",
+				"świętokrzyskie", "warmińsko-mazurskie", "wielkopolskie", "zachodniopomorskie"
+			];
+
+			foreach(var stateName in states) {
+				var newState = new State {
+					Name = stateName
+				};
+
+				dbContext.States.Add(newState);
+			}
+		}
+
+		await dbContext.SaveChangesAsync();
 	}
 
 }

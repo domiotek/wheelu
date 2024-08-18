@@ -1,14 +1,16 @@
 using System.Data;
 using Microsoft.EntityFrameworkCore;
+using WheeluAPI.DTO.Errors;
 using WheeluAPI.DTO.SchoolApplication;
 using WheeluAPI.helpers;
+using WheeluAPI.Mail.Templates;
 using WheeluAPI.models;
 
 namespace WheeluAPI.Services;
 
-public class SchoolApplicationService(ApplicationDbContext dbContext): BaseService, ISchoolApplicationService {
+public class SchoolApplicationService(ApplicationDbContext dbContext, IMailService mailService): BaseService, ISchoolApplicationService {
 
-	public ValidationDictionary ValidateApplicationData(SchoolApplicationData applicationData) {
+	public async Task<ValidationDictionary> ValidateApplicationDataAsync(SchoolApplicationData applicationData) {
 		var result = new ValidationDictionary();
 		
 		if(!RegexPatterns.NIP().Match(applicationData.NIP).Success)
@@ -23,6 +25,9 @@ public class SchoolApplicationService(ApplicationDbContext dbContext): BaseServi
 		if(!RegexPatterns.PhoneNumber().Match(applicationData.PhoneNumber).Success)
 			result.AddError("PhoneNumber", "Malformed phone number.");
 
+		if(await dbContext.States.Where(s=>s.Name == applicationData.State).SingleOrDefaultAsync()==null) 
+			result.AddError("State", "State value not found.");
+
 		try {
 			DateOnly.Parse(applicationData.EstablishedDate);
 		}catch(FormatException) {
@@ -32,7 +37,7 @@ public class SchoolApplicationService(ApplicationDbContext dbContext): BaseServi
 		return result;
 	}
 
-	public async Task<bool> CreateApplication(SchoolApplicationData applicationData) {
+	public async Task<SchoolApplication> CreateApplication(SchoolApplicationData applicationData) {
 
 		SchoolApplication schoolApplication = new() {
 			Name = applicationData.SchoolName,
@@ -41,12 +46,14 @@ public class SchoolApplicationService(ApplicationDbContext dbContext): BaseServi
 			Established = DateOnly.Parse(applicationData.EstablishedDate),
 			OwnerName = applicationData.OwnerName,
 			OwnerSurname = applicationData.OwnerSurname,
+			OwnerBirthday = applicationData.OwnerBirthday,
 			PhoneNumber = applicationData.PhoneNumber,
 			Street = applicationData.Street,
 			BuildingNumber = applicationData.BuildingNumber,
 			SubBuildingNumber = applicationData.SubBuildingNumber,
 			ZipCode = applicationData.ZipCode,
 			City = applicationData.City,
+			State = applicationData.State,
 			NearbyCities = applicationData.NearbyCities,
 			AppliedAt = DateTime.UtcNow,
 		};
@@ -54,15 +61,21 @@ public class SchoolApplicationService(ApplicationDbContext dbContext): BaseServi
 		dbContext.SchoolApplications.Add(schoolApplication);
 
 		await dbContext.SaveChangesAsync();
-		return true;
+		return schoolApplication;
 	}
 
 	public ValueTask<SchoolApplication?> GetApplicationByID(int id) {
 		return dbContext.SchoolApplications.FindAsync(id);
 	}
 
+	/// <summary>
+	/// Finds applications that has at least one significant property equal to the given data.
+	/// </summary>
+	/// <returns>Only one of those. Usefull for detecting.</returns>
 	public Task<SchoolApplication?> FindExistingApplication(SchoolApplicationData applicationData) {
-		return dbContext.SchoolApplications.Where(a=>a.NIP==applicationData.NIP || a.Email==applicationData.Email).SingleOrDefaultAsync();
+		return dbContext.SchoolApplications
+			.Where(a=>a.NIP==applicationData.NIP || a.Email==applicationData.Email)
+			.FirstOrDefaultAsync();
 	}
 
 	public Task<List<SchoolApplication>> GetAllApplications() {
@@ -80,13 +93,60 @@ public class SchoolApplicationService(ApplicationDbContext dbContext): BaseServi
 	public Task<int> Count() {
 		return dbContext.SchoolApplications.CountAsync();
 	}
+
+	public async Task<ServiceActionResult<InitialMailErrors>> SendInitialMail(SchoolApplication application) {
+		if(application.Status != SchoolApplicationState.Pending) 
+			return new ServiceActionResult<InitialMailErrors> {ErrorCode = InitialMailErrors.ApplicationResolved};
+
+		var template = mailService.GetTemplate<SchoolApplicationInitialTemplateVariables>("school-application-initial");
+
+		if(template == null) 
+			return new ServiceActionResult<InitialMailErrors> {};
+
+		var templateData = new SchoolApplicationInitialTemplateVariables {
+			ApplicationID = application.Id.ToString(),
+			FirstName = application.OwnerName
+		};
+
+		if(await mailService.SendEmail("aplications",template.Populate(templateData), [application.Email]) == false)
+			return new ServiceActionResult<InitialMailErrors> {ErrorCode = InitialMailErrors.MailServiceProblem};
+		
+		return new ServiceActionResult<InitialMailErrors> {IsSuccess = true};
+	}
+
+
+	public List<SchoolApplicationResponse> MapToDTO(List<SchoolApplication> source) {
+		return source.Select(application=>
+			new SchoolApplicationResponse {
+				Id = application.Id,
+				Status = application.Status.ToString().ToLower(),
+				AppliedAt = application.AppliedAt,
+				ResolvedAt = application.ResolvedAt,
+				SchoolName = application.Name,
+				OwnerName = application.OwnerName,
+				OwnerSurname = application.OwnerSurname,
+				OwnerBirthday = application.OwnerBirthday,
+				EstablishedDate = application.Established.ToShortDateString(),
+				NIP = application.NIP,
+				Street = application.Street,
+				BuildingNumber = application.BuildingNumber,
+				SubBuildingNumber = application.SubBuildingNumber,
+				ZipCode = application.ZipCode,
+				City = application.City,
+				State = application.State,
+				PhoneNumber = application.PhoneNumber,
+				Email = application.Email,
+				NearbyCities = application.NearbyCities
+			}
+		).ToList();
+	}
 }
 
 
 public interface ISchoolApplicationService {
-	ValidationDictionary ValidateApplicationData(SchoolApplicationData applicationData);
+	Task<ValidationDictionary> ValidateApplicationDataAsync(SchoolApplicationData applicationData);
 
-	Task<bool> CreateApplication(SchoolApplicationData applicationData);
+	Task<SchoolApplication> CreateApplication(SchoolApplicationData applicationData);
 
 	ValueTask<SchoolApplication?> GetApplicationByID(int id);
 
@@ -97,4 +157,8 @@ public interface ISchoolApplicationService {
 	IQueryable<SchoolApplication> GetApplications(PagingMetadata pagingMetadata, out int appliedPageSize);
 
 	Task<int> Count();
+
+	Task<ServiceActionResult<InitialMailErrors>> SendInitialMail(SchoolApplication application);
+
+	List<SchoolApplicationResponse> MapToDTO(List<SchoolApplication> source);
 }

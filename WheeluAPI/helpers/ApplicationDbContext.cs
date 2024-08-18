@@ -9,6 +9,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
 	public DbSet<City> Cities { get; set; }
 
+	public DbSet<State> States { get; set; }
+
 	public DbSet<School> Schools { get; set; }
 
 	public DbSet<SchoolApplication> SchoolApplications { get; set; }

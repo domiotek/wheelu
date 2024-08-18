@@ -3,7 +3,7 @@ import { Alert, Autocomplete, Button, Chip, createFilterOptions, Snackbar, TextF
 import classes from "./SchoolApplicationForm.module.css";
 import { c, callAPI, prepareFieldErrorMessage } from "../../modules/utils";
 import { useCallback, useState} from "react";
-import { Controller, FormContainer, TextFieldElement, useForm } from "react-hook-form-mui";
+import { Controller, FormContainer, SelectElement, TextFieldElement, useForm } from "react-hook-form-mui";
 import { API } from "../../types/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import SchoolApplicationService from "../../services/SchoolApplication";
@@ -27,6 +27,13 @@ export default function SchoolApplicationForm({onSuccess}: IProps) {
         retry: true,
 		staleTime: 60000,
 		enabled: citySelectOpened
+    });
+
+	const {data: stateOptions} = useQuery<API.State.GetAll.IResponse, API.State.GetAll.IEndpoint["error"]>({
+        queryKey: ["States"],
+        queryFn: ()=>callAPI<API.State.GetAll.IEndpoint>("GET","/api/v1/states"),
+        retry: true,
+		staleTime: Infinity
     });
 
 	const submitMutation = useMutation<null, API.Application.PostNew.IEndpoint["error"], API.Application.PostNew.IRequestData>({
@@ -105,6 +112,17 @@ export default function SchoolApplicationForm({onSuccess}: IProps) {
 
 			<div className={classes.InputGroup}>
 				<TextFieldElement 
+					name="ownerBirthday"
+					color="secondary"
+					variant="filled"
+					label="Data urodzenia właściciela"
+					type="date"
+					InputLabelProps={{shrink: true}} 
+					required
+					parseError={prepareFieldErrorMessage}
+				/>
+				
+				<TextFieldElement 
 					name="establishedDate"
 					color="secondary"
 					variant="filled"
@@ -114,7 +132,6 @@ export default function SchoolApplicationForm({onSuccess}: IProps) {
 					required
 					parseError={prepareFieldErrorMessage}
 				/>
-				<div />
 			</div>
 
 			<h4>Adres szkoły</h4>
@@ -172,6 +189,20 @@ export default function SchoolApplicationForm({onSuccess}: IProps) {
 					label="Miasto"
 					required
 					parseError={(err)=>prepareFieldErrorMessage(err, {minLength: "2 znaki", maxLength: "50 znaków"})}
+				/>
+			</div>
+
+			<div className={classes.InputGroup}>
+				<SelectElement
+					name="state"
+					required
+					color="secondary"
+					variant="filled"
+					label="Województwo"
+					options={stateOptions}
+					valueKey="name"
+					labelKey="name"
+					parseError={prepareFieldErrorMessage}
 				/>
 			</div>
 

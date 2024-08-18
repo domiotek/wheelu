@@ -13,21 +13,31 @@ export namespace App {
 			name: string
 		}
 
+		interface IState {
+			Id: number
+			name: string
+		}
+
 		interface IApplication {
 			schoolName: string
 			nip: string
 			ownerName: string
 			ownerSurname: string
+			ownerBirthday: string
 			establishedDate: string
 			street: string
 			buildingNumber: string
 			subBuildingNumber: string
 			zipCode: string
 			city: string
+			state: string
 			nearbyCities: string
 			email: string
 			phoneNumber: string
 			appliedAt?: string
+			id?: string
+			status?: string
+			resolvedAt?: string
 		}
 	}
 

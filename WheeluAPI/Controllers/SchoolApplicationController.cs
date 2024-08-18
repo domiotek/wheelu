@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using WheeluAPI.DTO.Errors;
 using WheeluAPI.DTO.SchoolApplication;
 using WheeluAPI.helpers;
+using WheeluAPI.models;
 using WheeluAPI.Services;
 
 [ApiController]
@@ -13,30 +14,45 @@ using WheeluAPI.Services;
 public class SchoolApplicationController(ISchoolApplicationService service, ISchoolService schoolService) : BaseAPIController {
 
 	[HttpPost]
+	[ProducesResponseType(StatusCodes.Status201Created)]
+	[ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
 	public async Task<IActionResult> PostApplication([FromBody] SchoolApplicationData application) {
-		var validationResult = service.ValidateApplicationData(application);
+		var validationResult = await service.ValidateApplicationDataAsync(application);
 
 		if(!validationResult.IsValid) {
 			return ValidationProblem(validationResult.Errors);
 		}
 
-		if(await service.FindExistingApplication(application)!=null) 
-			return BadRequest(new APIError<SchoolApplicationErrorCodes> {Code=SchoolApplicationErrorCodes.ApplicationAlreadyFiled});
+		SchoolApplication? existingApplication = await service.FindExistingApplication(application);
+		if(existingApplication !=null ) {
+			if(existingApplication.Status == SchoolApplicationState.Pending)
+				return BadRequest(new APIError<SchoolApplicationErrorCodes> {Code=SchoolApplicationErrorCodes.ApplicationAlreadyFiled});
+
+			var timeDiff = DateTime.UtcNow - existingApplication.ResolvedAt;
+			if(existingApplication.Status == SchoolApplicationState.Rejected && timeDiff != null && ((TimeSpan) timeDiff).TotalDays < 7)
+				return BadRequest(new APIError<SchoolApplicationErrorCodes> {Code=SchoolApplicationErrorCodes.RejectedTooSoon});
+		}
+			
 
 		if(await schoolService.FindExistingSchool(application)!=null)
 			return BadRequest(new APIError<SchoolApplicationErrorCodes> {Code=SchoolApplicationErrorCodes.SchoolExists});
 
 		try {
-			await service.CreateApplication(application);
+			var newApplication =await service.CreateApplication(application);
+
+			await service.SendInitialMail(newApplication);
 		}catch(Exception ex) {
 			return Problem(ex.Message);
 		}
 
-		return StatusCode(204);
+		return StatusCode(201);
 	}
 
 	[HttpGet]
 	[Authorize(Roles = "Administrator")]
+	[ProducesResponseType(typeof(SchoolApplicationResponse), StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	public async Task<IActionResult> GetAllApplications([FromQuery] OptionalPagingMetadata pagingMeta) {
 		if(pagingMeta.PageNumber!=null) {
 			int appliedPageSize;
@@ -45,10 +61,10 @@ public class SchoolApplicationController(ISchoolApplicationService service, ISch
 
 			var results = await service.GetApplications(metadata,out appliedPageSize).ToListAsync();
 
-			return Paginated(results, await service.Count(),appliedPageSize);
+			return Paginated(service.MapToDTO(results), await service.Count(),appliedPageSize);
 		}
 
-		return Ok(await service.GetAllApplications());
+		return Ok(service.MapToDTO(await service.GetAllApplications()));
 	}
 
 }
