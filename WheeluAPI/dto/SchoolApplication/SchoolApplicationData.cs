@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using WheeluAPI.models;
 
 namespace WheeluAPI.DTO.SchoolApplication;
 
@@ -49,5 +50,7 @@ public class SchoolApplicationResponse: SchoolApplicationData {
 	public required int Id { get; set; }
 	public required string Status { get; set; }
 	public DateTime? ResolvedAt { get; set; }
+	public string? RejectionReason {get; set;}
+	public string? RejectionMessage { get; set; }
 	public required DateTime AppliedAt { get; set; }
 }

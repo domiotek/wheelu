@@ -94,6 +94,38 @@ public class SchoolApplicationService(ApplicationDbContext dbContext, IMailServi
 		return dbContext.SchoolApplications.CountAsync();
 	}
 
+	public async Task<ServiceActionResult<RejectionErrors>> RejectApplication(SchoolApplication application, RejectionReason reason, string? message) {
+		if(application.Status != SchoolApplicationState.Pending) 
+			return new ServiceActionResult<RejectionErrors> {ErrorCode = RejectionErrors.ApplicationResolved};
+
+		application.Status = SchoolApplicationState.Rejected;
+		application.ResolvedAt = DateTime.UtcNow;
+		application.RejectionReason = reason;
+		application.RejectionMessage = message;
+
+		var template = mailService.GetTemplate<SchoolApplicationRejectionTemplateVariables>("school-application-rejection");
+
+		if(template == null) 
+			return new ServiceActionResult<RejectionErrors> {};
+
+		var templateData = new SchoolApplicationRejectionTemplateVariables {
+			ApplicationID = application.Id.ToString(),
+			FirstName = application.OwnerName,
+			Reason = application.RejectionReason ?? RejectionReason.Unspecified,
+			Message = application.RejectionMessage
+		};
+
+		if(await mailService.SendEmail("applications",template.Populate(templateData), [application.Email]) == false)
+			return new ServiceActionResult<RejectionErrors> {ErrorCode = RejectionErrors.MailServiceProblem};
+
+		var written = await dbContext.SaveChangesAsync();
+
+		if(written==0) return new ServiceActionResult<RejectionErrors> {ErrorCode = RejectionErrors.DbError};
+		
+		return new ServiceActionResult<RejectionErrors> {IsSuccess = true};
+		 
+	}
+
 	public async Task<ServiceActionResult<InitialMailErrors>> SendInitialMail(SchoolApplication application) {
 		if(application.Status != SchoolApplicationState.Pending) 
 			return new ServiceActionResult<InitialMailErrors> {ErrorCode = InitialMailErrors.ApplicationResolved};
@@ -114,7 +146,6 @@ public class SchoolApplicationService(ApplicationDbContext dbContext, IMailServi
 		return new ServiceActionResult<InitialMailErrors> {IsSuccess = true};
 	}
 
-
 	public List<SchoolApplicationResponse> MapToDTO(List<SchoolApplication> source) {
 		return source.Select(application=>
 			new SchoolApplicationResponse {
@@ -122,6 +153,8 @@ public class SchoolApplicationService(ApplicationDbContext dbContext, IMailServi
 				Status = application.Status.ToString().ToLower(),
 				AppliedAt = application.AppliedAt,
 				ResolvedAt = application.ResolvedAt,
+				RejectionReason = application.RejectionReason.ToString(),
+				RejectionMessage = application.RejectionMessage,
 				SchoolName = application.Name,
 				OwnerName = application.OwnerName,
 				OwnerSurname = application.OwnerSurname,
@@ -157,6 +190,8 @@ public interface ISchoolApplicationService {
 	IQueryable<SchoolApplication> GetApplications(PagingMetadata pagingMetadata, out int appliedPageSize);
 
 	Task<int> Count();
+
+	Task<ServiceActionResult<RejectionErrors>> RejectApplication(SchoolApplication application, RejectionReason reason, string? message);
 
 	Task<ServiceActionResult<InitialMailErrors>> SendInitialMail(SchoolApplication application);
 

@@ -142,5 +142,18 @@ export namespace API {
 
 			type IEndpoint = _.IBuildAPIEndpoint<"GET","/api/v1/applications",IResponse, _.TCommonServerErrorCodes, _.IPagingRequest>
 		}
+
+		namespace Reject {
+			interface IRequestData extends Record<string, string> {
+				Reason: "unspecified" | "invalidData" | "platformSaturated" | "badReputation"
+				Message?: string
+			}
+
+			interface IParams extends Record<string, string> {
+				id: string
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<"DELETE", "/api/v1/applications/:id",null, "ApplicationNotFound" | "ApplicationResolved" | "MailServiceProblem" | "DbError", IRequestData, IParams>
+		}
 	}
 }

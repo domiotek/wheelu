@@ -1,10 +1,11 @@
 import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { API } from '../../../../types/api';
 import { callAPI } from '../../../../modules/utils';
 import { App } from '../../../../types/app';
 import SchoolApplicationService from '../../../../services/SchoolApplication';
+import { Alert, Snackbar } from '@mui/material';
 
 export default function ApplicationsTable() {
 	const [paginationModel, setPaginationModel] = useState({
@@ -12,11 +13,21 @@ export default function ApplicationsTable() {
 		page: 0,
 	});
 
+	const [snackBarOpened, setSnackBarOpened] = useState(false);
+
+	const qClient = useQueryClient();
+
 	const {data, isFetching} = useQuery<API.Application.GetAll.IResponse, API.Application.GetAll.IEndpoint["error"]>({
         queryKey: ["Applications", paginationModel.pageSize, paginationModel.page],
         queryFn: ()=>callAPI<API.Application.GetAll.IEndpoint>("GET","/api/v1/applications",{PageNumber: paginationModel.page, PagingSize: paginationModel.pageSize}),
         retry: true,
 		staleTime: 60000
+    });
+
+	const quickRejectMutation = useMutation<null, API.Application.Reject.IEndpoint["error"], API.Application.Reject.IRequestData & {id: string}>({
+        mutationFn: data=>callAPI<API.Application.Reject.IEndpoint>("DELETE","/api/v1/applications/:id",data, {id: data.id }, true),
+        onSuccess: async ()=>qClient.invalidateQueries({queryKey: ["Applications"]}),
+		onError: (()=>setSnackBarOpened(true))
     });
 
 	const columns = useMemo(()=>{
@@ -32,12 +43,35 @@ export default function ApplicationsTable() {
 				return `${row.street} ${row.buildingNumber}${row.subBuildingNumber ?? 0 > 0?`/${row.subBuildingNumber}`:""}, ${row.zipCode} ${row.city}(${row.state})`
 			}},
 			{field: "appliedAt", headerName: "Data złożenia", width: 250, type: "dateTime", valueGetter: (value=>new Date(value))},
-			{field: "resolvedAt", headerName: "Data rozpatrzenia", width: 250, type: "custom", valueGetter: (value=>value!=undefined?new Date(value):"Nie rozpatrzono")},
+			{field: "resolvedAt", headerName: "Data rozpatrzenia", width: 250, type: "dateTime", valueGetter: (value=>value!=undefined?new Date(value):undefined)},
+			{field: "rejectionReason", headerName: "Powód odrzucenia", width: 120, type: "string"},
+			{field: "rejectionMessage", headerName: "Opis odrzucenia", width: 240, type: "string"},
 			{field: "actions", headerName: "Akcje", renderHeader: ()=>"", type: "actions", flex: 1, align: 'right', getActions: params=>{
-				return [
-					<GridActionsCellItem label="Rozpatrz" showInMenu />,
-					<GridActionsCellItem label="Odrzuć" showInMenu />,
-				]
+				let actions = [
+					<GridActionsCellItem 
+						label="Zadzwoń"
+						showInMenu
+						onClick={()=>window.location.href = `tel:${params.row.phoneNumber}`}
+					/>,
+					<GridActionsCellItem 
+						label="Napisz email" 
+						showInMenu
+						onClick={()=>window.location.href = `mailto:${params.row.email}`}
+					/>
+				];
+
+
+				if(params.row.status=="pending")
+					actions = actions.concat([
+						<GridActionsCellItem label="Rozpatrz" showInMenu />,
+						<GridActionsCellItem
+							label="Odrzuć"
+							showInMenu
+							onClick={()=>quickRejectMutation.mutate({Reason: "unspecified", id: params.row.id?.toString() ?? ""})}
+						/>,
+					]);
+
+				return actions;
 			}}
 		]
 
@@ -45,17 +79,43 @@ export default function ApplicationsTable() {
 	}, []);
 
 	return (
-		<DataGrid
-			rows={data?.entries ?? []}
-			paginationMode='server'
-			columns={columns}
-			pageSizeOptions={[15, 25, 35, 50, 75, 100]}
-			paginationModel={paginationModel}
-			onPaginationModelChange={setPaginationModel}
-			loading={isFetching}
-			autoHeight={true}
-			rowCount={data?.totalCount ?? 0}
-			disableColumnFilter={true}
-		/>
+		<>
+			<DataGrid
+				rows={data?.entries ?? []}
+				paginationMode='server'
+				columns={columns}
+				pageSizeOptions={[15, 25, 35, 50, 75, 100]}
+				paginationModel={paginationModel}
+				onPaginationModelChange={setPaginationModel}
+				loading={isFetching || quickRejectMutation.isPending}
+				autoHeight={true}
+				rowCount={data?.totalCount ?? 0}
+				disableColumnFilter={true}
+				initialState={{
+					columns: {
+						columnVisibilityModel: {
+							"rejectionReason": false,
+							"rejectionMessage": false
+						},
+					},
+					sorting: {
+						sortModel: [{
+							field: "id",
+							sort: "asc"
+						}]
+					}
+				}}
+			/>
+
+			<Snackbar open={snackBarOpened} autoHideDuration={4000} anchorOrigin={{vertical: "bottom", horizontal: "right"}} onClose={()=>setSnackBarOpened(false)}>
+				<Alert
+					severity="error"
+					variant="filled"
+					sx={{ width: '100%' }}
+				>
+					Nie udało się odrzucić wniosku.
+				</Alert>
+			</Snackbar>
+		</>
 	)
 }

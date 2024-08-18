@@ -67,4 +67,31 @@ public class SchoolApplicationController(ISchoolApplicationService service, ISch
 		return Ok(service.MapToDTO(await service.GetAllApplications()));
 	}
 
+	[HttpDelete("{id}")]
+	[Authorize(Roles = "Administrator")]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	public async Task<IActionResult> RejectApplication(int id, [FromBody] ApplicationRejectRequest data) {
+
+		var application = await service.GetApplicationByID(id);
+
+		if(application == null)
+			return BadRequest(new APIError<RejectionErrors> {Code = RejectionErrors.ApplicationNotFound});
+
+		var reason = data.Reason switch
+		{
+			"invalidData" => RejectionReason.InvalidData,
+			"platformSaturated" => RejectionReason.PlatformSaturated,
+			"badReputation" => RejectionReason.BadReputation,
+			_ => RejectionReason.Unspecified,
+		};
+
+		var result = await service.RejectApplication(application, reason, data.Message);
+
+		if(!result.IsSuccess) 
+			return BadRequest(new APIError<RejectionErrors> {Code = result.ErrorCode});
+
+		return Ok();
+	}
+
 }

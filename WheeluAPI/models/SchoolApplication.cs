@@ -6,11 +6,22 @@ public enum SchoolApplicationState {
 	Accepted
 }
 
+public enum RejectionReason {
+	Unspecified,
+	InvalidData,
+	PlatformSaturated,
+	BadReputation
+}
+
 public class SchoolApplication {
 	public int Id { get; set; }
 
 	public SchoolApplicationState Status { get; set; } = SchoolApplicationState.Pending;
 	public DateTime? ResolvedAt { get; set; }
+
+	public RejectionReason? RejectionReason { get; set; }
+	
+	public string? RejectionMessage { get; set; }
 
 	public required string Name { get; set; }
 

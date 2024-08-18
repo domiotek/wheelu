@@ -10,3 +10,10 @@ public enum InitialMailErrors {
 	ApplicationResolved,
 	MailServiceProblem
 }
+
+public enum RejectionErrors {
+	ApplicationNotFound,
+	ApplicationResolved,
+	MailServiceProblem,
+	DbError
+}
