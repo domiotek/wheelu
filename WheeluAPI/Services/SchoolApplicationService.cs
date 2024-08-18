@@ -108,7 +108,7 @@ public class SchoolApplicationService(ApplicationDbContext dbContext, IMailServi
 			FirstName = application.OwnerName
 		};
 
-		if(await mailService.SendEmail("aplications",template.Populate(templateData), [application.Email]) == false)
+		if(await mailService.SendEmail("applications",template.Populate(templateData), [application.Email]) == false)
 			return new ServiceActionResult<InitialMailErrors> {ErrorCode = InitialMailErrors.MailServiceProblem};
 		
 		return new ServiceActionResult<InitialMailErrors> {IsSuccess = true};
