@@ -61,6 +61,7 @@ export function callAPI<T extends API._.IBaseAPIEndpoint>(
 
 				printAPIFailure(endpointURL,errCode);
 				error.code = errCode;
+				error.status = error.response?.status;
 				rej(error);
 			});
 		});
@@ -131,6 +132,7 @@ export function prepareFieldErrorMessage(error: FieldError | undefined, context?
 export function translateGenericErrorCodes(error: API._.TCommonServerErrorCodes) {
 	switch(error) {
 		case "BadRequest": return "Wystąpił problem z tym żądaniem.";
+		case "DbError":
 		case "InternalError": return "Wystąpiły nieoczekiwane problemy z naszymi systemami.";
 		case "MalformedResponse": return "Serwer zwrócił nieoczekiwaną odpowiedź.";
 		case "ServerUnavailable": return "Serwer jest obecnie niedostępny, sprawdź połączenie z internetem.";

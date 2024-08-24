@@ -2,7 +2,7 @@ import { App } from "./app";
 
 export namespace API {
 	namespace _ {
-        type TCommonServerErrorCodes = "InternalError" | "BadRequest" | "ServerUnavailable" | "MalformedResponse" | "Unauthorized";
+        type TCommonServerErrorCodes = "InternalError" | "BadRequest" | "ServerUnavailable" | "MalformedResponse" | "Unauthorized" | "DbError";
 
         interface ISuccessGetResponse<T> {
             state: true,
@@ -21,7 +21,7 @@ export namespace API {
             returnData: any
             errCodes: TCommonServerErrorCodes | string
             returnPacket: ISuccessGetResponse<this["returnData"]> | IFailureGetResponse<this["errCodes"]>
-			requestData: Record<string, string  | number | undefined> | null
+			requestData: Record<string, string | number | string[] | object[] | undefined> | null
             urlParams: Record<string, string | number> | null
 			error: IError<TCommonServerErrorCodes | string>
         }
@@ -31,7 +31,7 @@ export namespace API {
 				U extends string, 
 				R, 
 				E extends string = TCommonServerErrorCodes, 
-				D extends Record<string, string | number> | null = null,
+				D extends Record<string, string | number | string[] | object[] | undefined> | null = null,
 				P extends Record<string, string | number> | null = null> = {
             method: M
             url: U
@@ -137,23 +137,67 @@ export namespace API {
 			type IEndpoint = _.IBuildAPIEndpoint<"POST","/api/v1/applications", null, "ApplicationAlreadyFiled" | "SchoolExists" | "RejectedTooSoon", IRequestData>
 		}
 
+		namespace Get {
+			interface IParams extends Record<string, string> {
+				id: string
+			}
+
+			type IResponse = App.Models.IApplication;
+
+			type IEndpoint = _.IBuildAPIEndpoint<"GET", "/api/v1/applications/:id", IResponse, _.TCommonServerErrorCodes, null, IParams>
+		}
+
 		namespace GetAll {
 			type IResponse = _.IPaginatedResponse<App.Models.IApplication>
 
 			type IEndpoint = _.IBuildAPIEndpoint<"GET","/api/v1/applications",IResponse, _.TCommonServerErrorCodes, Partial<_.IPagingRequest>>
 		}
 
-		namespace Reject {
-			interface IRequestData extends Record<string, string> {
-				Reason: "unspecified" | "invalidData" | "platformSaturated" | "badReputation"
-				Message?: string
+		type ResolveErrorCodes = "ApplicationNotFound" | "ApplicationResolved" | "MailServiceProblem" | "DbError" | _.TCommonServerErrorCodes;
+
+		namespace Accept {
+			type NearbyCityDef = {
+				Id?: string
+				Name?: string
+				State: string
+			}
+
+			interface IRequestData extends Record<string, string | NearbyCityDef[]> {
+				SchoolName: string
+				Nip: string
+				OwnerName: string
+				OwnerSurname: string
+				OwnerBirthday: string
+				EstablishedDate: string
+				Street: string
+				BuildingNumber: string
+				SubBuildingNumber: string
+				ZipCode: string
+				City: string
+				State: string
+				NearbyCities: NearbyCityDef[]
+				Email: string
+				PhoneNumber: string
 			}
 
 			interface IParams extends Record<string, string> {
 				id: string
 			}
 
-			type IEndpoint = _.IBuildAPIEndpoint<"DELETE", "/api/v1/applications/:id",null, "ApplicationNotFound" | "ApplicationResolved" | "MailServiceProblem" | "DbError", IRequestData, IParams>
+			type IEndpoint = _.IBuildAPIEndpoint<"POST","/api/v1/applications/:id", null, ResolveErrorCodes, IRequestData, IParams>
+		}
+
+		namespace Reject {
+			interface IRequestData extends Record<string, string | undefined> {
+				Reason: App.Models.ApplicationRejectionReason
+				Message?: string | undefined
+			}
+
+			interface IParams extends Record<string, string> {
+				id: string
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<"DELETE", "/api/v1/applications/:id",null, ResolveErrorCodes, IRequestData, IParams>
 		}
 	}
 }

@@ -28,11 +28,9 @@ public class SchoolApplicationService(ApplicationDbContext dbContext, IMailServi
 		if(await dbContext.States.Where(s=>s.Name == applicationData.State).SingleOrDefaultAsync()==null) 
 			result.AddError("State", "State value not found.");
 
-		try {
-			DateOnly.Parse(applicationData.EstablishedDate);
-		}catch(FormatException) {
-			result.AddError("Established", "Malformed date.");
-		}
+		if(applicationData.SubBuildingNumber!=null&&int.TryParse(applicationData.SubBuildingNumber, out int sbn)==false) 
+			result.AddError("SubBuildingNumber", "Must be a number or be empty.");
+		
 
 		return result;
 	}
@@ -43,14 +41,14 @@ public class SchoolApplicationService(ApplicationDbContext dbContext, IMailServi
 			Name = applicationData.SchoolName,
 			NIP = applicationData.NIP,
 			Email = applicationData.Email,
-			Established = DateOnly.Parse(applicationData.EstablishedDate),
+			Established = applicationData.EstablishedDate,
 			OwnerName = applicationData.OwnerName,
 			OwnerSurname = applicationData.OwnerSurname,
 			OwnerBirthday = applicationData.OwnerBirthday,
 			PhoneNumber = applicationData.PhoneNumber,
 			Street = applicationData.Street,
 			BuildingNumber = applicationData.BuildingNumber,
-			SubBuildingNumber = applicationData.SubBuildingNumber,
+			SubBuildingNumber = applicationData.SubBuildingNumber!=null?int.Parse(applicationData.SubBuildingNumber):0,
 			ZipCode = applicationData.ZipCode,
 			City = applicationData.City,
 			State = applicationData.State,
@@ -147,8 +145,11 @@ public class SchoolApplicationService(ApplicationDbContext dbContext, IMailServi
 	}
 
 	public List<SchoolApplicationResponse> MapToDTO(List<SchoolApplication> source) {
-		return source.Select(application=>
-			new SchoolApplicationResponse {
+		return source.Select(MapToDTO).ToList();
+	}
+
+	public SchoolApplicationResponse MapToDTO(SchoolApplication application) {
+		return new SchoolApplicationResponse {
 				Id = application.Id,
 				Status = application.Status.ToString().ToLower(),
 				AppliedAt = application.AppliedAt,
@@ -159,19 +160,18 @@ public class SchoolApplicationService(ApplicationDbContext dbContext, IMailServi
 				OwnerName = application.OwnerName,
 				OwnerSurname = application.OwnerSurname,
 				OwnerBirthday = application.OwnerBirthday,
-				EstablishedDate = application.Established.ToShortDateString(),
+				EstablishedDate = application.Established,
 				NIP = application.NIP,
 				Street = application.Street,
 				BuildingNumber = application.BuildingNumber,
-				SubBuildingNumber = application.SubBuildingNumber,
+				SubBuildingNumber = application.SubBuildingNumber==0?"":application.SubBuildingNumber.ToString(),
 				ZipCode = application.ZipCode,
 				City = application.City,
 				State = application.State,
 				PhoneNumber = application.PhoneNumber,
 				Email = application.Email,
 				NearbyCities = application.NearbyCities
-			}
-		).ToList();
+		};
 	}
 }
 
@@ -196,4 +196,5 @@ public interface ISchoolApplicationService {
 	Task<ServiceActionResult<InitialMailErrors>> SendInitialMail(SchoolApplication application);
 
 	List<SchoolApplicationResponse> MapToDTO(List<SchoolApplication> source);
+	SchoolApplicationResponse MapToDTO(SchoolApplication source);
 }

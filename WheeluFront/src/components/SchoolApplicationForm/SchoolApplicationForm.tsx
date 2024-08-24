@@ -303,7 +303,7 @@ export default function SchoolApplicationForm({onSuccess}: IProps) {
 					variant="filled"
 					sx={{ width: '100%' }}
 				>
-					Nie mogliśmy zarejestrować Twojego wniosku. {SchoolApplicationService.translateErrorCode(submitError ?? "InternalError")}
+					Nie mogliśmy zarejestrować Twojego wniosku. {SchoolApplicationService.translateApplicationSubmitErrorCode(submitError ?? "InternalError")}
 				</Alert>
 			</Snackbar>
 		</FormContainer>

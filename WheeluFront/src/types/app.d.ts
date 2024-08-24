@@ -1,3 +1,5 @@
+import AdminPanel from "../pages/AdminPanel/AdminPanel"
+
 export namespace App {
 
 	namespace Models {
@@ -9,12 +11,13 @@ export namespace App {
 		}
 
 		interface ICity {
-			Id: number
+			id: number
 			name: string
+			state: IState
 		}
 
 		interface IState {
-			Id: number
+			id: number
 			name: string
 		}
 
@@ -31,13 +34,19 @@ export namespace App {
 			zipCode: string
 			city: string
 			state: string
-			nearbyCities: string
+			nearbyCities: string[]
 			email: string
 			phoneNumber: string
 			appliedAt?: string
 			id?: string
 			status?: "pending" | "rejected" | "accepted"
 			resolvedAt?: string
+		}
+
+		interface ICityMatching {
+			identifier?: number
+			cityName: string
+			state: string
 		}
 
 		type ApplicationRejectionReason = "Unspecified" | "InvalidData" | "PlatformSaturated" | "BadReputation"

@@ -13,12 +13,12 @@ public class LocationController(ApplicationDbContext dbContext) : BaseAPIControl
 	[ProducesResponseType(typeof(List<City>), StatusCodes.Status200OK)]
 	[Produces("application/json")]
 	public async Task<IActionResult> GetCities() {
-		var cities = await dbContext.Cities.ToListAsync();
+		var cities = await dbContext.Cities.Include(c=>c.State).ToListAsync();
 
 		var result = new List<City>();
 
 		foreach (var city in cities) {
-			result.Add(new City { Id = city.Id, Name = city.Name,});
+			result.Add(new City { Id = city.Id, Name = city.Name, State = new State{ Id = city.State.Id, Name = city.State.Name}});
 		}
 
 		return Ok(result);

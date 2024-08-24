@@ -4,7 +4,7 @@ import { App } from "../types/app";
 
 export default class SchoolApplicationService {
 
-	public static translateErrorCode(errCode: API.Application.PostNew.IEndpoint["errCodes"]): string {
+	public static translateApplicationSubmitErrorCode(errCode: API.Application.PostNew.IEndpoint["errCodes"]): string {
 		switch(errCode) {
 			case "ApplicationAlreadyFiled":
 				return "Ta szkoła została już zgłoszona do programu.";
@@ -12,7 +12,19 @@ export default class SchoolApplicationService {
 				return "Ta szkoła znajduje sie już w programie.";
 			case "RejectedTooSoon":
 				return "Twój poprzedni wniosek został odrzucony zbyt niedawno. Musi minąć conajmniej 7 dni od daty odrzucenia wniosku, zanim będziesz mógł/mogła złożyć kolejny.";
-			break;
+			default:
+				return translateGenericErrorCodes(errCode);
+		}
+	}
+
+	public static translateApplicationResolveErrorCode(errCode: API.Application.ResolveErrorCodes): string {
+		switch(errCode) {
+			case "ApplicationNotFound":
+				return "Wniosek nie istnieje.";
+			case "ApplicationResolved":
+				return "Wniosek został już rozpatrzony.";
+			case "MailServiceProblem":
+				return "Wystąpił problem z klientem pocztowym.";
 			default:
 				return translateGenericErrorCodes(errCode);
 		}

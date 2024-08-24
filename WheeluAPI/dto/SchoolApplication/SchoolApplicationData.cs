@@ -11,7 +11,7 @@ public class SchoolApplicationData {
 	[StringLength(10)]
 	public required string NIP { get; set; }
 	
-	public required string EstablishedDate { get; set; }
+	public required DateOnly EstablishedDate { get; set; }
 
 	[StringLength(125)]
 	public required string Email { get; set; }
@@ -32,7 +32,7 @@ public class SchoolApplicationData {
 	[StringLength(10)]
 	public required string BuildingNumber { get; set; }
 
-	public required int SubBuildingNumber { get; set; }
+	public required string SubBuildingNumber { get; set; }
 
 	[StringLength(maximumLength: 6, MinimumLength = 6)]
 	public required string ZipCode { get; set; }

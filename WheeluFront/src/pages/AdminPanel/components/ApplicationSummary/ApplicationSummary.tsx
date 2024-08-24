@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, CardHeader, Collapse, Divider, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import { Button, Card, CardContent, CardHeader, Collapse, Divider, Skeleton, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import classes from "./ApplicationSummary.module.css";
 import { Mail, Phone } from '@mui/icons-material';
 import { useMemo, useState } from 'react';
@@ -17,14 +17,17 @@ interface INegativeOutcome {
 }
 
 export interface IApplicationSummaryProps {
-	schoolName: string
-	ownerFullName: string
-	phoneNumber: string
-	email: string
+	data?: {
+		schoolName: string
+		ownerFullName: string
+		phoneNumber: string
+		email: string
+	}
 	onConfirm: (outcome: IPositiveOutcome | INegativeOutcome)=>void
+	disableActions?: boolean
 }
 
-export default function ApplicationSummary({schoolName, ownerFullName, phoneNumber, email, onConfirm}: IApplicationSummaryProps) {
+export default function ApplicationSummary({data, onConfirm, disableActions}: IApplicationSummaryProps) {
 	const [decision, setDecision] = useState<"accept" | "reject" | undefined>();
 	const [rejectReason, setRejectReason] = useState<App.Models.ApplicationRejectionReason>("Unspecified");
 	const [message, setMessage] = useState<string>("");
@@ -56,14 +59,14 @@ export default function ApplicationSummary({schoolName, ownerFullName, phoneNumb
 
 	return (
 		<Card className={classes.Host} elevation={0}>
-			<CardHeader title={schoolName}/>
+			<CardHeader title={data?.schoolName ?? <Skeleton />}/>
 			<Divider />
 			<CardContent>
 				<div className={classes.OwnerSection}>
-					<Typography variant='h6'>{ownerFullName}</Typography>
+					<Typography variant='h6'>{data?.ownerFullName ?? <Skeleton />}</Typography>
 					<div className={classes.ActionsWrapper}>
-						<Button variant="contained" size='small' color='secondary' href={`tel:${phoneNumber}`}><Phone /></Button>
-						<Button variant="contained" size='small' color='secondary' href={`mailto:${email}`}><Mail /></Button>
+						<Button variant="contained" size='small' color='secondary' href={`tel:${data?.phoneNumber}`} disabled={data==undefined||disableActions}><Phone /></Button>
+						<Button variant="contained" size='small' color='secondary' href={`mailto:${data?.email}`}  disabled={data==undefined||disableActions}><Mail /></Button>
 					</div>
 				</div>
 				<Divider />
@@ -72,6 +75,7 @@ export default function ApplicationSummary({schoolName, ownerFullName, phoneNumb
 						value={decision}
 						exclusive
 						onChange={(_ev, val)=>setDecision(val)}
+						disabled={data==undefined||disableActions}
 					>
 						<ToggleButton value="accept" color='success'>
 							Zaakceptuj
@@ -104,7 +108,7 @@ export default function ApplicationSummary({schoolName, ownerFullName, phoneNumb
 					
 					<div className={c([classes.ActionsWrapper, classes.RightAligned])}>
 						<Button size='small' onClick={()=>navigate("/panel/applications")}>Anuluj</Button>
-						<Button variant='contained' disabled={decision==undefined} onClick={confirm}>Zatwierdź</Button>
+						<Button variant='contained' disabled={decision==undefined||disableActions} onClick={confirm}>Zatwierdź</Button>
 					</div>
 
 				</div>

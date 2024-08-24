@@ -49,6 +49,18 @@ public class SchoolApplicationController(ISchoolApplicationService service, ISch
 		return StatusCode(201);
 	}
 
+	[HttpGet("{applicationID}")]
+	[Authorize(Roles = "Administrator")]
+	[ProducesResponseType(typeof(SchoolApplicationResponse), StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	public async Task<IActionResult> GetApplication(int applicationID) {
+
+		var application = await service.GetApplicationByID(applicationID);
+
+		if(application==null) return NotFound();
+		return Ok(service.MapToDTO(application));
+	}	
+
 	[HttpGet]
 	[Authorize(Roles = "Administrator")]
 	[ProducesResponseType(typeof(SchoolApplicationResponse), StatusCodes.Status200OK)]
@@ -81,9 +93,9 @@ public class SchoolApplicationController(ISchoolApplicationService service, ISch
 
 		var reason = data.Reason switch
 		{
-			"invalidData" => RejectionReason.InvalidData,
-			"platformSaturated" => RejectionReason.PlatformSaturated,
-			"badReputation" => RejectionReason.BadReputation,
+			"InvalidData" => RejectionReason.InvalidData,
+			"PlatformSaturated" => RejectionReason.PlatformSaturated,
+			"BadReputation" => RejectionReason.BadReputation,
 			_ => RejectionReason.Unspecified,
 		};
 

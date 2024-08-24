@@ -1,0 +1,14 @@
+.Wrapper {
+	display: flex;
+	justify-content: center;
+}
+
+.Card {
+	max-width: 500px;
+}
+
+.Image {
+	aspect-ratio: 1 / 1;
+    margin-top: -6em;
+
+}
