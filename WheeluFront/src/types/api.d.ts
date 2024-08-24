@@ -140,7 +140,7 @@ export namespace API {
 		namespace GetAll {
 			type IResponse = _.IPaginatedResponse<App.Models.IApplication>
 
-			type IEndpoint = _.IBuildAPIEndpoint<"GET","/api/v1/applications",IResponse, _.TCommonServerErrorCodes, _.IPagingRequest>
+			type IEndpoint = _.IBuildAPIEndpoint<"GET","/api/v1/applications",IResponse, _.TCommonServerErrorCodes, Partial<_.IPagingRequest>>
 		}
 
 		namespace Reject {

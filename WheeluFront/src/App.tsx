@@ -11,7 +11,7 @@ import { API } from './types/api';
 import { callAPI, c, OutsideContextNotifier} from './modules/utils';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { App as AppNm } from "./types/app";
-import { AccessLevel } from './modules/enums';
+import { AccessLevel } from './modules/enums.ts';
 
 
 interface IProps {

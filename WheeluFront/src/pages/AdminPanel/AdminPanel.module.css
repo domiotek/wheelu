@@ -1,10 +1,3 @@
-.TableSection {
-	margin-top: 2em;
-}
-
-@media (min-width: 1025px) {
-	.TableSection {
-		padding: 0 2em;
-		max-width: 1400px;
-	}
+.ContentWindow {
+	padding-top: 3em;
 }

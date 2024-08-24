@@ -39,6 +39,8 @@ export namespace App {
 			status?: "pending" | "rejected" | "accepted"
 			resolvedAt?: string
 		}
+
+		type ApplicationRejectionReason = "Unspecified" | "InvalidData" | "PlatformSaturated" | "BadReputation"
 	}
 
 	namespace UI {

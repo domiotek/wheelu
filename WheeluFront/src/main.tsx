@@ -9,6 +9,7 @@ import AnonymousLayout from './layouts/AnonymousLayout.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import ResendActivationPortal from './portals/ResendActivationPortal.tsx'
 import ActivateAccountPortal from './portals/ActivateAccountPortal.tsx'
+import ResolveApplication from './pages/AdminPanel/views/ResolveApplication.tsx'
 
 
 const LandingPage = React.lazy(()=>import("./pages/LandingPage.tsx"));
@@ -20,6 +21,8 @@ const LogoutPortal = React.lazy(()=>import("./portals/LogoutPortal.tsx"));
 
 const DashboardPage = React.lazy(()=>import("./pages/Dashboard.tsx"));
 const AdminPanelPage = React.lazy(()=>import("./pages/AdminPanel/AdminPanel.tsx"));
+const MainAPView = React.lazy(()=>import("./pages/AdminPanel/views/Main.tsx"));
+const AllApplicationsView = React.lazy(()=>import("./pages/AdminPanel/views/AllApplications.tsx"));
 
 const qClient = new QueryClient();
 
@@ -41,7 +44,11 @@ root.render(
 				<Route path="*" element={<App useSplash={true} />}>
 					<Route path="*" element={<MainLayout />}>
 						<Route path='home' element={<DashboardPage />} />
-						<Route path='panel' element={<AdminPanelPage />} />
+						<Route path='panel' element={<AdminPanelPage />}>
+							<Route index element={<MainAPView />} />
+							<Route path='applications' element={<AllApplicationsView />} />
+							<Route path='applications/:id' element={<ResolveApplication />} />
+						</Route>
 					</Route>
 
 					<Route path='*' element={<PortalLayout />}>

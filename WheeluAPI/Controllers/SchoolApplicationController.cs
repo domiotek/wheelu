@@ -64,7 +64,8 @@ public class SchoolApplicationController(ISchoolApplicationService service, ISch
 			return Paginated(service.MapToDTO(results), await service.Count(),appliedPageSize);
 		}
 
-		return Ok(service.MapToDTO(await service.GetAllApplications()));
+		var applications = await service.GetAllApplications();
+		return Paginated(service.MapToDTO(applications), applications.Count,applications.Count);
 	}
 
 	[HttpDelete("{id}")]

@@ -4,13 +4,14 @@ import { Box, Theme, Button, Toolbar} from "@mui/material";
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 
-import { useContext, useState } from "react";
+import { Suspense, useContext, useState } from "react";
 
 import classes from "./MainLayout.module.css";
 import ElevatedHeader from "../components/ElevatedHeader/ElevatedHeader";
 import { AppContext } from "../App";
 import { Link, Outlet } from "react-router-dom";
 import Drawer from "../components/Drawer/Drawer";
+import LoadingScreen from "../components/LoadingScreen/LoadingScreen";
 
 
 export default function MainLayout() {
@@ -40,7 +41,9 @@ export default function MainLayout() {
 					</Toolbar>
 				</ElevatedHeader>
 
-				<Outlet />
+				<Suspense fallback={<LoadingScreen />}>
+					<Outlet />
+				</Suspense>
 			</Box>
 		</Box>
 	  );

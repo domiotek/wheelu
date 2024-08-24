@@ -6,8 +6,14 @@ import { callAPI } from '../../../../modules/utils';
 import { App } from '../../../../types/app';
 import SchoolApplicationService from '../../../../services/SchoolApplication';
 import { Alert, Snackbar } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
-export default function ApplicationsTable() {
+interface IProps {
+	supportFilter?: boolean
+}
+
+
+export default function ApplicationsTable({supportFilter}: IProps) {
 	const [paginationModel, setPaginationModel] = useState({
 		pageSize: 25,
 		page: 0,
@@ -16,10 +22,15 @@ export default function ApplicationsTable() {
 	const [snackBarOpened, setSnackBarOpened] = useState(false);
 
 	const qClient = useQueryClient();
+	const navigate = useNavigate();
 
 	const {data, isFetching} = useQuery<API.Application.GetAll.IResponse, API.Application.GetAll.IEndpoint["error"]>({
-        queryKey: ["Applications", paginationModel.pageSize, paginationModel.page],
-        queryFn: ()=>callAPI<API.Application.GetAll.IEndpoint>("GET","/api/v1/applications",{PageNumber: paginationModel.page, PagingSize: paginationModel.pageSize}),
+        queryKey: ["Applications"].concat(supportFilter?[]:[paginationModel.pageSize.toString(), paginationModel.page.toString()]),
+        queryFn: ()=>callAPI<API.Application.GetAll.IEndpoint>("GET","/api/v1/applications",
+			{
+				PageNumber: supportFilter?undefined:paginationModel.page, 
+				PagingSize: supportFilter?undefined:paginationModel.pageSize
+			}),
         retry: true,
 		staleTime: 60000
     });
@@ -63,7 +74,11 @@ export default function ApplicationsTable() {
 
 				if(params.row.status=="pending")
 					actions = actions.concat([
-						<GridActionsCellItem label="Rozpatrz" showInMenu />,
+						<GridActionsCellItem 
+							label="Rozpatrz"
+							showInMenu
+							onClick={()=>navigate(`/panel/applications/${params.id}`)}
+						/>,
 						<GridActionsCellItem
 							label="Odrzuć"
 							showInMenu
@@ -82,15 +97,15 @@ export default function ApplicationsTable() {
 		<>
 			<DataGrid
 				rows={data?.entries ?? []}
-				paginationMode='server'
+				paginationMode={supportFilter?"client":"server"}
 				columns={columns}
 				pageSizeOptions={[15, 25, 35, 50, 75, 100]}
 				paginationModel={paginationModel}
 				onPaginationModelChange={setPaginationModel}
 				loading={isFetching || quickRejectMutation.isPending}
 				autoHeight={true}
-				rowCount={data?.totalCount ?? 0}
-				disableColumnFilter={true}
+				rowCount={supportFilter?undefined:data?.totalCount ?? 0}
+				disableColumnFilter={!supportFilter}
 				initialState={{
 					columns: {
 						columnVisibilityModel: {
