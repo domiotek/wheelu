@@ -82,7 +82,7 @@ export default function ApplicationsTable({supportFilter}: IProps) {
 						<GridActionsCellItem
 							label="Odrzuć"
 							showInMenu
-							onClick={()=>quickRejectMutation.mutate({Reason: "unspecified", id: params.row.id?.toString() ?? ""})}
+							onClick={()=>quickRejectMutation.mutate({Reason: "Unspecified", id: params.row.id?.toString() ?? ""})}
 						/>,
 					]);
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WheeluAPI.DTO.Errors;
+using WheeluAPI.DTO.School;
 using WheeluAPI.DTO.SchoolApplication;
 using WheeluAPI.helpers;
 using WheeluAPI.models;
@@ -84,12 +85,13 @@ public class SchoolApplicationController(ISchoolApplicationService service, ISch
 	[Authorize(Roles = "Administrator")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(typeof(APIError<ApplicationRejectErrors>), StatusCodes.Status404NotFound)]
 	public async Task<IActionResult> RejectApplication(int id, [FromBody] ApplicationRejectRequest data) {
 
 		var application = await service.GetApplicationByID(id);
 
 		if(application == null)
-			return BadRequest(new APIError<RejectionErrors> {Code = RejectionErrors.ApplicationNotFound});
+			return NotFound(new APIError<ApplicationRejectErrors> {Code = ApplicationRejectErrors.ApplicationNotFound});
 
 		var reason = data.Reason switch
 		{
@@ -102,7 +104,29 @@ public class SchoolApplicationController(ISchoolApplicationService service, ISch
 		var result = await service.RejectApplication(application, reason, data.Message);
 
 		if(!result.IsSuccess) 
-			return BadRequest(new APIError<RejectionErrors> {Code = result.ErrorCode});
+			return BadRequest(new APIError<ApplicationRejectErrors> {Code = result.ErrorCode});
+
+		return Ok();
+	}
+
+	
+	[HttpPost("{id}")]
+	[Authorize(Roles = "Administrator")]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(typeof(APIError<ApplicationAcceptErrors>), StatusCodes.Status404NotFound)]
+	public async Task<IActionResult> AcceptApplication(int id, [FromBody] SchoolRegistrationData requestData) {
+
+		var application = await service.GetApplicationByID(id);
+
+		if(application == null)
+			return NotFound(new APIError<ApplicationAcceptErrors> {Code = ApplicationAcceptErrors.ApplicationNotFound});
+
+
+		var result = await service.AcceptApplication(application, requestData);
+
+		if(!result.IsSuccess) 
+			return BadRequest(new APIError<ApplicationAcceptErrors> {Code = result.ErrorCode});
 
 		return Ok();
 	}

@@ -25,7 +25,7 @@ public class SchoolApplicationRejectionTemplate: ITemplate<SchoolApplicationReje
 		{
 			{ "application_id", variables.ApplicationID },
 			{ "name", variables.FirstName},
-			{ "rejection_reason", message }
+			{ "reason_description", message }
 		};
 		
 		return new PopulatedTemplate {

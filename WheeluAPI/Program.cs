@@ -54,6 +54,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISchoolApplicationService, SchoolApplicationService>();
 builder.Services.AddScoped<ISchoolService, Schoolervice>();
 builder.Services.AddSingleton<IMailService, MailService>();
+builder.Services.AddScoped<ILocationService, LocationService>();
 
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowSpecificOrigin",

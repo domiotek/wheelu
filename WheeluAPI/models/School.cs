@@ -13,7 +13,7 @@ public class School {
 
 	public required Address Address { get; set; }
 
-	public required DateTime Established { get; set; }
+	public required DateOnly Established { get; set; }
 
 	public required DateTime Joined { get; set; }
 

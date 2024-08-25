@@ -16,7 +16,8 @@ public class MailService: IMailService {
 	private IDictionary<string, ITemplate> _templates = new Dictionary<string, ITemplate> {
 		{"confirm-registration", new ConfirmRegistrationTemplate()},
 		{"school-application-initial", new SchoolApplicationInitialTemplate()},
-		{"school-application-rejection", new SchoolApplicationRejectionTemplate()}
+		{"school-application-rejection", new SchoolApplicationRejectionTemplate()},
+		{"school-application-acceptation", new SchoolApplicationAcceptationTemplate()}
 	};
 
 	public MailService(IConfiguration configuration) {

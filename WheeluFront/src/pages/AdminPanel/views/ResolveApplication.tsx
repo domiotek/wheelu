@@ -58,6 +58,7 @@ export default function ResolveApplication() {
 			navigate("/panel/applications");
 		},
 		onError: (err=>{
+			setDrawerOpen(false);
 			setSubmitError(err.code);
 			setSnackBarOpened(true);
 		})
@@ -70,6 +71,7 @@ export default function ResolveApplication() {
 			navigate("/panel/applications");
 		},
 		onError: (err=>{
+			setDrawerOpen(false);
 			setSnackBarOpened(true);
 			setSubmitError(err.code);
 		})
@@ -133,7 +135,7 @@ export default function ResolveApplication() {
 			},
 			disableActions: rejectMutation.isPending || acceptMutation.isPending
 		}
-	},[applicationData, isFormSafe]);
+	},[formState, applicationData, isFormSafe]);
 
 	useEffect(()=>{
 		if(error&&error.status!=404)

@@ -1,6 +1,10 @@
 using System.Data;
+using System.Transactions;
 using Microsoft.EntityFrameworkCore;
+using WheeluAPI.DTO;
 using WheeluAPI.DTO.Errors;
+using WheeluAPI.DTO.Location;
+using WheeluAPI.DTO.School;
 using WheeluAPI.DTO.SchoolApplication;
 using WheeluAPI.helpers;
 using WheeluAPI.Mail.Templates;
@@ -8,7 +12,12 @@ using WheeluAPI.models;
 
 namespace WheeluAPI.Services;
 
-public class SchoolApplicationService(ApplicationDbContext dbContext, IMailService mailService): BaseService, ISchoolApplicationService {
+public class SchoolApplicationService(
+	ApplicationDbContext dbContext,
+	ISchoolService schoolService,
+	IMailService mailService, 
+	IUserService userService,
+	ILocationService locationService): BaseService, ISchoolApplicationService {
 
 	public async Task<ValidationDictionary> ValidateApplicationDataAsync(SchoolApplicationData applicationData) {
 		var result = new ValidationDictionary();
@@ -92,9 +101,9 @@ public class SchoolApplicationService(ApplicationDbContext dbContext, IMailServi
 		return dbContext.SchoolApplications.CountAsync();
 	}
 
-	public async Task<ServiceActionResult<RejectionErrors>> RejectApplication(SchoolApplication application, RejectionReason reason, string? message) {
+	public async Task<ServiceActionResult<ApplicationRejectErrors>> RejectApplication(SchoolApplication application, RejectionReason reason, string? message) {
 		if(application.Status != SchoolApplicationState.Pending) 
-			return new ServiceActionResult<RejectionErrors> {ErrorCode = RejectionErrors.ApplicationResolved};
+			return new ServiceActionResult<ApplicationRejectErrors> {ErrorCode = ApplicationRejectErrors.ApplicationResolved};
 
 		application.Status = SchoolApplicationState.Rejected;
 		application.ResolvedAt = DateTime.UtcNow;
@@ -104,7 +113,7 @@ public class SchoolApplicationService(ApplicationDbContext dbContext, IMailServi
 		var template = mailService.GetTemplate<SchoolApplicationRejectionTemplateVariables>("school-application-rejection");
 
 		if(template == null) 
-			return new ServiceActionResult<RejectionErrors> {};
+			return new ServiceActionResult<ApplicationRejectErrors> {};
 
 		var templateData = new SchoolApplicationRejectionTemplateVariables {
 			ApplicationID = application.Id.ToString(),
@@ -114,14 +123,87 @@ public class SchoolApplicationService(ApplicationDbContext dbContext, IMailServi
 		};
 
 		if(await mailService.SendEmail("applications",template.Populate(templateData), [application.Email]) == false)
-			return new ServiceActionResult<RejectionErrors> {ErrorCode = RejectionErrors.MailServiceProblem};
+			return new ServiceActionResult<ApplicationRejectErrors> {ErrorCode = ApplicationRejectErrors.MailServiceProblem};
 
 		var written = await dbContext.SaveChangesAsync();
 
-		if(written==0) return new ServiceActionResult<RejectionErrors> {ErrorCode = RejectionErrors.DbError};
+		if(written==0) return new ServiceActionResult<ApplicationRejectErrors> {ErrorCode = ApplicationRejectErrors.DbError};
 		
-		return new ServiceActionResult<RejectionErrors> {IsSuccess = true};
+		return new ServiceActionResult<ApplicationRejectErrors> {IsSuccess = true};
 		 
+	}
+
+	public async Task<ServiceActionResult<ApplicationAcceptErrors>> AcceptApplication(SchoolApplication application, SchoolRegistrationData finalData) {
+		if(application.Status != SchoolApplicationState.Pending) 
+			return new ServiceActionResult<ApplicationAcceptErrors> {ErrorCode = ApplicationAcceptErrors.ApplicationResolved};
+
+		application.Status = SchoolApplicationState.Accepted;
+		application.ResolvedAt = DateTime.UtcNow;
+
+		var userDetails = new UserSignUpRequest {
+			Username = finalData.Email,
+			Password = Guid.NewGuid().ToString()+"!T",
+			Name = finalData.OwnerName,
+			Surname = finalData.OwnerSurname,
+			Birthday = finalData.OwnerBirthday
+		};
+
+		using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled)) {
+			var accountResult = await userService.CreateAccountAsync(userDetails, UserRole.SchoolManager,true);
+
+			if(!accountResult.IsSuccess || accountResult.User==null) 
+				return new ServiceActionResult<ApplicationAcceptErrors> {
+					ErrorCode = ApplicationAcceptErrors.AccountCreationProblem, 
+					Details = [accountResult.ErrorCode.ToString()]
+				};
+
+			var cities = await locationService.ResolveNearbyCities(finalData.NearbyCities);
+
+			var addressData = new ComposeAddressData {
+				Street = finalData.Street,
+				BuildingNumber = finalData.BuildingNumber,
+				SubBuildingNumber = finalData.SubBuildingNumber,
+				ZipCode = finalData.ZipCode,
+				City = finalData.City,
+				State = finalData.State
+			};
+
+			var address = await locationService.ComposeAddress(addressData);
+
+			if(!address.IsSuccess || address.Address==null) 
+				return new ServiceActionResult<ApplicationAcceptErrors> {
+					ErrorCode = ApplicationAcceptErrors.AddressResolvingProblem,
+					Details = [address.ErrorCode.ToString(), address.Details[0]]
+				};
+
+			var schoolData = new SchoolData {
+				SchoolName = finalData.SchoolName,
+				Nip = finalData.Nip,
+				Owner = accountResult.User,
+				EstablishedDate = finalData.EstablishedDate,
+				PhoneNumber = finalData.PhoneNumber,
+				Address = address.Address,
+				NearbyCities = cities
+			};
+
+			var school = await schoolService.CreateSchool(schoolData);
+
+			if(school==null) return new ServiceActionResult<ApplicationAcceptErrors> {
+					ErrorCode = ApplicationAcceptErrors.DbError, 
+					Details=["Couldn't create school object"]
+				};
+			
+			var deliveryResult = await SendAcceptationMail(application, accountResult.User);
+
+			if(!deliveryResult.IsSuccess) return new ServiceActionResult<ApplicationAcceptErrors> {
+				ErrorCode = ApplicationAcceptErrors.MailServiceProblem,
+				Details = [deliveryResult.ErrorCode.ToString()]
+			};
+
+			scope.Complete();
+		}
+
+		return new ServiceActionResult<ApplicationAcceptErrors> {IsSuccess = true};
 	}
 
 	public async Task<ServiceActionResult<InitialMailErrors>> SendInitialMail(SchoolApplication application) {
@@ -142,6 +224,34 @@ public class SchoolApplicationService(ApplicationDbContext dbContext, IMailServi
 			return new ServiceActionResult<InitialMailErrors> {ErrorCode = InitialMailErrors.MailServiceProblem};
 		
 		return new ServiceActionResult<InitialMailErrors> {IsSuccess = true};
+	}
+
+	public async Task<ServiceActionResult<AcceptMailErrors>> SendAcceptationMail(SchoolApplication application, User user) {
+		if(application.Status != SchoolApplicationState.Accepted) 
+			return new ServiceActionResult<AcceptMailErrors> {ErrorCode = AcceptMailErrors.UnexpectedApplicationStatus};
+
+		var template = mailService.GetTemplate<SchoolApplicationAcceptationTemplateVariables>("school-application-acceptation");
+
+		var token = await userService.GetAccountTokenAsync(user, AccountTokenType.PasswordResetToken);
+
+		if(token==null) return new ServiceActionResult<AcceptMailErrors> {
+			ErrorCode = AcceptMailErrors.TokenProblem, 
+			Details=["Couldn't acquire account-setup token"]
+		};
+
+		if(template == null) 
+			return new ServiceActionResult<AcceptMailErrors> {};
+
+		var templateData = new SchoolApplicationAcceptationTemplateVariables {
+			ApplicationID = application.Id.ToString(),
+			FirstName = application.OwnerName,
+			Link = $"http://localhost:5173/reset-password?token={token?.Id}"
+		};
+
+		if(await mailService.SendEmail("applications",template.Populate(templateData), [application.Email]) == false)
+			return new ServiceActionResult<AcceptMailErrors> {ErrorCode = AcceptMailErrors.MailServiceProblem};
+
+		return new ServiceActionResult<AcceptMailErrors> {IsSuccess = true};
 	}
 
 	public List<SchoolApplicationResponse> MapToDTO(List<SchoolApplication> source) {
@@ -191,7 +301,8 @@ public interface ISchoolApplicationService {
 
 	Task<int> Count();
 
-	Task<ServiceActionResult<RejectionErrors>> RejectApplication(SchoolApplication application, RejectionReason reason, string? message);
+	Task<ServiceActionResult<ApplicationAcceptErrors>> AcceptApplication(SchoolApplication application, SchoolRegistrationData finalData);
+	Task<ServiceActionResult<ApplicationRejectErrors>> RejectApplication(SchoolApplication application, RejectionReason reason, string? message);
 
 	Task<ServiceActionResult<InitialMailErrors>> SendInitialMail(SchoolApplication application);
 

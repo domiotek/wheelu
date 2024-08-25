@@ -10,13 +10,15 @@ using WheeluAPI.models;
 namespace WheeluAPI.Services;
 
 public class UserService(UserManager<User> users, SignInManager<User> signInManager, IMailService mailService, ApplicationDbContext dbContext): IUserService {
-	public async Task<UserCreationResult> CreateAccountAsync(UserSignUpRequest requestData, UserRole role) {
+	public async Task<UserCreationResult> CreateAccountAsync(UserSignUpRequest requestData, UserRole role, bool createActivated=false) {
 		var newUser = new User {
 			Email = requestData.Username,
 			UserName = requestData.Username,
 			Name = requestData.Name,
 			Surname = requestData.Surname,
+			Birthday = requestData.Birthday,
 			CreatedAt = DateTime.UtcNow,
+			EmailConfirmed = createActivated
 		};
 
 		var result = await users.CreateAsync(newUser, requestData.Password);
@@ -78,32 +80,33 @@ public class UserService(UserManager<User> users, SignInManager<User> signInMana
 		return new ServiceActionResult<UserSignInErrorCode> {IsSuccess = true};
 	}
 
-	public async Task<ActivationTokenFetchResult> GetActivationTokenAsync(User user) {
-		if(user.EmailConfirmed) return new ActivationTokenFetchResult {ErrorCode = ActivationTokenFetchErrors.AlreadyActivated};
+	public async Task<AccountToken?> GetAccountTokenAsync(User user, AccountTokenType tokenType) {
 
-		var existingToken = await dbContext.ActivationTokens.Include(t=>t.User).Where(t=>t.User.Id == user.Id).SingleOrDefaultAsync();
+		var existingToken = await dbContext.AccountTokens
+			.Include(t=>t.User)
+			.Where(t=>t.User.Id == user.Id)
+			.Where(t=>t.TokenType==tokenType)
+			.SingleOrDefaultAsync();
 
 		if(existingToken != null) {
 			if(DateTime.UtcNow <= existingToken.CreatedAt.AddHours(24))
-				return new ActivationTokenFetchResult {IsSuccess = true, Token = existingToken};
+				return existingToken;
 
-			dbContext.ActivationTokens.Remove(existingToken);
+			dbContext.AccountTokens.Remove(existingToken);
 		}
 
-		var newToken = new ActivationToken() {
+		var newToken = new AccountToken() {
 			Id = Guid.NewGuid(),
+			TokenType = tokenType,
 			User = user,
 			CreatedAt = DateTime.UtcNow
 		};
 
-		dbContext.ActivationTokens.Add(newToken);
+		dbContext.AccountTokens.Add(newToken);
 
 		var written = await dbContext.SaveChangesAsync();
 
-		return written > 0?
-			new ActivationTokenFetchResult {IsSuccess = true, Token = newToken}
-			:
-			new ActivationTokenFetchResult {ErrorCode = ActivationTokenFetchErrors.DBError};
+		return written > 0? newToken : null;
 	}
 
 	public async Task<ServiceActionResult<SendActivationEmailErrorCodes>> SendActivationEmailAsync(User user, string templateID) {
@@ -112,13 +115,16 @@ public class UserService(UserManager<User> users, SignInManager<User> signInMana
 		if(template == null) 
 			return new ServiceActionResult<SendActivationEmailErrorCodes> {};
 
-		var tokenFetchResult = await GetActivationTokenAsync(user);
+		if(user.EmailConfirmed)
+			return new ServiceActionResult<SendActivationEmailErrorCodes> {ErrorCode = SendActivationEmailErrorCodes.AlreadyActivated };
 
-		if(!tokenFetchResult.IsSuccess) 
-			return new ServiceActionResult<SendActivationEmailErrorCodes> {ErrorCode = (SendActivationEmailErrorCodes)tokenFetchResult.ErrorCode };
+		var token = await GetAccountTokenAsync(user, AccountTokenType.ActivationToken);
+
+		if(token==null) 
+			return new ServiceActionResult<SendActivationEmailErrorCodes> {ErrorCode = SendActivationEmailErrorCodes.DBError };
 
 		var templateData = new ConfirmRegistrationTemplateVariables {
-			Link = $"http://localhost:5173/activate-account?token={tokenFetchResult?.Token?.Id}"
+			Link = $"http://localhost:5173/activate-account?token={token?.Id}"
 		};
 
 		if(await mailService.SendEmail("accounts",template.Populate(templateData), [user.Email]) == false)
@@ -128,7 +134,7 @@ public class UserService(UserManager<User> users, SignInManager<User> signInMana
 	}
 
 	public async Task<ServiceActionResult<ActivationTokenValidationErrors>> ActivateAccountAsync(string tokenID) {
-		var token = dbContext.ActivationTokens.Include(t=>t.User).FirstOrDefault(t=>t.Id == Guid.Parse(tokenID));
+		var token = dbContext.AccountTokens.Include(t=>t.User).FirstOrDefault(t=>t.Id == Guid.Parse(tokenID));
 
 		if(token == null || DateTime.UtcNow > token.CreatedAt.AddHours(24))
 			return new ServiceActionResult<ActivationTokenValidationErrors> {ErrorCode = ActivationTokenValidationErrors.InvalidToken};
@@ -136,7 +142,7 @@ public class UserService(UserManager<User> users, SignInManager<User> signInMana
 		token.User.EmailConfirmed = true;
 
 		dbContext.Users.Update(token.User);
-		dbContext.ActivationTokens.Remove(token);
+		dbContext.AccountTokens.Remove(token);
 
 		var written = await dbContext.SaveChangesAsync();
 
@@ -148,11 +154,11 @@ public class UserService(UserManager<User> users, SignInManager<User> signInMana
 }
 
 public interface IUserService {
-	Task<UserCreationResult> CreateAccountAsync(UserSignUpRequest requestData, UserRole role);
+	Task<UserCreationResult> CreateAccountAsync(UserSignUpRequest requestData, UserRole role, bool createActivated=false);
 
 	Task<ServiceActionResult<SendActivationEmailErrorCodes>> SendActivationEmailAsync(User user, string templateID);
 
-	Task<ActivationTokenFetchResult> GetActivationTokenAsync(User user);
+	Task<AccountToken?> GetAccountTokenAsync(User user, AccountTokenType tokenType);
 
 	Task<ServiceActionResult<ActivationTokenValidationErrors>> ActivateAccountAsync(string tokenID);
 

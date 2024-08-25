@@ -8,5 +8,7 @@ public class User: IdentityUser {
 
 	public required string Surname { get; set; }
 
+	public required DateOnly Birthday { get; set; }
+
 	public required DateTime CreatedAt { get; set; }
 }

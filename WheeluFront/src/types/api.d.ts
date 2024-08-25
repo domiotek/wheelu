@@ -76,6 +76,7 @@ export namespace API {
 				Password: string
 				Name: string
 				Surname: string
+				Birthday: string
 			}
 
 			type IEndpoint = _.IBuildAPIEndpoint<"POST", "/api/v1/auth/signup", null, "PasswordRequirementsNotMet" | "EmailAlreadyTaken" | "EmailDeliveryProblem", IRequestData>

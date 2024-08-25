@@ -11,11 +11,15 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
 	public DbSet<State> States { get; set; }
 
+	public DbSet<ZipCode> ZipCodes { get; set; }
+
+	public DbSet<Address> Addresses { get; set; }
+
 	public DbSet<School> Schools { get; set; }
 
 	public DbSet<SchoolApplication> SchoolApplications { get; set; }
 
-	public DbSet<ActivationToken> ActivationTokens { get; set; }
+	public DbSet<AccountToken> AccountTokens { get; set; }
 
 	protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder) {
 		configurationBuilder.Properties<DateTime>().HaveConversion(typeof(UtcValueConverter));

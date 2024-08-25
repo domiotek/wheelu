@@ -63,7 +63,8 @@ export default function RegisterForm({onSuccess}: IProps) {
 			Username: val.email,
 			Name: val.name,
 			Surname: val.surname,
-			Password: val.password
+			Password: val.password,
+			Birthday: val.birthday,
 		});
 	}
 

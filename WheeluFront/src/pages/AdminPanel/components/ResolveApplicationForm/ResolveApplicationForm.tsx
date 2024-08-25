@@ -22,7 +22,7 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 	const formContext = useForm<API.Application.PostNew.IRequestData>();
 
 	const submitRef = useRef<HTMLButtonElement | null>(null);
-	const values = formContext.watch();
+	const values = formContext.getValues();
 
 	const nearbyCitiesSectionRef = useRef<HTMLDivElement | null>(null);
 
@@ -107,7 +107,7 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 		setNearbyCitiesList(result);
 	},[data, cities]);
 
-	useEffect(()=>submitRef.current?.click(),[values]);
+	useEffect(()=>submitRef.current?.click(), [JSON.stringify(values)]);
 
 	return (
 		<FormContainer FormProps={{className: classes.Form}} formContext={formContext} onSuccess={submitCallback}>

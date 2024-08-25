@@ -9,5 +9,6 @@ public class UserSignUpRequest {
 
 	public required string Surname { get; set; }
 
+	public required DateOnly Birthday { get; set; }
 	
 }
