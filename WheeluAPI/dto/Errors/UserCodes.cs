@@ -12,7 +12,19 @@ public enum SendActivationEmailErrorCodes {
 	MailServiceProblem
 }
 
-public enum ActivationTokenValidationErrors {
+public enum GenericTokenActionErrors {
 	DBError = ActivationTokenFetchErrors.DBError,
 	InvalidToken
+}
+
+public enum SendRecoveryEmailErrorCodes {
+	DBError = ActivationTokenFetchErrors.DBError,
+	InvalidTemplate,
+	MailServiceProblem
+}
+
+public enum ChangePasswordTokenActionErrors {
+	DBError = ActivationTokenFetchErrors.DBError,
+	InvalidToken = GenericTokenActionErrors.InvalidToken,
+	PasswordRequirementsNotMet = UserSignUpErrorCode.PasswordRequirementsNotMet
 }

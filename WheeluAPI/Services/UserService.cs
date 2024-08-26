@@ -1,3 +1,4 @@
+using System.Transactions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WheeluAPI.DTO;
@@ -10,6 +11,11 @@ using WheeluAPI.models;
 namespace WheeluAPI.Services;
 
 public class UserService(UserManager<User> users, SignInManager<User> signInManager, IMailService mailService, ApplicationDbContext dbContext): IUserService {
+
+	private List<string> ExtractIdentityErrors(IEnumerable<IdentityError> errors) {
+		return errors.Select(e=>e.Code).ToList();
+	}
+
 	public async Task<UserCreationResult> CreateAccountAsync(UserSignUpRequest requestData, UserRole role, bool createActivated=false) {
 		var newUser = new User {
 			Email = requestData.Username,
@@ -30,16 +36,9 @@ public class UserService(UserManager<User> users, SignInManager<User> signInMana
 			else await users.DeleteAsync(newUser);
 		}
 
-		var errorCodes = new List<string>();
+		var errorCodes = ExtractIdentityErrors(result.Errors);
 
-		var passwordValid = true;
-
-		foreach(var error in result.Errors) {
-			if(error.Code.Contains("Password"))
-				passwordValid = false;
-			
-			errorCodes.Add(error.Code);
-		}
+		var passwordValid = errorCodes.Find(c=>c.Contains("Password")) == null;
 
 		if(!passwordValid)
 			return new UserCreationResult { ErrorCode = UserSignUpErrorCode.PasswordRequirementsNotMet, Details = errorCodes};
@@ -133,11 +132,11 @@ public class UserService(UserManager<User> users, SignInManager<User> signInMana
 		return new ServiceActionResult<SendActivationEmailErrorCodes> {IsSuccess = true};
 	}
 
-	public async Task<ServiceActionResult<ActivationTokenValidationErrors>> ActivateAccountAsync(string tokenID) {
-		var token = dbContext.AccountTokens.Include(t=>t.User).FirstOrDefault(t=>t.Id == Guid.Parse(tokenID));
+	public async Task<ServiceActionResult<GenericTokenActionErrors>> ActivateAccountAsync(string tokenID) {
+		var token = dbContext.AccountTokens.Include(t=>t.User).FirstOrDefault(t=>t.Id == Guid.Parse(tokenID) && t.TokenType == AccountTokenType.ActivationToken);
 
 		if(token == null || DateTime.UtcNow > token.CreatedAt.AddHours(24))
-			return new ServiceActionResult<ActivationTokenValidationErrors> {ErrorCode = ActivationTokenValidationErrors.InvalidToken};
+			return new ServiceActionResult<GenericTokenActionErrors> {ErrorCode = GenericTokenActionErrors.InvalidToken};
 
 		token.User.EmailConfirmed = true;
 
@@ -147,9 +146,63 @@ public class UserService(UserManager<User> users, SignInManager<User> signInMana
 		var written = await dbContext.SaveChangesAsync();
 
 		if(written != 2) 
-			return new ServiceActionResult<ActivationTokenValidationErrors> {ErrorCode = ActivationTokenValidationErrors.DBError};
+			return new ServiceActionResult<GenericTokenActionErrors> {ErrorCode = GenericTokenActionErrors.DBError};
 		
-		return new ServiceActionResult<ActivationTokenValidationErrors> {IsSuccess = true};
+		return new ServiceActionResult<GenericTokenActionErrors> {IsSuccess = true};
+	}
+
+	public async Task<ServiceActionResult<SendRecoveryEmailErrorCodes>> SendRecoveryEmailAsync(User user) {
+		var template = mailService.GetTemplate<AccountRecoveryTemplateVariables>("account-recovery");
+
+		if(template == null) 
+			return new ServiceActionResult<SendRecoveryEmailErrorCodes> {};
+
+		var token = await GetAccountTokenAsync(user, AccountTokenType.PasswordResetToken);
+
+		if(token==null) 
+			return new ServiceActionResult<SendRecoveryEmailErrorCodes> {ErrorCode = SendRecoveryEmailErrorCodes.DBError };
+
+		var templateData = new AccountRecoveryTemplateVariables {
+			Name = user.Name,
+			Link = $"http://localhost:5173/reset-password?token={token?.Id}"
+		};
+
+		if(await mailService.SendEmail("accounts",template.Populate(templateData), [user.Email]) == false)
+			return new ServiceActionResult<SendRecoveryEmailErrorCodes> {ErrorCode = SendRecoveryEmailErrorCodes.MailServiceProblem};
+		
+		return new ServiceActionResult<SendRecoveryEmailErrorCodes> {IsSuccess = true};
+	}
+
+	public async Task<ServiceActionResult<ChangePasswordTokenActionErrors>> ChangePasswordAsync(string tokenID, string password) {
+		var token = dbContext.AccountTokens.Include(t=>t.User).FirstOrDefault(t=>t.Id == Guid.Parse(tokenID) && t.TokenType == AccountTokenType.PasswordResetToken);
+
+		if(token == null || DateTime.UtcNow > token.CreatedAt.AddHours(24))
+			return new ServiceActionResult<ChangePasswordTokenActionErrors> {ErrorCode = ChangePasswordTokenActionErrors.InvalidToken};
+		
+		var errorResult = new ServiceActionResult<ChangePasswordTokenActionErrors> {ErrorCode = ChangePasswordTokenActionErrors.DBError};
+
+		using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled)) {
+			var removalResult = await users.RemovePasswordAsync(token.User);
+
+			if(!removalResult.Succeeded)
+				return errorResult;
+
+			var additionResult = await users.AddPasswordAsync(token.User, password);
+
+			if(!additionResult.Succeeded)
+				return new ServiceActionResult<ChangePasswordTokenActionErrors> {ErrorCode = ChangePasswordTokenActionErrors.PasswordRequirementsNotMet, Details=ExtractIdentityErrors(additionResult.Errors)};
+
+			dbContext.AccountTokens.Remove(token);
+			
+			var written = await dbContext.SaveChangesAsync();
+
+			if(written == 0) 
+				return errorResult;
+
+			scope.Complete();
+		}
+
+		return new ServiceActionResult<ChangePasswordTokenActionErrors> {IsSuccess = true};
 	}
 }
 
@@ -158,9 +211,13 @@ public interface IUserService {
 
 	Task<ServiceActionResult<SendActivationEmailErrorCodes>> SendActivationEmailAsync(User user, string templateID);
 
+	Task<ServiceActionResult<SendRecoveryEmailErrorCodes>> SendRecoveryEmailAsync(User user);
+
 	Task<AccountToken?> GetAccountTokenAsync(User user, AccountTokenType tokenType);
 
-	Task<ServiceActionResult<ActivationTokenValidationErrors>> ActivateAccountAsync(string tokenID);
+	Task<ServiceActionResult<GenericTokenActionErrors>> ActivateAccountAsync(string tokenID);
+
+	Task<ServiceActionResult<ChangePasswordTokenActionErrors>> ChangePasswordAsync(string tokenID, string password);
 
 	Task<ServiceActionResult<UserSignInErrorCode>> TrySignInAsync(UserSignInRequest requestData);
 

@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import ResendActivationPortal from './portals/ResendActivationPortal.tsx'
 import ActivateAccountPortal from './portals/ActivateAccountPortal.tsx'
 import ResolveApplication from './pages/AdminPanel/views/ResolveApplication.tsx'
+import ResetPasswordPortal from './portals/ResetPasswordPortal.tsx'
 
 
 const LandingPage = React.lazy(()=>import("./pages/LandingPage.tsx"));
@@ -57,6 +58,7 @@ root.render(
 						<Route path="logout" element={<LogoutPortal />} />
 						<Route path="resend-activation-link" element={<ResendActivationPortal />} />
 						<Route path="activate-account" element={<ActivateAccountPortal />} />
+						<Route path="reset-password" element={<ResetPasswordPortal />} />
 					</Route>
 				</Route>
 			</Routes>

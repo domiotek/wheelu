@@ -111,6 +111,23 @@ export namespace API {
 
 			type IEndpoint = _.IBuildAPIEndpoint<"POST", "/api/v1/auth/activate-account", null, _.TCommonServerErrorCodes, IRequestData>
 		}
+
+		namespace RecoverPassword {
+			interface IRequestData extends Record<string, string> {
+				Email: string
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<"POST", "/api/v1/auth/recover-account",null, _.TCommonServerErrorCodes, IRequestData>
+		}
+
+		namespace ChangePassword {
+			interface IRequestData extends Record<string, string> {
+				Token: string
+				Password: string
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<"POST", "/api/v1/auth/change-password", null, "PasswordRequirementsNotMet", IRequestData>
+		}
 	}
 
 	namespace City {

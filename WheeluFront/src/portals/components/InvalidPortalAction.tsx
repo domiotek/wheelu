@@ -13,7 +13,7 @@ export default function InvalidPortalAction() {
 				<Typography variant="h5">Ten link nie zadziała</Typography>
 				<Typography variant="body2" gutterBottom>Sprawdź, czy wprowadzony link jest poprawny.</Typography>
 
-				<Button variant='contained' onClick={()=>navigate("/")}>Powrót</Button>
+				<Button variant='contained' onClick={()=>navigate("/")} sx={{mt: 2}}>Powrót</Button>
 			</Stack>
 		</Card>
 	)

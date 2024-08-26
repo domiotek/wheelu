@@ -17,7 +17,7 @@ export default function FailurePortalAction({message}: IProps) {
 				<Typography variant="h5">Coś poszło nie tak</Typography>
 				<Typography variant="body2" gutterBottom>{message}</Typography>
 
-				<Button variant='contained' onClick={()=>navigate("/")}>Powrót</Button>
+				<Button variant='contained' onClick={()=>navigate("/")} sx={{mt: 2}}>Powrót</Button>
 			</Stack>
 		</Card>
 	)

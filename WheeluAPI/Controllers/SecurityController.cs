@@ -93,15 +93,44 @@ public class SecurityController(IJwtHandler jwtHandler, IUserService service) : 
 	}
 
 	[HttpPost("activate-account")]
-	[ProducesResponseType(typeof(UserIdentifyResponse), StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
 	public async Task<IActionResult> ActivateAccount([FromBody] ActivationRequest data) {
 
 		var result = await service.ActivateAccountAsync(data.Token);
 
 		if(!result.IsSuccess)
-			return BadRequest(new APIError<ActivationTokenValidationErrors> {Code = result.ErrorCode});
+			return BadRequest(new APIError<GenericTokenActionErrors> {Code = result.ErrorCode});
 
+
+		return Ok();
+	}
+
+	[HttpPost("recover-account")]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	public async Task<IActionResult> RecoverAccount([FromBody] AccountRecoveryRequest data) {
+		var user = await service.GetUserByEmailAsync(data.Email);
+
+		if(user==null) {
+			await Task.Delay(2000);
+			return Ok();
+		}
+
+		await service.SendRecoveryEmailAsync(user);
+
+		return Ok();
+	}
+
+	[HttpPost("change-password")]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest data) {
+
+		var result = await service.ChangePasswordAsync(data.Token, data.Password);
+
+		if(!result.IsSuccess)
+			return BadRequest(new APIError<ChangePasswordTokenActionErrors> {Code = result.ErrorCode, Details = result.Details});
 
 		return Ok();
 	}

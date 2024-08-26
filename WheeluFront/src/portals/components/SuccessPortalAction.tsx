@@ -17,7 +17,7 @@ export default function SuccessPortalAction({message, link}: IProps) {
 				<Typography variant="h5">Gotowe!</Typography>
 				<Typography variant="body2" gutterBottom>{message}</Typography>
 
-				<Button variant='contained' onClick={()=>navigate(link)}>Powrót</Button>
+				<Button variant='contained' onClick={()=>navigate(link)} sx={{mt: 2}}>Powrót</Button>
 			</Stack>
 		</Card>
 	)

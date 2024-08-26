@@ -99,6 +99,9 @@ export default function LoginPortal() {
 							/>
 						}
 					/>
+					<Typography variant="body2" alignSelf="flex-start" gutterBottom mb={3}>
+						Problemy z logowaniem? <Link onClick={()=>navigate("/reset-password")}>Odzyskaj dostęp</Link>
+					</Typography>
 					
 					<Controller
 						name="rememberMe"
