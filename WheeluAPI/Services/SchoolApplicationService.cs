@@ -101,6 +101,14 @@ public class SchoolApplicationService(
 		return dbContext.SchoolApplications.CountAsync();
 	}
 
+	public async Task<bool> DeleteApplication(SchoolApplication application) {
+		dbContext.SchoolApplications.Remove(application);
+
+		var deleted = await dbContext.SaveChangesAsync();
+
+		return deleted > 0;
+	}
+
 	public async Task<ServiceActionResult<ApplicationRejectErrors>> RejectApplication(SchoolApplication application, RejectionReason reason, string? message) {
 		if(application.Status != SchoolApplicationState.Pending) 
 			return new ServiceActionResult<ApplicationRejectErrors> {ErrorCode = ApplicationRejectErrors.ApplicationResolved};
@@ -300,6 +308,8 @@ public interface ISchoolApplicationService {
 	IQueryable<SchoolApplication> GetApplications(PagingMetadata pagingMetadata, out int appliedPageSize);
 
 	Task<int> Count();
+
+	Task<bool> DeleteApplication(SchoolApplication application);
 
 	Task<ServiceActionResult<ApplicationAcceptErrors>> AcceptApplication(SchoolApplication application, SchoolRegistrationData finalData);
 	Task<ServiceActionResult<ApplicationRejectErrors>> RejectApplication(SchoolApplication application, RejectionReason reason, string? message);

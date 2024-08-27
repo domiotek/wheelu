@@ -1,12 +1,14 @@
 import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { API } from '../../../../types/api';
 import { callAPI } from '../../../../modules/utils';
 import { App } from '../../../../types/app';
 import SchoolApplicationService from '../../../../services/SchoolApplication';
-import { Alert, Snackbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
+import { AppContext } from '../../../../App';
+import { LinearProgress } from '@mui/material';
 
 interface IProps {
 	supportFilter?: boolean
@@ -19,10 +21,10 @@ export default function ApplicationsTable({supportFilter}: IProps) {
 		page: 0,
 	});
 
-	const [snackBarOpened, setSnackBarOpened] = useState(false);
-
+	const {snackBarProps} = useContext(AppContext);
 	const qClient = useQueryClient();
 	const navigate = useNavigate();
+	const snackBar = useSnackbar();
 
 	const {data, isFetching} = useQuery<API.Application.GetAll.IResponse, API.Application.GetAll.IEndpoint["error"]>({
         queryKey: ["Applications"].concat(supportFilter?[]:[paginationModel.pageSize.toString(), paginationModel.page.toString()]),
@@ -36,10 +38,23 @@ export default function ApplicationsTable({supportFilter}: IProps) {
     });
 
 	const quickRejectMutation = useMutation<null, API.Application.Reject.IEndpoint["error"], API.Application.Reject.IRequestData & {id: string}>({
-        mutationFn: data=>callAPI<API.Application.Reject.IEndpoint>("DELETE","/api/v1/applications/:id",data, {id: data.id }, true),
+        mutationFn: data=>callAPI<API.Application.Reject.IEndpoint>("POST","/api/v1/applications/:id/reject",data, {id: data.id }, true),
         onSuccess: async ()=>qClient.invalidateQueries({queryKey: ["Applications"]}),
-		onError: (()=>setSnackBarOpened(true))
+		onError: ()=>snackBar.enqueueSnackbar({...snackBarProps, message: "Nie udało się odrzucić wniosku.", variant: "error"})
     });
+
+	const deleteMutation = useMutation<null, API.Application.Delete.IEndpoint["error"], {id: string}>({
+        mutationFn: data=>callAPI<API.Application.Delete.IEndpoint>("DELETE","/api/v1/applications/:id",data, {id: data.id }, true),
+        onSuccess: async ()=>qClient.invalidateQueries({queryKey: ["Applications"]}),
+		onError: ()=>snackBar.enqueueSnackbar({...snackBarProps, message: "Nie udało się usunąć wniosku.", variant: "error"})
+    });
+
+	const showProgressSnack = useCallback((message: string)=>{
+		snackBar.enqueueSnackbar({
+			...snackBarProps,
+			message: <>{message} <LinearProgress variant="indeterminate" /></>,
+		})
+	},[]);
 
 	const columns = useMemo(()=>{
 		const result: GridColDef<App.Models.IApplication>[] = [
@@ -82,9 +97,23 @@ export default function ApplicationsTable({supportFilter}: IProps) {
 						<GridActionsCellItem
 							label="Odrzuć"
 							showInMenu
-							onClick={()=>quickRejectMutation.mutate({Reason: "Unspecified", id: params.row.id?.toString() ?? ""})}
+							onClick={()=>{
+								showProgressSnack("Przetwarzanie żądania");
+								quickRejectMutation.mutate({Reason: "Unspecified", id: params.row.id?.toString() ?? ""})
+							}}
 						/>,
 					]);
+				else 
+					actions = actions.concat([
+						<GridActionsCellItem
+							label="Usuń"
+							showInMenu
+							onClick={()=> {
+								showProgressSnack("Przetwarzanie żądania");
+								deleteMutation.mutate({id: params.row.id?.toString() ?? ""})
+							}}
+						/>,
+					])
 
 				return actions;
 			}}
@@ -121,16 +150,6 @@ export default function ApplicationsTable({supportFilter}: IProps) {
 					}
 				}}
 			/>
-
-			<Snackbar open={snackBarOpened} autoHideDuration={4000} anchorOrigin={{vertical: "bottom", horizontal: "right"}} onClose={()=>setSnackBarOpened(false)}>
-				<Alert
-					severity="error"
-					variant="filled"
-					sx={{ width: '100%' }}
-				>
-					Nie udało się odrzucić wniosku.
-				</Alert>
-			</Snackbar>
 		</>
 	)
 }

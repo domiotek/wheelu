@@ -81,7 +81,7 @@ public class SchoolApplicationController(ISchoolApplicationService service, ISch
 		return Paginated(service.MapToDTO(applications), applications.Count,applications.Count);
 	}
 
-	[HttpDelete("{id}")]
+	[HttpPost("{id}/reject")]
 	[Authorize(Roles = "Administrator")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -110,7 +110,7 @@ public class SchoolApplicationController(ISchoolApplicationService service, ISch
 	}
 
 	
-	[HttpPost("{id}")]
+	[HttpPost("{id}/accept")]
 	[Authorize(Roles = "Administrator")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -127,6 +127,27 @@ public class SchoolApplicationController(ISchoolApplicationService service, ISch
 
 		if(!result.IsSuccess) 
 			return BadRequest(new APIError<ApplicationAcceptErrors> {Code = result.ErrorCode});
+
+		return Ok();
+	}
+
+	[HttpDelete("{id}")]
+	[Authorize(Roles = "Administrator")]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(typeof(APIError<DeleteApplicationErrors>), StatusCodes.Status404NotFound)]
+	public async Task<IActionResult> DeleteApplication(int id) {
+
+		var application = await service.GetApplicationByID(id);
+
+		if(application == null)
+			return NotFound(new APIError<DeleteApplicationErrors> {Code = DeleteApplicationErrors.ApplicationNotFound});
+
+
+		var result = await service.DeleteApplication(application);
+
+		if(!result) 
+			return BadRequest(new APIError<DeleteApplicationErrors> {Code = DeleteApplicationErrors.DbError});
 
 		return Ok();
 	}

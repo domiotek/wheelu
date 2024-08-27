@@ -52,7 +52,7 @@ export default function ResolveApplication() {
     });
 
 	const acceptMutation = useMutation<null, API.Application.Accept.IEndpoint["error"], API.Application.Accept.IRequestData>({
-        mutationFn: data=>callAPI<API.Application.Accept.IEndpoint>("POST","/api/v1/applications/:id",data, {id: params["id"] ?? ""}),
+        mutationFn: data=>callAPI<API.Application.Accept.IEndpoint>("POST","/api/v1/applications/:id/accept",data, {id: params["id"] ?? ""}),
         onSuccess: async ()=>{
 			qClient.invalidateQueries({queryKey: ["Applications"]});
 			navigate("/panel/applications");
@@ -65,7 +65,7 @@ export default function ResolveApplication() {
     });
 
 	const rejectMutation = useMutation<null, API.Application.Reject.IEndpoint["error"], API.Application.Reject.IRequestData>({
-        mutationFn: data=>callAPI<API.Application.Reject.IEndpoint>("DELETE","/api/v1/applications/:id",data, {id: params["id"] ?? "" }),
+        mutationFn: data=>callAPI<API.Application.Reject.IEndpoint>("POST","/api/v1/applications/:id/reject",data, {id: params["id"] ?? "" }),
         onSuccess: ()=>{
 			qClient.invalidateQueries({queryKey: ["Applications"]});
 			navigate("/panel/applications");

@@ -73,5 +73,6 @@ export namespace App {
 		setTheme: (theme: "dark" | "light")=>void
 		userDetails: Models.IUser | null
 		accessLevel: AccessLevel
+		snackBarProps: import("notistack").OptionsObject
 	}
 }

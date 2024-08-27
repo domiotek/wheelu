@@ -32,3 +32,8 @@ public enum AcceptMailErrors {
 	TokenProblem,
 	MailServiceProblem
 }
+
+public enum DeleteApplicationErrors {
+	ApplicationNotFound,
+	DbError
+}

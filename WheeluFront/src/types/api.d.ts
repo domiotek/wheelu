@@ -202,7 +202,7 @@ export namespace API {
 				id: string
 			}
 
-			type IEndpoint = _.IBuildAPIEndpoint<"POST","/api/v1/applications/:id", null, ResolveErrorCodes, IRequestData, IParams>
+			type IEndpoint = _.IBuildAPIEndpoint<"POST","/api/v1/applications/:id/accept", null, ResolveErrorCodes, IRequestData, IParams>
 		}
 
 		namespace Reject {
@@ -211,6 +211,14 @@ export namespace API {
 				Message?: string | undefined
 			}
 
+			interface IParams extends Record<string, string> {
+				id: string
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<"POST", "/api/v1/applications/:id/reject",null, ResolveErrorCodes, IRequestData, IParams>
+		}
+
+		namespace Delete {
 			interface IParams extends Record<string, string> {
 				id: string
 			}

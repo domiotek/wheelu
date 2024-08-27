@@ -12,6 +12,7 @@ import { callAPI, c, OutsideContextNotifier} from './modules/utils';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { App as AppNm } from "./types/app";
 import { AccessLevel } from './modules/enums.ts';
+import { OptionsObject, SnackbarProvider } from 'notistack';
 
 
 interface IProps {
@@ -34,6 +35,11 @@ const darkTheme = createTheme({
 }, plPLc, plPLx);
 
 
+const commonSnackBarProps: OptionsObject = {
+	anchorOrigin: {horizontal: "right", vertical: "bottom"},
+	preventDuplicate: true
+}
+
 export const AppContext = createContext<AppNm.IAppContext>(
 	{
 		lightTheme, 
@@ -41,7 +47,8 @@ export const AppContext = createContext<AppNm.IAppContext>(
 		activeTheme: "" as any, 
 		setTheme: OutsideContextNotifier,
 		userDetails: null,
-		accessLevel: AccessLevel.Anonymous
+		accessLevel: AccessLevel.Anonymous,
+		snackBarProps: commonSnackBarProps
 	}
 );
 
@@ -95,12 +102,15 @@ export default function App({useSplash}: IProps) {
 				activeTheme: darkMode?"dark":"light", 
 				setTheme: (theme)=>setDarkMode(theme=="dark"),
 				userDetails: data ?? null,
-				accessLevel
+				accessLevel,
+				snackBarProps: commonSnackBarProps
 			}}
 		>
 			<ThemeProvider theme={darkMode?darkTheme:lightTheme}>
 				<CssBaseline>
-					<Outlet />
+					<SnackbarProvider>
+						<Outlet />
+					</SnackbarProvider>
 
 					<Grid container className={c(
 						[
