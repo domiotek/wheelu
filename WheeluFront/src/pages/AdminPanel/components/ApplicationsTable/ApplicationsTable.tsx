@@ -131,7 +131,7 @@ export default function ApplicationsTable({supportFilter}: IProps) {
 				pageSizeOptions={[15, 25, 35, 50, 75, 100]}
 				paginationModel={paginationModel}
 				onPaginationModelChange={setPaginationModel}
-				loading={isFetching || quickRejectMutation.isPending}
+				loading={isFetching || quickRejectMutation.isPending || deleteMutation.isPending}
 				autoHeight={true}
 				rowCount={supportFilter?undefined:data?.totalCount ?? 0}
 				disableColumnFilter={!supportFilter}

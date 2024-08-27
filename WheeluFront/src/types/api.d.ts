@@ -226,4 +226,22 @@ export namespace API {
 			type IEndpoint = _.IBuildAPIEndpoint<"DELETE", "/api/v1/applications/:id",null, ResolveErrorCodes, IRequestData, IParams>
 		}
 	}
+
+	namespace School {
+		namespace Get {
+			interface IParams extends Record<string, string> {
+				id: string
+			}
+
+			type IResponse = App.Models.ISchool;
+
+			type IEndpoint = _.IBuildAPIEndpoint<"GET", "/api/v1/schools/:id", IResponse, _.TCommonServerErrorCodes, null, IParams>
+		}
+
+		namespace GetAll {
+			type IResponse = _.IPaginatedResponse<App.Models.ISchool>
+
+			type IEndpoint = _.IBuildAPIEndpoint<"GET","/api/v1/schools",IResponse, _.TCommonServerErrorCodes, Partial<_.IPagingRequest>>
+		}
+	}
 }

@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using WheeluAPI.models;
 
 namespace WheeluAPI.DTO.SchoolApplication;
 

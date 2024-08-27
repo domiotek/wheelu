@@ -10,6 +10,21 @@ export namespace App {
 			role: "Student" | "Administrator"
 		}
 
+		interface IShortUser {
+			Id: string
+			name: string
+			surname: string
+		}
+
+		interface IAddress {
+			street: string
+			buildingNumber: string
+			subBuildingNumber?: number
+			zipCode: string
+			city: string
+			state: string
+		}
+
 		interface ICity {
 			id: number
 			name: string
@@ -43,6 +58,19 @@ export namespace App {
 			resolvedAt?: string
 			rejectionReason?: ApplicationRejectionReason
 			rejectionMessage?: string
+		}
+
+		interface ISchool {
+			id: number
+			name: string
+			description?: string
+			nip: string
+			hidden: boolean
+			owner: IShortUser
+			address: IAddress
+			established: string
+			joined: string
+			phoneNumber: string
 		}
 
 		interface ICityMatching {

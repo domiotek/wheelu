@@ -1,3 +1,5 @@
+using WheeluAPI.DTO.Location;
+
 namespace WheeluAPI.models;
 
 public class Address {
@@ -8,5 +10,17 @@ public class Address {
 	public required string BuildingNumber { get; set; }
 
 	public int? SubBuildingNumber { get; set; }
-	public required ZipCode ZipCode { get; set; }
+	public required virtual ZipCode ZipCode { get; set; }
+
+
+	public AddressResponse GetDTO() {
+		return new AddressResponse {
+			Street = Street,
+			BuildingNumber = BuildingNumber,
+			SubBuildingNumber = SubBuildingNumber,
+			ZipCode = ZipCode.Name,
+			City = ZipCode.City.Name,
+			State = ZipCode.City.State.Name
+		};
+	}
 }

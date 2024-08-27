@@ -24,6 +24,7 @@ const DashboardPage = React.lazy(()=>import("./pages/Dashboard.tsx"));
 const AdminPanelPage = React.lazy(()=>import("./pages/AdminPanel/AdminPanel.tsx"));
 const MainAPView = React.lazy(()=>import("./pages/AdminPanel/views/Main.tsx"));
 const AllApplicationsView = React.lazy(()=>import("./pages/AdminPanel/views/AllApplications.tsx"));
+const AllSchoolsView = React.lazy(()=>import("./pages/AdminPanel/views/AllSchools.tsx"));
 
 const qClient = new QueryClient();
 
@@ -49,6 +50,7 @@ root.render(
 							<Route index element={<MainAPView />} />
 							<Route path='applications' element={<AllApplicationsView />} />
 							<Route path='applications/:id' element={<ResolveApplication />} />
+							<Route path="schools" element={<AllSchoolsView />} />
 						</Route>
 					</Route>
 

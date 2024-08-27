@@ -14,12 +14,16 @@ export default function AdminPanel() {
 			location.pathname, 
 			{rootLink: "/panel"},
 			[
-				{id: "applications", label: "Wnioski", link: "applications"}
+				{id: "applications", label: "Wnioski", link: "applications"},
+				{id: "schools", label: "Szkoły", link: "schools"}
 			],
 			new Map<string, ILevelLeaf[]>([
-					["applications", [
+				[
+					"applications", 
+					[
 						{id:  "index", label: "Rozpatrz wniosek", link: "#"}
-					]]
+					]
+				]
 			])
 		);
 	},[location]);

@@ -1,3 +1,7 @@
+.ContentWrapper {
+	max-width: 1500px;
+}
+
 .TableSection {
 	display: flex;
 	flex-direction: column;

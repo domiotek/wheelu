@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WheeluAPI.DTO.Errors;
-using WheeluAPI.DTO.School;
 using WheeluAPI.DTO.SchoolApplication;
 using WheeluAPI.helpers;
 using WheeluAPI.models;

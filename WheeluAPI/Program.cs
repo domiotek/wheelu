@@ -25,7 +25,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options=>{
-	options.UseNpgsql(builder.Configuration.GetConnectionString("DBContext"));
+	options.UseNpgsql(builder.Configuration.GetConnectionString("DBContext")).UseLazyLoadingProxies();
 });
 
 builder.Services.AddAuthorization();

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -20,6 +21,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 	public DbSet<SchoolApplication> SchoolApplications { get; set; }
 
 	public DbSet<AccountToken> AccountTokens { get; set; }
+
+	protected override void OnModelCreating(ModelBuilder modelBuilder) {
+		base.OnModelCreating(modelBuilder);
+
+		modelBuilder.Entity<IdentityUserLogin<string>>()
+			.HasKey(login => new { login.LoginProvider, login.ProviderKey });
+	}
 
 	protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder) {
 		configurationBuilder.Properties<DateTime>().HaveConversion(typeof(UtcValueConverter));
