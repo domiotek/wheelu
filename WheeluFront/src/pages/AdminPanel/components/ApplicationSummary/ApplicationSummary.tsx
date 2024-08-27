@@ -1,7 +1,7 @@
 import { Button, Card, CardContent, CardHeader, Collapse, Divider, Skeleton, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import classes from "./ApplicationSummary.module.css";
 import { Mail, Phone } from '@mui/icons-material';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { c } from '../../../../modules/utils';
 import { useNavigate } from 'react-router-dom';
 import { App } from '../../../../types/app';
@@ -22,6 +22,9 @@ export interface IApplicationSummaryProps {
 		ownerFullName: string
 		phoneNumber: string
 		email: string
+		status: App.Models.IApplication["status"]
+		rejectionReason?: App.Models.ApplicationRejectionReason
+		rejectionMessage?: string
 	}
 	onConfirm: (outcome: IPositiveOutcome | INegativeOutcome)=>void
 	disableActions?: boolean
@@ -57,6 +60,17 @@ export default function ApplicationSummary({data, onConfirm, disableActions}: IA
 		return Array.from(options.entries()).map(elem=><option key={elem[0]} value={elem[0]}>{elem[1]}</option>);
 	},[]);
 
+	useEffect(()=>{
+		switch(data?.status) {
+			case "accepted": setDecision("accept"); break;
+			case "rejected": setDecision("reject"); break;
+			default: setDecision(undefined);
+		}
+		
+		setRejectReason(data?.rejectionReason ?? "Unspecified");
+		setMessage(data?.rejectionMessage ?? "")
+	},[data])
+
 	return (
 		<Card className={classes.Host} elevation={0}>
 			<CardHeader title={data?.schoolName ?? <Skeleton />}/>
@@ -75,7 +89,7 @@ export default function ApplicationSummary({data, onConfirm, disableActions}: IA
 						value={decision}
 						exclusive
 						onChange={(_ev, val)=>setDecision(val)}
-						disabled={data==undefined||disableActions}
+						disabled={data==undefined || disableActions || data.status!="pending"}
 					>
 						<ToggleButton value="accept" color='success'>
 							Zaakceptuj
@@ -94,6 +108,7 @@ export default function ApplicationSummary({data, onConfirm, disableActions}: IA
 							}}
 							value={rejectReason}
 							onChange={ev=>setRejectReason(ev.target.value as any)}
+							disabled={data?.status!="pending"}
 						>
 							{rejectionReasons}
 						</TextField>
@@ -103,12 +118,13 @@ export default function ApplicationSummary({data, onConfirm, disableActions}: IA
 							maxRows={3}
 							value={message}
 							onChange={ev=>setMessage(ev.target.value)}
+							disabled={data?.status!="pending"}
 						/>
 					</Collapse>
 					
 					<div className={c([classes.ActionsWrapper, classes.RightAligned])}>
-						<Button size='small' onClick={()=>navigate("/panel/applications")}>Anuluj</Button>
-						<Button variant='contained' disabled={decision==undefined||disableActions} onClick={confirm}>Zatwierdź</Button>
+						<Button size='small' onClick={()=>navigate("/panel/applications")} disabled={data?.status!="pending"}>Anuluj</Button>
+						<Button variant='contained' disabled={decision==undefined || disableActions || data?.status!="pending"} onClick={confirm}>Zatwierdź</Button>
 					</div>
 
 				</div>

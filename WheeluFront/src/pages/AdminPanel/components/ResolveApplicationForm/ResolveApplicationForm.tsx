@@ -1,11 +1,12 @@
 import { FormContainer, SelectElement, TextFieldElement, useForm } from "react-hook-form-mui"
 import { c, prepareFieldErrorMessage } from "../../../../modules/utils"
-import { Autocomplete, Button, IconButton, MenuItem, TextField, Typography } from "@mui/material"
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Alert, AlertTitle, Autocomplete, Button, IconButton, MenuItem, TextField, Typography } from "@mui/material"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { API } from "../../../../types/api";
 import { App } from "../../../../types/app";
 import classes from "./ResolveApplicationForm.module.css";
 import { Close } from "@mui/icons-material";
+import { DateTime } from "luxon";
 
 interface IProps {
 	data: App.Models.IApplication
@@ -25,6 +26,8 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 	const values = formContext.getValues();
 
 	const nearbyCitiesSectionRef = useRef<HTMLDivElement | null>(null);
+
+	const isReadonly = data.status!="pending";
 
 	const submitCallback = useCallback((data: App.Models.IApplication)=>{
 
@@ -109,8 +112,18 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 
 	useEffect(()=>submitRef.current?.click(), [JSON.stringify(values)]);
 
+	const parsedResolvedDate = useMemo(()=>DateTime.fromISO(data.resolvedAt ?? ""), [data.resolvedAt]);
+
 	return (
 		<FormContainer FormProps={{className: classes.Form}} formContext={formContext} onSuccess={submitCallback}>
+			{
+				isReadonly && 
+				<Alert severity="info">
+					<AlertTitle>Wniosel rozpatrzony</AlertTitle>
+					Ten wniosek został rozpatrzony <b>{data.status=="accepted"?"pozytywnie":"negatywnie"}</b> dnia {parsedResolvedDate.toFormat("dd/LL/yyyy")} o godzinie {parsedResolvedDate.toFormat("h:mm")}
+				</Alert>
+			}	
+
 			<h4>Podstawowe informacje</h4>
 			<div className={classes.InputGroup}>
 				<TextFieldElement
@@ -122,6 +135,7 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 					type="text"
 					required
 					parseError={prepareFieldErrorMessage}
+					disabled={isReadonly}
 				/>
 
 				<TextFieldElement 
@@ -134,6 +148,7 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 					required
 					inputProps={{maxLength: 10}}
 					parseError={(err)=>prepareFieldErrorMessage(err, {pattern: "Niewłaściwy format NIP."})}
+					disabled={isReadonly}
 				/>
 			</div>
 
@@ -149,6 +164,7 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 					autoComplete="given-name"
 					required
 					parseError={(err)=>prepareFieldErrorMessage(err, {minLength: "2 znaki", maxLength: "35 znaków"})}
+					disabled={isReadonly}
 				/>
 
 				<TextFieldElement 
@@ -161,6 +177,7 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 					autoComplete="given-name"
 					required
 					parseError={(err)=>prepareFieldErrorMessage(err, {minLength: "2 znaki", maxLength: "50 znaków"})}
+					disabled={isReadonly}
 				/>
 			</div>
 
@@ -174,6 +191,7 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 					InputLabelProps={{shrink: true}} 
 					required
 					parseError={prepareFieldErrorMessage}
+					disabled={isReadonly}
 				/>
 				
 				<TextFieldElement 
@@ -185,6 +203,7 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 					InputLabelProps={{shrink: true}} 
 					required
 					parseError={prepareFieldErrorMessage}
+					disabled={isReadonly}
 				/>
 			</div>
 
@@ -200,6 +219,7 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 					label="Ulica"
 					required
 					parseError={(err)=>prepareFieldErrorMessage(err, {minLength: "2 znaki", maxLength: "75 znaków"})}
+					disabled={isReadonly}
 				/>
 				
 				<TextFieldElement 
@@ -210,6 +230,7 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 					label="Numer budynku"
 					required
 					parseError={err=>prepareFieldErrorMessage(err, {maxLength: "10 znaków"})}
+					disabled={isReadonly}
 				/>
 
 				<TextFieldElement 
@@ -220,6 +241,7 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 					label="Numer lokalu"
 					type="number"
 					parseError={(err)=>prepareFieldErrorMessage(err, {min: 1})}
+					disabled={isReadonly}
 				/>
 
 			</div>
@@ -233,6 +255,7 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 					label="Kod pocztowy"
 					required
 					parseError={(err)=>prepareFieldErrorMessage(err, {pattern: "Niewłaściwy format kodu pocztowego."})}
+					disabled={isReadonly}
 				/>
 
 				<TextFieldElement 
@@ -251,8 +274,9 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 								currValue["city"]==opt.name&&
 								currValue["state"]==opt.state.name
 							);
-						})?"":"Miasto zostanie dodane"
+						})||isReadonly?"":"Miasto zostanie dodane"
 					}
+					disabled={isReadonly}
 				/>
 
 				<div className={classes.InputGroup}>
@@ -266,6 +290,7 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 						valueKey="name"
 						labelKey="name"
 						parseError={prepareFieldErrorMessage}
+						disabled={isReadonly}
 					/>
 				</div>
 			</div>
@@ -282,6 +307,7 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 					label="Adres email"
 					required
 					parseError={(err)=>prepareFieldErrorMessage(err, {pattern: "Niewłaściwy adres email.", maxLength: "125 znaków"})}
+					disabled={isReadonly}
 				/>
 
 				<TextFieldElement 
@@ -293,14 +319,19 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 					autoComplete="tel"
 					required
 					parseError={(err)=>prepareFieldErrorMessage(err, {pattern: "Niewłaściwy format numeru telefonu.", maxLength: "16 znaków"})}
+					disabled={isReadonly}
 				/>
 			</div>
 
 			<div className={classes.SectionHeader}>
 				<h4>Miasta w pobliżu</h4>
-				<Button size="small" className={classes.AddCityButton} onClick={addNewCityCallback}>
-					Dodaj
-				</Button>
+				{
+					!isReadonly && 	
+					<Button size="small" className={classes.AddCityButton} onClick={addNewCityCallback}>
+						Dodaj
+					</Button>
+				}
+			
 			</div>
 
 
@@ -334,7 +365,7 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 									helperText={
 										city.cityName==""||
 										city.state==undefined?
-										"Uzupełnij pola. (Zatwierdź miasto enterem)"
+										"Uzupełnij pola."
 										:
 											cities?.find(opt=>city.cityName==opt.name&&city.state==opt.state.name)?
 												"Istniejące miaso zostanie użyte."
@@ -343,6 +374,7 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 									}
 									{...props}
 								/>}
+								disabled={isReadonly}
 							/>
 							<TextField
 								select
@@ -354,6 +386,7 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 								onChange={(ev)=>modifyCityCallback(city, "state", ev.target.value as string)}
 								value={city.state ?? ""}
 								error={city.state==undefined}
+								disabled={isReadonly}
 							>
 								{
 									states?.map(state=>
@@ -361,10 +394,13 @@ export default function ResolveApplicationForm({data, cities, states, onUpdate, 
 									)
 								}
 							</TextField>
-
-							<Button className={c([classes.RemoveCityButton, classes.MobileButton])} onClick={()=>modifyCityCallback(city)}>Usuń</Button>
-							<IconButton className={c([classes.RemoveCityButton, classes.DesktopButton])} onClick={()=>modifyCityCallback(city)}><Close/></IconButton>
-							
+							{
+								!isReadonly &&
+								<>
+									<Button className={c([classes.RemoveCityButton, classes.MobileButton])} onClick={()=>modifyCityCallback(city)}>Usuń</Button>
+									<IconButton className={c([classes.RemoveCityButton, classes.DesktopButton])} onClick={()=>modifyCityCallback(city)}><Close/></IconButton>
+								</>
+							}
 						</div>)
 					})
 				}

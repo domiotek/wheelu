@@ -68,17 +68,17 @@ export default function ApplicationsTable({supportFilter}: IProps) {
 						label="Napisz email" 
 						showInMenu
 						onClick={()=>window.location.href = `mailto:${params.row.email}`}
-					/>
+					/>,
+					<GridActionsCellItem 
+						label={params.row.status=="pending"?"Rozpatrz":"Zobacz wniosek"}
+						showInMenu
+						onClick={()=>navigate(`/panel/applications/${params.id}`)}
+					/>,
 				];
 
 
 				if(params.row.status=="pending")
 					actions = actions.concat([
-						<GridActionsCellItem 
-							label="Rozpatrz"
-							showInMenu
-							onClick={()=>navigate(`/panel/applications/${params.id}`)}
-						/>,
 						<GridActionsCellItem
 							label="Odrzuć"
 							showInMenu

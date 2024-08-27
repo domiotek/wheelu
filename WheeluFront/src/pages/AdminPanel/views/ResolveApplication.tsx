@@ -115,6 +115,9 @@ export default function ResolveApplication() {
 			ownerFullName: `${applicationData.ownerName} ${applicationData.ownerSurname}`,
 			phoneNumber: applicationData.phoneNumber,
 			email: applicationData.email,
+			status: applicationData.status,
+			rejectionReason: applicationData.rejectionReason,
+			rejectionMessage: applicationData.rejectionMessage
 		}:undefined
 
 		return {
@@ -146,7 +149,6 @@ export default function ResolveApplication() {
 
 	return (
 		<section className={classes.ContentWrapper}>
-
 			{
 				applicationData&&cityOptions&&stateOptions?
 					<ResolveApplicationForm data={applicationData} cities={cityOptions} states={stateOptions} onUpdate={onFormChange} onChange={setIsFormSafe} />

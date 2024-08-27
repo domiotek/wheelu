@@ -41,6 +41,8 @@ export namespace App {
 			id?: string
 			status?: "pending" | "rejected" | "accepted"
 			resolvedAt?: string
+			rejectionReason?: ApplicationRejectionReason
+			rejectionMessage?: string
 		}
 
 		interface ICityMatching {
