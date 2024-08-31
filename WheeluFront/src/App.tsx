@@ -53,9 +53,9 @@ export const AppContext = createContext<AppNm.IAppContext>(
 );
 
 export default function App({useSplash}: IProps) {
-	const {error, data, isFetching} = useQuery<API.UserData.IResponseData, API.UserData.IEndpoint["error"]>({
+	const {error, data, isFetching} = useQuery<API.Auth.Identify.IResponseData, API.Auth.Identify.IEndpoint["error"]>({
         queryKey: ["User"],
-        queryFn: ()=>callAPI<API.UserData.IEndpoint>("GET","/api/v1/auth/identify"),
+        queryFn: ()=>callAPI<API.Auth.Identify.IEndpoint>("GET","/api/v1/auth/identify"),
         retry: false,
 		staleTime: 60000
     });

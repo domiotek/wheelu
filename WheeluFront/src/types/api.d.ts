@@ -62,14 +62,15 @@ export namespace API {
 		}
     }
 
-	namespace UserData {
-		
-		type IResponseData = App.Models.IUser;
-
-		type IEndpoint = _.IBuildAPIEndpoint<"GET","/api/v1/auth/identify",IResponseData>
-	}
-
 	namespace Auth {
+		namespace Identify {
+		
+			type IResponseData = App.Models.IIdentityUser;
+	
+			type IEndpoint = _.IBuildAPIEndpoint<"GET","/api/v1/auth/identify",IResponseData>
+		}
+
+
 		namespace SignUp {
 			interface IRequestData extends Record<string, string> {
 				Username: string
@@ -127,6 +128,14 @@ export namespace API {
 			}
 
 			type IEndpoint = _.IBuildAPIEndpoint<"POST", "/api/v1/auth/change-password", null, "PasswordRequirementsNotMet", IRequestData>
+		}
+	}
+
+	namespace User {
+		namespace GetMany {
+			type IResponse = _.IPaginatedResponse<App.Models.IUser>
+
+			type IEndpoint = _.IBuildAPIEndpoint<"GET","/api/v1/auth/users",IResponse, _.TCommonServerErrorCodes, Partial<_.IPagingRequest>>
 		}
 	}
 

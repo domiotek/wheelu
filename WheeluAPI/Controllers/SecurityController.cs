@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WheeluAPI.DTO;
 using WheeluAPI.DTO.Errors;
 using WheeluAPI.DTO.User;
@@ -133,5 +134,24 @@ public class SecurityController(IJwtHandler jwtHandler, IUserService service) : 
 			return BadRequest(new APIError<ChangePasswordTokenActionErrors> {Code = result.ErrorCode, Details = result.Details});
 
 		return Ok();
+	}
+
+	[HttpGet("users")]
+	[Authorize]
+	[ProducesResponseType(typeof(PagingResponse<UserResponseWithRole>), StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	public async Task<IActionResult> GetUsers([FromQuery] OptionalPagingMetadata pagingMeta) {
+		if(pagingMeta.PageNumber!=null) {
+			int appliedPageSize;
+
+			PagingMetadata metadata = new() {PageNumber = (int)pagingMeta.PageNumber, PageSize = pagingMeta.PageSize };
+
+			var results = await service.GetUsersAsync(metadata,out appliedPageSize).ToListAsync();
+
+			return Paginated(await service.MapToDTOWithRole(results), await service.Count(),appliedPageSize);
+		}
+
+		var schools = await service.GetAllUsersAsync();
+		return Paginated(await service.MapToDTOWithRole(schools), schools.Count,schools.Count);
 	}
 }

@@ -3,17 +3,27 @@ import AdminPanel from "../pages/AdminPanel/AdminPanel"
 export namespace App {
 
 	namespace Models {
-		interface IUser {
+		type UserRole = "Student" | "Administrator" | "SchoolManager";
+
+		interface IIdentityUser {
 			userId: string
 			name: string
 			surname: string
-			role: "Student" | "Administrator"
+			role: UserRole
 		}
 
 		interface IShortUser {
-			Id: string
+			id: string
 			name: string
 			surname: string
+		}
+
+		interface IUser extends IShortUser {
+			birthday: string
+			createdAt: string
+			isActivated: boolean
+			lastPasswordChange: string
+			role: UserRole
 		}
 
 		interface IAddress {
@@ -99,7 +109,7 @@ export namespace App {
 		darkTheme: import("@mui/material").Theme
 		activeTheme: "dark" | "light"
 		setTheme: (theme: "dark" | "light")=>void
-		userDetails: Models.IUser | null
+		userDetails: Models.IIdentityUser | null
 		accessLevel: AccessLevel
 		snackBarProps: import("notistack").OptionsObject
 	}

@@ -37,6 +37,7 @@ public class DBSetup {
 					Name = configuration["Administrator:Name"] ?? "",
 					Surname = configuration["Administrator:Surname"] ?? "",
 					CreatedAt = DateTime.UtcNow,
+					LastPasswordChange = DateTime.UtcNow,
 					Birthday = DateOnly.MinValue,
 					EmailConfirmed = true
 				};

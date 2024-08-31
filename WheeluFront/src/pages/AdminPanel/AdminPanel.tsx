@@ -15,7 +15,8 @@ export default function AdminPanel() {
 			{rootLink: "/panel"},
 			[
 				{id: "applications", label: "Wnioski", link: "applications"},
-				{id: "schools", label: "Szkoły", link: "schools"}
+				{id: "schools", label: "Szkoły", link: "schools"},
+				{id: "users", label: "Użytkownicy", "link": "users"}
 			],
 			new Map<string, ILevelLeaf[]>([
 				[

@@ -10,9 +10,9 @@ using WheeluAPI.models;
 
 namespace WheeluAPI.Services;
 
-public class UserService(UserManager<User> users, SignInManager<User> signInManager, IMailService mailService, ApplicationDbContext dbContext): IUserService {
+public class UserService(UserManager<User> users, SignInManager<User> signInManager, IMailService mailService, ApplicationDbContext dbContext): BaseService, IUserService {
 
-	private List<string> ExtractIdentityErrors(IEnumerable<IdentityError> errors) {
+	private static List<string> ExtractIdentityErrors(IEnumerable<IdentityError> errors) {
 		return errors.Select(e=>e.Code).ToList();
 	}
 
@@ -24,7 +24,8 @@ public class UserService(UserManager<User> users, SignInManager<User> signInMana
 			Surname = requestData.Surname,
 			Birthday = requestData.Birthday,
 			CreatedAt = DateTime.UtcNow,
-			EmailConfirmed = createActivated
+			EmailConfirmed = createActivated,
+			LastPasswordChange = DateTime.UtcNow
 		};
 
 		var result = await users.CreateAsync(newUser, requestData.Password);
@@ -57,6 +58,39 @@ public class UserService(UserManager<User> users, SignInManager<User> signInMana
 		return users.FindByEmailAsync(email);
 	}
 
+	public Task<List<User>> GetAllUsersAsync() {
+		return dbContext.Users.ToListAsync();
+	}
+
+	public IQueryable<User> GetUsersAsync(PagingMetadata meta, out int appliedPageSize) {
+		var results = ApplyPaging(dbContext.Users.AsQueryable(), meta, out int actualPageSize);
+
+		appliedPageSize =  actualPageSize;
+
+		return results;
+	}
+
+	public Task<int> Count() {
+		return dbContext.Users.CountAsync();
+	}
+
+	public List<UserResponse> MapToDTO(List<User> source) {
+		return source.Select(u=>u.GetDTO()).ToList();
+	}
+	
+	public async Task<List<UserResponseWithRole>> MapToDTOWithRole(List<User> source) {
+		List<UserResponseWithRole> result = [];
+
+		foreach(var user in source) {
+			var baseDTO = user.GetDTO();
+
+			var roles = await users.GetRolesAsync(user);
+
+			result.Add(UserResponseWithRole.CreateFromUserResponse(baseDTO, roles[0]));
+		}
+
+		return result;
+	}
 	public async Task<bool> DeleteUserAsync(User user) {
 		var result = await users.DeleteAsync(user);
 		return result.Succeeded;
@@ -182,6 +216,8 @@ public class UserService(UserManager<User> users, SignInManager<User> signInMana
 		var errorResult = new ServiceActionResult<ChangePasswordTokenActionErrors> {ErrorCode = ChangePasswordTokenActionErrors.DBError};
 
 		using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled)) {
+			token.User.LastPasswordChange = DateTime.UtcNow;
+
 			var removalResult = await users.RemovePasswordAsync(token.User);
 
 			if(!removalResult.Succeeded)
@@ -190,9 +226,10 @@ public class UserService(UserManager<User> users, SignInManager<User> signInMana
 			var additionResult = await users.AddPasswordAsync(token.User, password);
 
 			if(!additionResult.Succeeded)
-				return new ServiceActionResult<ChangePasswordTokenActionErrors> {ErrorCode = ChangePasswordTokenActionErrors.PasswordRequirementsNotMet, Details=ExtractIdentityErrors(additionResult.Errors)};
+				return new ServiceActionResult<ChangePasswordTokenActionErrors> {ErrorCode = ChangePasswordTokenActionErrors.PasswordRequirementsNotMet, Details= ExtractIdentityErrors(additionResult.Errors)};
 
 			dbContext.AccountTokens.Remove(token);
+			dbContext.Users.Update(token.User);
 			
 			var written = await dbContext.SaveChangesAsync();
 
@@ -224,6 +261,16 @@ public interface IUserService {
 	Task<User?> GetUserByIDAsync(string userID);
 
 	Task<User?> GetUserByEmailAsync(string email);
+
+	Task<List<User>> GetAllUsersAsync();
+
+	IQueryable<User> GetUsersAsync(PagingMetadata meta, out int appliedPageSize);
+
+	Task<int> Count();
+
+	List<UserResponse> MapToDTO(List<User> source);
+
+	Task<List<UserResponseWithRole>> MapToDTOWithRole(List<User> source);
 
 	Task<bool> DeleteUserAsync(User user);
 }

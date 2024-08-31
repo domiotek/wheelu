@@ -4,6 +4,7 @@ import classes from "./Main.module.css";
 import { FilterAlt } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import SchoolsTable from '../components/SchoolsTable/SchoolsTable';
+import UsersTable from '../components/UsersTable/UsersTable';
 
 interface IProps {
 	header: string
@@ -39,6 +40,10 @@ export default function Main() {
 			
 			<TableSection header='Szkoły' link='/panel/schools'>
 				<SchoolsTable />
+			</TableSection>
+
+			<TableSection header='Użytkownicy' link='/panel/users'>
+				<UsersTable />
 			</TableSection>
 		</div>
 		
