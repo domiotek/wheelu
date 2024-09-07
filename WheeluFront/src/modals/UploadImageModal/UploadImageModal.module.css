@@ -1,0 +1,105 @@
+.Modal {
+	min-width: 320px;
+    width: 60%;
+    max-width: 500px;
+    height: 600px;
+}
+
+.Form {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+.UploadContainer {
+	display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    border: dashed 2px var(--neutral-shades-7-color);
+    margin: 1.5em 0em;
+    border-radius: 0.5em;
+	transition: border-color 0.4s, margin 0.4s, background 0.4s;
+}
+
+.UploadContainer.DraggedOver {
+	border: dashed 2px #5882C0;
+	margin: 1.5em 0;
+    background: var(--neutral-tints-12-color);
+}
+
+.UploadContainer svg {
+	height: 100px;
+	width: 100px;
+    margin-bottom: 0.25em;
+}
+
+.UploadContainer strong {
+	color: var(--secondary-shades-5-color);
+    cursor: pointer;
+}
+
+.ImagePreviewsScroller {
+	height: fit-content;
+	max-height: 100px;
+}
+
+.ImagePreviews {
+	display: flex;
+	gap: 0.5em;
+    align-items: center;
+    max-height: 100px;
+	padding: 0.5em;
+	width: -moz-fit-content;
+	width: fit-content;
+}
+
+.ImagePreviews > div {
+	width: 125px;
+    position: relative;
+    flex-shrink: 0;
+    aspect-ratio: 16 / 9;
+    background: var(--image-src);
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    border-radius: 0.5em;
+}
+
+.ImagePreviews span {
+	position: absolute;
+    right: -5px;
+    top: -5px;
+    background: var(--secondary-shades-4-color);
+    width: 1.5em;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+	cursor: pointer;
+	transition: background 0.4s;
+}
+
+.ImagePreviews span:hover {
+	background: var(--secondary-shades-1-color);
+}
+
+.ImagePreviews span:active {
+	background: var(--secondary-shades-5-color);
+}
+
+.ButtonBar {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5em;
+	margin-top: 0.5em;
+}
+
+
+@media (min-width: 800px) {
+	.UploadContainer {
+		margin: 3em 1.5em;
+	}
+}

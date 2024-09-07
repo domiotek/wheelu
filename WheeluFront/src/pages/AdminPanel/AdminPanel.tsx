@@ -24,6 +24,12 @@ export default function AdminPanel() {
 					[
 						{id:  "index", label: "Rozpatrz wniosek", link: "#"}
 					]
+				],
+				[
+					"schools",
+					[
+						{id: "index", label: "Profil szkoły", link: "#"}
+					]
 				]
 			])
 		);

@@ -1,0 +1,85 @@
+.Container {
+	--local-bg-color: #2a2a2abf;
+	position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	animation: FadeBgIn 0.2s ease-in-out forwards;
+}
+
+.Container.Shown {
+	display: flex;
+}
+
+.Container.Intermediate {
+	animation: FadeBgOut 0.2s ease-in-out forwards;
+}
+
+.Wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.Host {
+	display: flex;
+	max-width: 90vw;
+    width: 100%;
+    max-height: 90vh;
+    height: 100%;
+	animation: ScaleIn 0.2s ease-in-out forwards;
+}
+
+.RenderedHost {
+	overflow: hidden;
+	width: 100%;
+}
+
+.RenderedHost > div, .RenderedHost .HostContent {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.Host.Intermediate {
+	animation: ScaleOut 0.2s ease-in-out forwards;
+}
+
+@keyframes ScaleIn {
+	from {
+		opacity: 0;
+		transform: scale(0.9);
+	}
+
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+@keyframes ScaleOut {
+	from {
+		opacity: 1;
+		transform: scale(1);
+	}
+
+	to {
+		opacity: 0;
+		transform: scale(0.9);
+	}
+}
+
+@keyframes FadeBgIn {
+    from { background: transparent; }
+    to { background: var(--local-bg-color, transparent); }
+}
+
+@keyframes FadeBgOut {
+    from { background: var(--local-bg-color, transparent); }
+    to { background: transparent; }
+}

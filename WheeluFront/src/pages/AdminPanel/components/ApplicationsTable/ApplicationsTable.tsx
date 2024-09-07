@@ -1,123 +1,251 @@
-import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useContext, useMemo, useState } from 'react';
-import { API } from '../../../../types/api';
-import { callAPI } from '../../../../modules/utils';
-import { App } from '../../../../types/app';
-import SchoolApplicationService from '../../../../services/SchoolApplication';
-import { useNavigate } from 'react-router-dom';
-import { useSnackbar } from 'notistack';
-import { AppContext } from '../../../../App';
-import { LinearProgress } from '@mui/material';
+import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useContext, useMemo, useState } from "react";
+import { API } from "../../../../types/api";
+import { callAPI, formatAddress } from "../../../../modules/utils";
+import { App } from "../../../../types/app";
+import SchoolApplicationService from "../../../../services/SchoolApplication";
+import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
+import { AppContext } from "../../../../App";
+import { LinearProgress } from "@mui/material";
 
 interface IProps {
-	supportFilter?: boolean
+	supportFilter?: boolean;
 }
 
-
-export default function ApplicationsTable({supportFilter}: IProps) {
+export default function ApplicationsTable({ supportFilter }: IProps) {
 	const [paginationModel, setPaginationModel] = useState({
 		pageSize: 25,
 		page: 0,
 	});
 
-	const {snackBarProps} = useContext(AppContext);
+	const { snackBarProps } = useContext(AppContext);
 	const qClient = useQueryClient();
 	const navigate = useNavigate();
 	const snackBar = useSnackbar();
 
-	const {data, isFetching} = useQuery<API.Application.GetAll.IResponse, API.Application.GetAll.IEndpoint["error"]>({
-        queryKey: ["Applications"].concat(supportFilter?[]:[paginationModel.pageSize.toString(), paginationModel.page.toString()]),
-        queryFn: ()=>callAPI<API.Application.GetAll.IEndpoint>("GET","/api/v1/applications",
-			{
-				PageNumber: supportFilter?undefined:paginationModel.page, 
-				PagingSize: supportFilter?undefined:paginationModel.pageSize
+	const { data, isFetching } = useQuery<
+		API.Application.GetAll.IResponse,
+		API.Application.GetAll.IEndpoint["error"]
+	>({
+		queryKey: ["Applications"].concat(
+			supportFilter
+				? []
+				: [
+						paginationModel.pageSize.toString(),
+						paginationModel.page.toString(),
+				  ]
+		),
+		queryFn: () =>
+			callAPI<API.Application.GetAll.IEndpoint>(
+				"GET",
+				"/api/v1/applications",
+				{
+					PageNumber: supportFilter
+						? undefined
+						: paginationModel.page,
+					PagingSize: supportFilter
+						? undefined
+						: paginationModel.pageSize,
+				}
+			),
+		retry: true,
+		staleTime: 60000,
+	});
+
+	const quickRejectMutation = useMutation<
+		null,
+		API.Application.Reject.IEndpoint["error"],
+		API.Application.Reject.IRequestData & { id: string }
+	>({
+		mutationFn: (data) =>
+			callAPI<API.Application.Reject.IEndpoint>(
+				"POST",
+				"/api/v1/applications/:id/reject",
+				data,
+				{ id: data.id },
+				true
+			),
+		onSuccess: async () =>
+			qClient.invalidateQueries({ queryKey: ["Applications"] }),
+		onError: () =>
+			snackBar.enqueueSnackbar({
+				...snackBarProps,
+				message: "Nie udało się odrzucić wniosku.",
+				variant: "error",
 			}),
-        retry: true,
-		staleTime: 60000
-    });
+	});
 
-	const quickRejectMutation = useMutation<null, API.Application.Reject.IEndpoint["error"], API.Application.Reject.IRequestData & {id: string}>({
-        mutationFn: data=>callAPI<API.Application.Reject.IEndpoint>("POST","/api/v1/applications/:id/reject",data, {id: data.id }, true),
-        onSuccess: async ()=>qClient.invalidateQueries({queryKey: ["Applications"]}),
-		onError: ()=>snackBar.enqueueSnackbar({...snackBarProps, message: "Nie udało się odrzucić wniosku.", variant: "error"})
-    });
+	const deleteMutation = useMutation<
+		null,
+		API.Application.Delete.IEndpoint["error"],
+		{ id: string }
+	>({
+		mutationFn: (data) =>
+			callAPI<API.Application.Delete.IEndpoint>(
+				"DELETE",
+				"/api/v1/applications/:id",
+				data,
+				{ id: data.id },
+				true
+			),
+		onSuccess: async () =>
+			qClient.invalidateQueries({ queryKey: ["Applications"] }),
+		onError: () =>
+			snackBar.enqueueSnackbar({
+				...snackBarProps,
+				message: "Nie udało się usunąć wniosku.",
+				variant: "error",
+			}),
+	});
 
-	const deleteMutation = useMutation<null, API.Application.Delete.IEndpoint["error"], {id: string}>({
-        mutationFn: data=>callAPI<API.Application.Delete.IEndpoint>("DELETE","/api/v1/applications/:id",data, {id: data.id }, true),
-        onSuccess: async ()=>qClient.invalidateQueries({queryKey: ["Applications"]}),
-		onError: ()=>snackBar.enqueueSnackbar({...snackBarProps, message: "Nie udało się usunąć wniosku.", variant: "error"})
-    });
-
-	const showProgressSnack = useCallback((message: string)=>{
+	const showProgressSnack = useCallback((message: string) => {
 		snackBar.enqueueSnackbar({
 			...snackBarProps,
-			message: <>{message} <LinearProgress variant="indeterminate" /></>,
-		})
-	},[]);
+			message: (
+				<>
+					{message} <LinearProgress variant="indeterminate" />
+				</>
+			),
+		});
+	}, []);
 
-	const columns = useMemo(()=>{
+	const columns = useMemo(() => {
 		const result: GridColDef<App.Models.IApplication>[] = [
-			{field: "id", headerName: "ID", width: 35, type: "number"},
-			{field: "status", headerName: "Status", width: 120, type: "string", valueGetter: (value)=>SchoolApplicationService.translateApplicationStatus(value)},
-			{field: "nip", headerName: "NIP", width: 125, type: "number", headerAlign: "left"},
-			{field: "schoolName", headerName: "Nazwa szkoły", width: 150, type: "string"},
-			{field: "owner", headerName: "Właściciel", width: 150, valueGetter: (_value, row)=>{
-				return `${row.ownerName} ${row.ownerSurname}`;
-			}},
-			{field: "address", headerName: "Adres", width: 250, valueGetter: (_value, row)=>{
-				return `${row.street} ${row.buildingNumber}${row.subBuildingNumber ?? 0 > 0?`/${row.subBuildingNumber}`:""}, ${row.zipCode} ${row.city}(${row.state})`
-			}},
-			{field: "appliedAt", headerName: "Data złożenia", width: 250, type: "dateTime", valueGetter: (value=>new Date(value))},
-			{field: "resolvedAt", headerName: "Data rozpatrzenia", width: 250, type: "dateTime", valueGetter: (value=>value!=undefined?new Date(value):undefined)},
-			{field: "rejectionReason", headerName: "Powód odrzucenia", width: 120, type: "string"},
-			{field: "rejectionMessage", headerName: "Opis odrzucenia", width: 240, type: "string"},
-			{field: "actions", headerName: "Akcje", renderHeader: ()=>"", type: "actions", flex: 1, align: 'right', getActions: params=>{
-				let actions = [
-					<GridActionsCellItem 
-						label="Zadzwoń"
-						showInMenu
-						onClick={()=>window.location.href = `tel:${params.row.phoneNumber}`}
-					/>,
-					<GridActionsCellItem 
-						label="Napisz email" 
-						showInMenu
-						onClick={()=>window.location.href = `mailto:${params.row.email}`}
-					/>,
-					<GridActionsCellItem 
-						label={params.row.status=="pending"?"Rozpatrz":"Zobacz wniosek"}
-						showInMenu
-						onClick={()=>navigate(`/panel/applications/${params.id}`)}
-					/>,
-				];
-
-
-				if(params.row.status=="pending")
-					actions = actions.concat([
+			{ field: "id", headerName: "ID", width: 35, type: "number" },
+			{
+				field: "status",
+				headerName: "Status",
+				width: 120,
+				type: "string",
+				valueGetter: (value) =>
+					SchoolApplicationService.translateApplicationStatus(value),
+			},
+			{
+				field: "nip",
+				headerName: "NIP",
+				width: 125,
+				type: "number",
+				headerAlign: "left",
+			},
+			{
+				field: "schoolName",
+				headerName: "Nazwa szkoły",
+				width: 150,
+				type: "string",
+			},
+			{
+				field: "owner",
+				headerName: "Właściciel",
+				width: 150,
+				valueGetter: (_value, row) => {
+					return `${row.ownerName} ${row.ownerSurname}`;
+				},
+			},
+			{
+				field: "address",
+				headerName: "Adres",
+				width: 250,
+				valueGetter: (_value, row) => {
+					return formatAddress(row as any as App.Models.IAddress);
+				},
+			},
+			{
+				field: "appliedAt",
+				headerName: "Data złożenia",
+				width: 250,
+				type: "dateTime",
+				valueGetter: (value) => new Date(value),
+			},
+			{
+				field: "resolvedAt",
+				headerName: "Data rozpatrzenia",
+				width: 250,
+				type: "dateTime",
+				valueGetter: (value) =>
+					value != undefined ? new Date(value) : undefined,
+			},
+			{
+				field: "rejectionReason",
+				headerName: "Powód odrzucenia",
+				width: 120,
+				type: "string",
+			},
+			{
+				field: "rejectionMessage",
+				headerName: "Opis odrzucenia",
+				width: 240,
+				type: "string",
+			},
+			{
+				field: "actions",
+				headerName: "Akcje",
+				renderHeader: () => "",
+				type: "actions",
+				flex: 1,
+				align: "right",
+				getActions: (params) => {
+					let actions = [
 						<GridActionsCellItem
-							label="Odrzuć"
+							label="Zadzwoń"
 							showInMenu
-							onClick={()=>{
-								showProgressSnack("Przetwarzanie żądania");
-								quickRejectMutation.mutate({Reason: "Unspecified", id: params.row.id?.toString() ?? ""})
-							}}
+							onClick={() =>
+								(window.location.href = `tel:${params.row.phoneNumber}`)
+							}
 						/>,
-					]);
-				else 
-					actions = actions.concat([
 						<GridActionsCellItem
-							label="Usuń"
+							label="Napisz email"
 							showInMenu
-							onClick={()=> {
-								showProgressSnack("Przetwarzanie żądania");
-								deleteMutation.mutate({id: params.row.id?.toString() ?? ""})
-							}}
+							onClick={() =>
+								(window.location.href = `mailto:${params.row.email}`)
+							}
 						/>,
-					])
+						<GridActionsCellItem
+							label={
+								params.row.status == "pending"
+									? "Rozpatrz"
+									: "Zobacz wniosek"
+							}
+							showInMenu
+							onClick={() =>
+								navigate(`/panel/applications/${params.id}`)
+							}
+						/>,
+					];
 
-				return actions;
-			}}
-		]
+					if (params.row.status == "pending")
+						actions = actions.concat([
+							<GridActionsCellItem
+								label="Odrzuć"
+								showInMenu
+								onClick={() => {
+									showProgressSnack("Przetwarzanie żądania");
+									quickRejectMutation.mutate({
+										Reason: "Unspecified",
+										id: params.row.id?.toString() ?? "",
+									});
+								}}
+							/>,
+						]);
+					else
+						actions = actions.concat([
+							<GridActionsCellItem
+								label="Usuń"
+								showInMenu
+								onClick={() => {
+									showProgressSnack("Przetwarzanie żądania");
+									deleteMutation.mutate({
+										id: params.row.id?.toString() ?? "",
+									});
+								}}
+							/>,
+						]);
+
+					return actions;
+				},
+			},
+		];
 
 		return result;
 	}, []);
@@ -126,30 +254,37 @@ export default function ApplicationsTable({supportFilter}: IProps) {
 		<>
 			<DataGrid
 				rows={data?.entries ?? []}
-				paginationMode={supportFilter?"client":"server"}
+				paginationMode={supportFilter ? "client" : "server"}
 				columns={columns}
 				pageSizeOptions={[15, 25, 35, 50, 75, 100]}
 				paginationModel={paginationModel}
 				onPaginationModelChange={setPaginationModel}
-				loading={isFetching || quickRejectMutation.isPending || deleteMutation.isPending}
+				loading={
+					isFetching ||
+					quickRejectMutation.isPending ||
+					deleteMutation.isPending
+				}
 				autoHeight={true}
-				rowCount={supportFilter?undefined:data?.totalCount ?? 0}
+				rowCount={supportFilter ? undefined : data?.totalCount ?? 0}
 				disableColumnFilter={!supportFilter}
 				initialState={{
 					columns: {
 						columnVisibilityModel: {
-							"rejectionReason": false,
-							"rejectionMessage": false
+							rejectionReason: false,
+							rejectionMessage: false,
 						},
 					},
 					sorting: {
-						sortModel: [{
-							field: "id",
-							sort: "asc"
-						}]
-					}
+						sortModel: [
+							{
+								field: "id",
+								sort: "asc",
+							},
+						],
+					},
 				}}
+				onRowDoubleClick={(row) => navigate(`applications/${row.id}`)}
 			/>
 		</>
-	)
+	);
 }

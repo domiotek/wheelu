@@ -30,6 +30,7 @@ export default function UsersTable({supportFilter}: IProps) {
 	const columns = useMemo(()=>{
 		const result: GridColDef<App.Models.IUser>[] = [
 			{field: "id", headerName: "ID", width: 300, type: "number"},
+			{field: "email", headerName: "Email", width: 250, type: "string"},
 			{field: "name", headerName: "Imię", width: 150, type: "string"},
 			{field: "surname", headerName: "Nazwisko", width: 150, type: "string"},
 			{field: "role", headerName: "Rola", width: 125, type: "string"},

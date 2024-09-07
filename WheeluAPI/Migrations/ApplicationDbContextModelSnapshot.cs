@@ -26,6 +26,21 @@ namespace WheeluAPI.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("CitySchool", b =>
+                {
+                    b.Property<int>("NearbyCitiesId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NearbySchoolsId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("NearbyCitiesId", "NearbySchoolsId");
+
+                    b.HasIndex("NearbySchoolsId");
+
+                    b.ToTable("CitySchool");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -231,6 +246,34 @@ namespace WheeluAPI.Migrations
                     b.ToTable("Cities");
                 });
 
+            modelBuilder.Entity("WheeluAPI.models.Image", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Images");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            FileName = "placeholder.png",
+                            UploadDate = new DateTime(2024, 9, 7, 19, 39, 43, 445, DateTimeKind.Utc).AddTicks(1663)
+                        });
+                });
+
             modelBuilder.Entity("WheeluAPI.models.School", b =>
                 {
                     b.Property<int>("Id")
@@ -240,6 +283,12 @@ namespace WheeluAPI.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AddressId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Blocked")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("CoverImageId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Description")
@@ -272,6 +321,8 @@ namespace WheeluAPI.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AddressId");
+
+                    b.HasIndex("CoverImageId");
 
                     b.HasIndex("OwnerId");
 
@@ -483,6 +534,21 @@ namespace WheeluAPI.Migrations
                     b.ToTable("ZipCodes");
                 });
 
+            modelBuilder.Entity("CitySchool", b =>
+                {
+                    b.HasOne("WheeluAPI.models.City", null)
+                        .WithMany()
+                        .HasForeignKey("NearbyCitiesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WheeluAPI.models.School", null)
+                        .WithMany()
+                        .HasForeignKey("NearbySchoolsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -573,11 +639,19 @@ namespace WheeluAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("WheeluAPI.models.Image", "CoverImage")
+                        .WithMany()
+                        .HasForeignKey("CoverImageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("WheeluAPI.models.User", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId");
 
                     b.Navigation("Address");
+
+                    b.Navigation("CoverImage");
 
                     b.Navigation("Owner");
                 });

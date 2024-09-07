@@ -1,0 +1,187 @@
+.Modal {
+    width: 100%;
+    height: 100%;
+}
+
+.Main {
+	position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.Main >button {
+	position: absolute;
+	right: 0;
+	top: 0;
+	color: white;
+	z-index: 10;
+}
+
+.Picture {
+	width: 100%;
+    flex: 1;
+    position: relative;
+    padding: 3em 0 4em;
+	max-height: calc(100% - 15vh);
+    display: flex;
+    justify-content: center;
+	align-items: center;
+}
+
+.Canvas {
+	display: none;
+	max-width: 100%;
+    max-height: 100%;
+	transition: transform 0.2s;
+}
+
+.Canvas.Set :global {
+	display: block;
+	animation: FadeIn 0.4s forwards;
+	animation-play-state: paused;
+}
+
+.Canvas.Painted {
+	animation-play-state: running;
+}
+
+.LoadingAnim {
+	position: absolute;
+	z-index: -1;
+	width: 60px!important;
+	height: 60px!important;
+}
+
+.PrevPictureButton, .NextPictureButton {
+	position: absolute;
+	display: none!important;
+	top: 50%;
+	transform: translateY(-50%);
+	left: 0;
+	font-size: 1.2em;
+}
+
+.NextPictureButton {
+	left: unset;
+    right: 0;
+}
+
+.SetAsCoverButton {
+	display: none!important;
+	position: absolute!important;
+	left: 50%;
+	bottom: -6px;
+    transform: translateX(-50%);
+	width: 13em;
+	transition: background 0.4s, border-color 0.4s, color 0.4s!important;
+}
+
+.SetAsCoverButton.Active:not(.Hidden) {
+	display: block;
+    border: solid 1px black;
+    color: white;
+    background-color: color-mix(in srgb, var(--neutral-shades-7-color), transparent 40%);
+	cursor: default;
+	pointer-events: none;
+}
+
+.SetAsCoverButton.InActive:not(.Hidden) {
+	display: block;
+	background: var(--primary-shades-2-color);
+	border: solid 1px var(--primary-shades-2-color);
+}
+
+.SetAsCoverButton.InActive:hover {
+	background-color: var(--primary-color);
+}
+
+.SetAsCoverButton.InActive:active {
+	background-color: var(--primary-shades-3-color);
+}
+
+.DeleteImageButton {
+	position: absolute!important;
+	display: none;
+    right: 0;
+    top: 30px;
+    background: var(--error-box-bg-color);
+    border-radius: 5em;
+    color: white;
+	align-items: center;
+}
+
+.DeleteImageButton:not(.Hidden) {
+	display: flex;
+}
+
+.DeleteImageButton:hover {
+	background: #E55D5D;
+}
+
+.DeleteImageButton:active {
+	background-color: #D62323;
+}
+
+.DeleteImageButton span {
+	transition: width 0.4s;
+    width: 0;
+    overflow: hidden;
+    font-size: 0.75em;
+    white-space: nowrap;
+}
+
+.DeleteImageButton span.Shown {
+	width: 120px;
+}
+
+.CarouselWrapper {
+	height: 14vh;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    margin-top: 1.5em;
+	--scrollbar-color: var(--neutral-tints-5-color);
+}
+
+.Carousel {
+	display: flex;
+    gap: 0.5em;
+    height: 15vh;
+	padding: 0.5em;
+}
+
+.CarouselPanel {
+	height: 100%;
+    background: var(--neutral-shades-12-color);
+	aspect-ratio: 16 / 9;
+    flex-shrink: 0;
+	background-image: var(--img-src);
+	background-position: center;
+	background-size: contain;
+	background-repeat: no-repeat;
+	border-radius: 0.5em;
+	cursor: pointer;
+	transition: transform 0.4s;
+}
+
+.CarouselPanel:hover {
+	transform: scale(1.05);
+}
+
+.CarouselPanel:active {
+	transform: scale(1);
+}
+
+@media (hover: hover) {
+	.PrevPictureButton:not(.Hidden), .NextPictureButton:not(.Hidden) {
+		display: block!important;
+	}
+}
+
+@media (min-width: 759px) {
+	.Picture {
+		padding: 3em 3em 4em;
+	}
+}

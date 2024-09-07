@@ -27,6 +27,7 @@ public class User: IdentityUser {
 		return new UserResponse {
 			Id = Id,
 			Name = Name,
+			Email = Email!,
 			Surname = Surname,
 			Birthday = Birthday,
 			CreatedAt = CreatedAt,

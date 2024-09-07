@@ -74,6 +74,9 @@ public class UserService(UserManager<User> users, SignInManager<User> signInMana
 		return dbContext.Users.CountAsync();
 	}
 
+	public async Task<bool> HasRole(User user, string roleName) {
+		return await users.IsInRoleAsync(user, roleName);
+	}
 	public List<UserResponse> MapToDTO(List<User> source) {
 		return source.Select(u=>u.GetDTO()).ToList();
 	}
@@ -267,6 +270,8 @@ public interface IUserService {
 	IQueryable<User> GetUsersAsync(PagingMetadata meta, out int appliedPageSize);
 
 	Task<int> Count();
+
+	Task<bool> HasRole(User user, string roleName);
 
 	List<UserResponse> MapToDTO(List<User> source);
 

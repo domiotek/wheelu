@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { createContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import classes from "./App.module.css";
 import { CssBaseline, Grid, ThemeProvider, Typography, createTheme } from '@mui/material';
 import { plPL as plPLc} from '@mui/material/locale';
@@ -13,6 +13,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { App as AppNm } from "./types/app";
 import { AccessLevel } from './modules/enums.ts';
 import { OptionsObject, SnackbarProvider } from 'notistack';
+import ModalContainer from './components/ModalContainer/ModalContainer.tsx';
 
 
 interface IProps {
@@ -48,11 +49,22 @@ export const AppContext = createContext<AppNm.IAppContext>(
 		setTheme: OutsideContextNotifier,
 		userDetails: null,
 		accessLevel: AccessLevel.Anonymous,
-		snackBarProps: commonSnackBarProps
+		snackBarProps: commonSnackBarProps,
+		setModalContent: OutsideContextNotifier
 	}
 );
 
 export default function App({useSplash}: IProps) {
+	const [showModal, setShowModal] = useState<boolean>(false);
+    const [modalContent, setModalContent] = useState<JSX.Element | null>(null);
+
+	const [splashHidden, setSplashHidden] = useState<boolean>(false);
+	const [darkMode, setDarkMode] = useState<boolean>(false);
+
+	const navigate = useNavigate();
+	const location = useLocation();
+
+
 	const {error, data, isFetching} = useQuery<API.Auth.Identify.IResponseData, API.Auth.Identify.IEndpoint["error"]>({
         queryKey: ["User"],
         queryFn: ()=>callAPI<API.Auth.Identify.IEndpoint>("GET","/api/v1/auth/identify"),
@@ -60,11 +72,20 @@ export default function App({useSplash}: IProps) {
 		staleTime: 60000
     });
 
-	const [splashHidden, setSplashHidden] = useState<boolean>(false);
-	const [darkMode, setDarkMode] = useState<boolean>(false);
 
-	const navigate = useNavigate();
-	const location = useLocation();
+	const accessLevel = useMemo(()=>{
+		switch(data?.role) {
+			case "Administrator": return AccessLevel.Administrator;
+			case "Student": return AccessLevel.Student;
+			default: return AccessLevel.Anonymous;
+		}
+	},[data]);
+
+	const modalContentSetter = useCallback((content: JSX.Element)=>{
+        setModalContent(content);
+        setShowModal(true);
+    }, []);
+
 
 	useEffect(()=>{
 		if(!isFetching) {
@@ -87,14 +108,6 @@ export default function App({useSplash}: IProps) {
 
 	},[data, error, location]);
 
-	const accessLevel = useMemo(()=>{
-		switch(data?.role) {
-			case "Administrator": return AccessLevel.Administrator;
-			case "Student": return AccessLevel.Student;
-			default: return AccessLevel.Anonymous;
-		}
-	},[data]);
-
 	return (
 		<AppContext.Provider value={{
 				lightTheme, 
@@ -103,7 +116,8 @@ export default function App({useSplash}: IProps) {
 				setTheme: (theme)=>setDarkMode(theme=="dark"),
 				userDetails: data ?? null,
 				accessLevel,
-				snackBarProps: commonSnackBarProps
+				snackBarProps: commonSnackBarProps,
+				setModalContent: modalContentSetter
 			}}
 		>
 			<ThemeProvider theme={darkMode?darkTheme:lightTheme}>
@@ -138,6 +152,7 @@ export default function App({useSplash}: IProps) {
 							</Typography>
 						}
 					</Grid>
+					<ModalContainer show={showModal} onClose={()=>{setShowModal(false); setModalContent(null)}}>{modalContent}</ModalContainer>
 				</CssBaseline>
 			</ThemeProvider>
 			<ReactQueryDevtools initialIsOpen={false} />

@@ -1,0 +1,72 @@
+.SectionHeader {
+	display: flex;
+	align-items: baseline;
+	margin-bottom: 0.5em;
+}
+
+.SectionHeader, .Form > h4 {
+	margin-top: 2em;
+}
+
+.SectionHeader > button {
+	align-self: baseline;
+}
+
+.NearbyCitiesSection {
+	display: flex;
+	flex-direction: column;
+	gap: 2em;
+}
+
+.AddCityButton {
+	align-self: flex-end;
+}
+
+.NearbyCityWrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5em;
+}
+
+.RemoveCityButton {
+	align-self: flex-end;
+}
+
+.DesktopButton {
+	display: none!important;
+}
+
+.NearbyCityWrapper > * {
+	flex: 1;
+}
+
+
+@container (min-width: 600px) {
+	.Form {
+		padding: 0 2.5em;
+	}
+
+	.InputGroup {
+		flex-direction: row;
+	}
+
+	.NearbyCitiesSection {
+		gap: 1em;
+	}
+
+	.NearbyCityWrapper {
+		flex-direction: row;
+		align-items: flex-start;
+	}
+
+	.DesktopButton {
+		display: inline-flex!important;
+		align-self: flex-start;
+        margin-top: 0.25em !important;
+		flex-grow: 0;
+	}
+
+	.MobileButton {
+		display: none!important;
+	}
+}

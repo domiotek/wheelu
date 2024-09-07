@@ -6,6 +6,7 @@ public class UserResponseWithRole: UserResponse {
 	public static UserResponseWithRole CreateFromUserResponse(UserResponse baseObject, string role) {
 		return  new UserResponseWithRole {
 			Id = baseObject.Id,
+			Email = baseObject.Email,
 			Name = baseObject.Name,
 			Surname = baseObject.Surname,
 			Birthday = baseObject.Birthday,
