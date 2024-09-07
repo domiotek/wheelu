@@ -236,7 +236,10 @@ export namespace API {
 				"POST",
 				"/api/v1/applications",
 				null,
-				"ApplicationAlreadyFiled" | "SchoolExists" | "RejectedTooSoon",
+				| "ApplicationAlreadyFiled"
+				| "SchoolExists"
+				| "RejectedTooSoon"
+				| "UserExists",
 				IRequestData
 			>;
 		}
