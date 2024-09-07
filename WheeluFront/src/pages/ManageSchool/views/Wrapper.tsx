@@ -1,6 +1,6 @@
 import { ChevronLeft } from "@mui/icons-material";
 import { Button, Stack, Typography } from "@mui/material";
-import classes from "../SchoolPage.module.css";
+import classes from "../ManageSchoolPage.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { popUrlSegment } from "../../../modules/utils";
 

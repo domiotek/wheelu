@@ -5,7 +5,7 @@ import classes from "./Manage.module.css";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import LoadingScreen from "../../../../components/LoadingScreen/LoadingScreen";
 import DataSection from "./components/DataSection";
-import { SchoolPageContext } from "../../SchoolPage";
+import { SchoolPageContext } from "../../ManageSchoolPage";
 import { useContext, useState } from "react";
 import {
 	Button,

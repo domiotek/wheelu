@@ -9,7 +9,7 @@ import {
 	Rating,
 	Typography,
 } from "@mui/material";
-import classes from "./SchoolPage.module.css";
+import classes from "./ManageSchoolPage.module.css";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { API } from "../../types/api";
@@ -28,17 +28,20 @@ import { App } from "../../types/app";
 
 interface IProps {
 	viewPoint: "admin" | "owner";
+}
+
+interface IManageSchoolPageContext extends IProps {
 	setCoverPhotoPreview: (preview: any) => void;
 	schoolData: App.Models.ISchool | null;
 }
 
-export const SchoolPageContext = createContext<IProps>({
+export const SchoolPageContext = createContext<IManageSchoolPageContext>({
 	viewPoint: null as any,
 	setCoverPhotoPreview: OutsideContextNotifier,
 	schoolData: null,
 });
 
-export default function SchoolPage({ viewPoint }: IProps) {
+export default function ManageSchoolPage({ viewPoint }: IProps) {
 	const [coverPhotoPreview, setCoverPhotoPreview] = useState(null);
 
 	const params = useParams();

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import classes from "../SchoolPage.module.css";
+import classes from "../ManageSchoolPage.module.css";
 import { Settings } from "@mui/icons-material";
 import { App } from "../../../types/app";
 import { useLocation, useNavigate } from "react-router-dom";

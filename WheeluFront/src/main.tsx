@@ -41,15 +41,17 @@ const AllUsersView = React.lazy(
 	() => import("./pages/AdminPanel/views/AllUsers.tsx")
 );
 
-const SchoolPage = React.lazy(() => import("./pages/School/SchoolPage.tsx"));
+const ManageSchoolPage = React.lazy(
+	() => import("./pages/ManageSchool/ManageSchoolPage.tsx")
+);
 const SchoolPageWrapper = React.lazy(
-	() => import("./pages/School/SchoolPageWrapper.tsx")
+	() => import("./pages/ManageSchool/SchoolPageWrapper.tsx")
 );
 const SchoolManagementMainView = React.lazy(
-	() => import("./pages/School/views/Main.tsx")
+	() => import("./pages/ManageSchool/views/Main.tsx")
 );
 const SchoolManagementManageView = React.lazy(
-	() => import("./pages/School/views/ManageView/Manage.tsx")
+	() => import("./pages/ManageSchool/views/ManageView/Manage.tsx")
 );
 
 const qClient = new QueryClient();
@@ -98,7 +100,9 @@ root.render(
 								/>
 								<Route
 									path="schools/:id"
-									element={<SchoolPage viewPoint="admin" />}
+									element={
+										<ManageSchoolPage viewPoint="admin" />
+									}
 								>
 									{schoolManagementViews}
 								</Route>
