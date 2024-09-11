@@ -1,0 +1,16 @@
+.Wrapper {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5em;
+}
+
+.Wrapper > * {
+	font-size: 1em;
+    padding: 1em 1.15em!important;
+    border-radius: 1em!important;
+	min-width: 4em;
+}
+
+.Wrapper > * > span {
+	padding: 0!important;
+}

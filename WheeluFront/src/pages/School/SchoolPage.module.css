@@ -1,0 +1,95 @@
+.Header, .TopSection, .DetailsSection {
+	display: flex;
+	flex-direction: column;
+	gap: 2em;
+}
+
+.Header {
+	max-width: 450px;
+	margin: auto;
+}
+
+.TopSection img {
+	margin: auto;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+}
+
+.DetailsSection h3 {
+	font-size: 2.5em;
+}
+
+.DetailsWrapper {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5em 0;
+}
+
+.DetailsWrapper .DetailCell {
+	width: 50%;
+	text-align: center;
+}
+
+.CategoriesWidget {
+	justify-content: space-around;
+}
+
+.MainContentWrapper {
+	display: flex;
+	flex-direction: column;
+	margin-top: 4em;
+}
+
+@media (min-width: 769px) {
+	.Header {
+		max-width: 600px;
+	}
+	
+	.TopSection img {
+		max-width: 450px;
+	}
+
+	.DetailsWrapper .DetailCell {
+		width: 33%;
+	}
+
+	.CategoriesWidget {
+		justify-content: unset;
+	}
+
+	.MainContentWrapper {
+		flex-direction: row;
+		margin-left: 4em;
+	}
+}
+
+@media (min-width: 1025px) {
+	.Header {
+		max-width: 800px;
+	}
+
+	.TopSection img {
+		max-width: 500px;
+	}
+}
+
+@media (min-width: 1441px) {
+	.Header {
+		max-width: 1200px;
+		margin: unset;
+		margin-left: 4em;
+	}
+
+	.TopSection {
+		flex-direction: row;
+		gap: 6em;
+	}
+
+	.DetailsWrapper .DetailCell {
+		text-align: left;
+	}
+
+	.CategoriesWidget {
+		width: 450px;
+	}
+}

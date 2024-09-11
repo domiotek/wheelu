@@ -1,8 +1,16 @@
-
 export enum AccessLevel {
 	Administrator,
 	SchoolOwner,
 	Instructor,
 	Student,
-	Anonymous
+	Anonymous,
+}
+
+export enum SchoolPageTab {
+	Courses,
+	Services,
+	Reviews,
+	Instructors,
+	Vehicles,
+	Contact,
 }

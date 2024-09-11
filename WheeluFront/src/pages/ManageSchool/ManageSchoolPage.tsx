@@ -21,7 +21,13 @@ import {
 } from "../../modules/utils";
 import EntityNotFound from "../AdminPanel/components/EntityNotFound/EntityNotFound";
 import LoadingScreen from "../../components/LoadingScreen/LoadingScreen";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+	createContext,
+	Suspense,
+	useContext,
+	useLayoutEffect,
+	useState,
+} from "react";
 import { AppContext } from "../../App";
 import { AccessLevel } from "../../modules/enums";
 import { App } from "../../types/app";
@@ -67,7 +73,7 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 		staleTime: 60000,
 	});
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (!schoolData) return;
 
 		if (viewPoint == "admin" && accessLevel != AccessLevel.Administrator) {
@@ -158,7 +164,9 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 					schoolData: schoolData ?? null,
 				}}
 			>
-				<Outlet />
+				<Suspense fallback={<LoadingScreen />}>
+					<Outlet />
+				</Suspense>
 			</SchoolPageContext.Provider>
 		</div>
 	);

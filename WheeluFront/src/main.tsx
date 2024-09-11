@@ -54,6 +54,10 @@ const SchoolManagementManageView = React.lazy(
 	() => import("./pages/ManageSchool/views/ManageView/Manage.tsx")
 );
 
+const PublicSchoolPage = React.lazy(
+	() => import("./pages/School/SchoolPage.tsx")
+);
+
 const qClient = new QueryClient();
 
 const root = ReactDOM.createRoot(
@@ -112,6 +116,10 @@ root.render(
 								/>
 							</Route>
 							<Route path="schools/:id">
+								<Route
+									path="*"
+									element={<PublicSchoolPage />}
+								></Route>
 								<Route
 									path="manage"
 									element={<SchoolPageWrapper />}
