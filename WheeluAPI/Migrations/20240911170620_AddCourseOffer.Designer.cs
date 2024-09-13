@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WheeluAPI.helpers;
@@ -12,9 +13,11 @@ using WheeluAPI.helpers;
 namespace WheeluAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240911170620_AddCourseOffer")]
+    partial class AddCourseOffer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -173,145 +176,6 @@ namespace WheeluAPI.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("WheeluAPI.Models.CourseCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int?>("RequiredAge")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("SpecialRequirements")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CourseCategories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "AM",
-                            RequiredAge = 14,
-                            SpecialRequirements = false
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "A",
-                            SpecialRequirements = true
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "A1",
-                            RequiredAge = 16,
-                            SpecialRequirements = false
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "A2",
-                            RequiredAge = 18,
-                            SpecialRequirements = false
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "B",
-                            RequiredAge = 18,
-                            SpecialRequirements = false
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "B1",
-                            RequiredAge = 16,
-                            SpecialRequirements = false
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "C",
-                            RequiredAge = 21,
-                            SpecialRequirements = false
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "C1",
-                            RequiredAge = 18,
-                            SpecialRequirements = false
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "D",
-                            RequiredAge = 24,
-                            SpecialRequirements = false
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Name = "D1",
-                            RequiredAge = 21,
-                            SpecialRequirements = false
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Name = "T",
-                            RequiredAge = 16,
-                            SpecialRequirements = false
-                        });
-                });
-
-            modelBuilder.Entity("WheeluAPI.Models.CourseOffer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("HoursCount")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("LastUpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("PricePerHour")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("SchoolId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("SchoolId");
-
-                    b.ToTable("CourseOffers");
-                });
-
             modelBuilder.Entity("WheeluAPI.models.AccountToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -409,7 +273,7 @@ namespace WheeluAPI.Migrations
                         {
                             Id = 1,
                             FileName = "placeholder.png",
-                            UploadDate = new DateTime(2024, 9, 13, 13, 31, 13, 795, DateTimeKind.Utc).AddTicks(5532)
+                            UploadDate = new DateTime(2024, 9, 11, 17, 6, 19, 477, DateTimeKind.Utc).AddTicks(8330)
                         });
                 });
 
@@ -739,25 +603,6 @@ namespace WheeluAPI.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WheeluAPI.Models.CourseOffer", b =>
-                {
-                    b.HasOne("WheeluAPI.Models.CourseCategory", "Category")
-                        .WithMany("CourseOffers")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WheeluAPI.models.School", "School")
-                        .WithMany("CourseOffers")
-                        .HasForeignKey("SchoolId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("School");
-                });
-
             modelBuilder.Entity("WheeluAPI.models.AccountToken", b =>
                 {
                     b.HasOne("WheeluAPI.models.User", "User")
@@ -825,19 +670,9 @@ namespace WheeluAPI.Migrations
                     b.Navigation("City");
                 });
 
-            modelBuilder.Entity("WheeluAPI.Models.CourseCategory", b =>
-                {
-                    b.Navigation("CourseOffers");
-                });
-
             modelBuilder.Entity("WheeluAPI.models.City", b =>
                 {
                     b.Navigation("ZipCodes");
-                });
-
-            modelBuilder.Entity("WheeluAPI.models.School", b =>
-                {
-                    b.Navigation("CourseOffers");
                 });
 
             modelBuilder.Entity("WheeluAPI.models.State", b =>

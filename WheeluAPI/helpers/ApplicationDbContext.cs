@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WheeluAPI.models;
+using WheeluAPI.Models;
 
 namespace WheeluAPI.helpers;
 
@@ -22,7 +23,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<SchoolApplication> SchoolApplications { get; set; }
 
     public DbSet<AccountToken> AccountTokens { get; set; }
+
     public DbSet<Image> Images { get; set; }
+
+    public DbSet<CourseOffer> CourseOffers { get; set; }
+
+    public DbSet<CourseCategory> CourseCategories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,6 +47,90 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                         Id = 1,
                         FileName = "placeholder.png",
                         UploadDate = DateTime.UtcNow,
+                    },
+                ]
+            );
+
+        modelBuilder
+            .Entity<CourseCategory>()
+            .HasData(
+                [
+                    new CourseCategory
+                    {
+                        Id = CourseCategoryType.AM,
+                        Name = "AM",
+                        RequiredAge = 14,
+                        CourseOffers = [],
+                    },
+                    new CourseCategory
+                    {
+                        Id = CourseCategoryType.A,
+                        Name = "A",
+                        SpecialRequirements = true,
+                        CourseOffers = [],
+                    },
+                    new CourseCategory
+                    {
+                        Id = CourseCategoryType.A1,
+                        Name = "A1",
+                        RequiredAge = 16,
+                        CourseOffers = [],
+                    },
+                    new CourseCategory
+                    {
+                        Id = CourseCategoryType.A2,
+                        Name = "A2",
+                        RequiredAge = 18,
+                        CourseOffers = [],
+                    },
+                    new CourseCategory
+                    {
+                        Id = CourseCategoryType.B,
+                        Name = "B",
+                        RequiredAge = 18,
+                        CourseOffers = [],
+                    },
+                    new CourseCategory
+                    {
+                        Id = CourseCategoryType.B1,
+                        Name = "B1",
+                        RequiredAge = 16,
+                        CourseOffers = [],
+                    },
+                    new CourseCategory
+                    {
+                        Id = CourseCategoryType.C,
+                        Name = "C",
+                        RequiredAge = 21,
+                        CourseOffers = [],
+                    },
+                    new CourseCategory
+                    {
+                        Id = CourseCategoryType.C1,
+                        Name = "C1",
+                        RequiredAge = 18,
+                        CourseOffers = [],
+                    },
+                    new CourseCategory
+                    {
+                        Id = CourseCategoryType.D,
+                        Name = "D",
+                        RequiredAge = 24,
+                        CourseOffers = [],
+                    },
+                    new CourseCategory
+                    {
+                        Id = CourseCategoryType.D1,
+                        Name = "D1",
+                        RequiredAge = 21,
+                        CourseOffers = [],
+                    },
+                    new CourseCategory
+                    {
+                        Id = CourseCategoryType.T,
+                        Name = "T",
+                        RequiredAge = 16,
+                        CourseOffers = [],
                     },
                 ]
             );

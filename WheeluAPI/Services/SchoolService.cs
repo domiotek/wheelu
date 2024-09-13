@@ -92,6 +92,7 @@ public class Schoolervice(
             PhoneNumber = requestData.PhoneNumber,
             CoverImage = placeholderImage,
             NearbyCities = requestData.NearbyCities,
+            CourseOffers = [],
         };
 
         dbContext.Schools.Add(school);

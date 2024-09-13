@@ -1,3 +1,5 @@
+using WheeluAPI.Models;
+
 namespace WheeluAPI.models;
 
 public enum SchoolUpdateMode
@@ -33,4 +35,6 @@ public class School
     public virtual required Image CoverImage { get; set; }
 
     public virtual required List<City> NearbyCities { get; set; }
+
+    public virtual required List<CourseOffer> CourseOffers { get; set; }
 }

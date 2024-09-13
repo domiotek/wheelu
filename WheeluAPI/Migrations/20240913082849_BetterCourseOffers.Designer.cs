@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WheeluAPI.helpers;
@@ -12,9 +13,11 @@ using WheeluAPI.helpers;
 namespace WheeluAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240913082849_BetterCourseOffers")]
+    partial class BetterCourseOffers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -190,7 +193,7 @@ namespace WheeluAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CourseCategories");
+                    b.ToTable("CourseCategory");
 
                     b.HasData(
                         new
@@ -282,17 +285,11 @@ namespace WheeluAPI.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<bool>("Enabled")
                         .HasColumnType("boolean");
 
                     b.Property<int>("HoursCount")
                         .HasColumnType("integer");
-
-                    b.Property<DateTime>("LastUpdatedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
@@ -409,7 +406,7 @@ namespace WheeluAPI.Migrations
                         {
                             Id = 1,
                             FileName = "placeholder.png",
-                            UploadDate = new DateTime(2024, 9, 13, 13, 31, 13, 795, DateTimeKind.Utc).AddTicks(5532)
+                            UploadDate = new DateTime(2024, 9, 13, 8, 28, 47, 879, DateTimeKind.Utc).AddTicks(5613)
                         });
                 });
 
