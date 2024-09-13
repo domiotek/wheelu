@@ -18,7 +18,7 @@
 	margin: auto;
 }
 
-.OwnerListItem {
+.CollapsableListItem {
 	flex-wrap: wrap;
 }
 

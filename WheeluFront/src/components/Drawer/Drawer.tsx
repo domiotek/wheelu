@@ -125,7 +125,7 @@ export default function Drawer({ open, setOpen }: IProps) {
 				result.push({
 					icon: <Business />,
 					name: "Moja szkoła",
-					link: `/schools/${userDetails?.ownedSchoolID}`,
+					link: `/schools/${userDetails?.ownedSchoolID}/manage`,
 				});
 				break;
 		}

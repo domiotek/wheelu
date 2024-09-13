@@ -84,7 +84,7 @@ export default function SchoolPage() {
 	}, []);
 
 	if (isPending) return <LoadingScreen />;
-	if (error?.status == 404) return <EntityNotFound />;
+	if (error?.status == 404 || error?.status == 400) return <EntityNotFound />;
 
 	return (
 		<div>

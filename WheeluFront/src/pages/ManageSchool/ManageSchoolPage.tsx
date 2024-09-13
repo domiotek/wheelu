@@ -118,14 +118,23 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 			)}
 			<div className={classes.Header}>
 				<List>
-					<ListItem>
+					<ListItem className={classes.CollapsableListItem}>
 						<ListItemText
 							primary="Nazwa"
 							secondary={`${schoolData?.name}`}
 						/>
+						<Button
+							variant="outlined"
+							size="small"
+							onClick={() =>
+								navigate(`/schools/${schoolData?.id}`)
+							}
+						>
+							Przejdź na profil publiczny
+						</Button>
 					</ListItem>
 					<Divider />
-					<ListItem className={classes.OwnerListItem}>
+					<ListItem className={classes.CollapsableListItem}>
 						<ListItemText
 							primary="Właściciel"
 							secondary={`${schoolData?.owner.name} ${schoolData?.owner.surname}`}
