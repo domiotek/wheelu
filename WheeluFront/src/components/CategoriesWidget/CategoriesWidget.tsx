@@ -1,12 +1,15 @@
 import { Chip } from "@mui/material";
 import classes from "./CategoriesWidget.module.css";
 import { c } from "../../modules/utils";
+import { CourseCategoriesMapping } from "../../modules/constants";
+import { CourseCategory } from "../../modules/enums";
 
 interface IProps {
 	className?: string;
+	enabledList?: Set<CourseCategory>;
 }
 
-export default function CategoriesWidget({ className }: IProps) {
+export default function CategoriesWidget({ className, enabledList }: IProps) {
 	return (
 		<div
 			className={c([
@@ -14,17 +17,16 @@ export default function CategoriesWidget({ className }: IProps) {
 				[className!, className != undefined],
 			])}
 		>
-			<Chip label="AM" variant="outlined" color="secondary" />
-			<Chip label="A" variant="outlined" color="secondary" />
-			<Chip label="B" variant="outlined" color="secondary" />
-			<Chip label="C" variant="outlined" color="secondary" />
-			<Chip label="D" variant="outlined" color="secondary" />
-			<Chip label="T" variant="outlined" color="secondary" />
-			<Chip label="A1" variant="filled" color="secondary" />
-			<Chip label="A2" variant="outlined" color="secondary" />
-			<Chip label="B1" variant="outlined" color="secondary" />
-			<Chip label="C1" variant="outlined" color="secondary" />
-			<Chip label="D1" variant="outlined" color="secondary" />
+			{CourseCategoriesMapping.map((category) => (
+				<Chip
+					key={category.id}
+					label={category.name}
+					variant={
+						enabledList?.has(category.id) ? "filled" : "outlined"
+					}
+					color="secondary"
+				/>
+			))}
 		</div>
 	);
 }

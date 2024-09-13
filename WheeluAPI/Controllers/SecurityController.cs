@@ -12,146 +12,189 @@ namespace WheeluAPI.Controllers;
 
 [ApiController]
 [Route("/api/v1/auth")]
-public class SecurityController(IJwtHandler jwtHandler, IUserService service) : BaseAPIController {
+public class SecurityController(IJwtHandler jwtHandler, IUserService service) : BaseAPIController
+{
+    [HttpPost("signup")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
+    [Produces("application/json")]
+    public async Task<IActionResult> CreateStudentAccount([FromBody] UserSignUpRequest requestData)
+    {
+        var result = await service.CreateAccountAsync(requestData, UserRole.Student);
 
-	[HttpPost("signup")]
-	[ProducesResponseType(StatusCodes.Status201Created)]
-	[ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
-	[Produces("application/json")]
-	public async Task<IActionResult> CreateStudentAccount([FromBody] UserSignUpRequest requestData) {
-		var result = await service.CreateAccountAsync(requestData, UserRole.Student);
+        if (result.IsSuccess && result.User != null)
+        {
+            var deliveryResult = await service.SendActivationEmailAsync(
+                result.User,
+                "confirm-registration"
+            );
 
-		if(result.IsSuccess && result.User != null) {
-			var deliveryResult = await service.SendActivationEmailAsync(result.User, "confirm-registration");
-			
-			if(!deliveryResult.IsSuccess) {
-				await service.DeleteUserAsync(result.User);
-				return BadRequest(new APIError<UserSignUpErrorCode> {Code = UserSignUpErrorCode.EmailDeliveryProblem, Details = [deliveryResult.ErrorCode.ToString()]});
-			}
-			return StatusCode(201);
-		}
+            if (!deliveryResult.IsSuccess)
+            {
+                await service.DeleteUserAsync(result.User);
+                return BadRequest(
+                    new APIError<UserSignUpErrorCode>
+                    {
+                        Code = UserSignUpErrorCode.EmailDeliveryProblem,
+                        Details = [deliveryResult.ErrorCode.ToString()],
+                    }
+                );
+            }
+            return StatusCode(201);
+        }
 
-		return BadRequest(new APIError<UserSignUpErrorCode> {Code = result.ErrorCode, Details = result.Details});
-	}
+        return BadRequest(
+            new APIError<UserSignUpErrorCode> { Code = result.ErrorCode, Details = result.Details }
+        );
+    }
 
-	[HttpPost("signin")]
-	[ProducesResponseType(typeof(UserSignInResponse), StatusCodes.Status200OK)]
-	[ProducesResponseType(typeof(APIError), StatusCodes.Status401Unauthorized)]
-	[ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
-	[ProducesResponseType(StatusCodes.Status400BadRequest)]
-	[Produces("application/json")]
-	public async Task<IActionResult> Login([FromBody] UserSignInRequest requestData) {
+    [HttpPost("signin")]
+    [ProducesResponseType(typeof(UserSignInResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(APIError), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Produces("application/json")]
+    public async Task<IActionResult> Login([FromBody] UserSignInRequest requestData)
+    {
+        var result = await service.TrySignInAsync(requestData);
+        if (result.IsSuccess)
+        {
+            var token = await jwtHandler.GenerateJwtToken(requestData.Username);
 
-		var result = await service.TrySignInAsync(requestData);
-		if(result.IsSuccess) {
-			var token = await jwtHandler.GenerateJwtToken(requestData.Username);
+            return Ok(new UserSignInResponse { Token = token });
+        }
 
-			return Ok(new UserSignInResponse {Token = token});
-		}
+        if (result.ErrorCode == UserSignInErrorCode.AccountNotActivated)
+            return BadRequest(
+                new APIError<UserSignInErrorCode> { Code = UserSignInErrorCode.AccountNotActivated }
+            );
 
-		if(result.ErrorCode == UserSignInErrorCode.AccountNotActivated) 
-			return BadRequest(new APIError<UserSignInErrorCode> {Code = UserSignInErrorCode.AccountNotActivated});
+        return Unauthorized(
+            new APIError<UserSignInErrorCode> { Code = UserSignInErrorCode.InvalidCredentials }
+        );
+    }
 
-		return Unauthorized(new APIError<UserSignInErrorCode> {Code=UserSignInErrorCode.InvalidCredentials});
-	}
+    [HttpGet("identify")]
+    [ProducesResponseType(typeof(UserIdentifyResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
+    [Produces("application/json")]
+    [Authorize]
+    public async Task<IActionResult> IdentifyUser()
+    {
+        var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-	
-	[HttpGet("identify")]
-	[ProducesResponseType(typeof(UserIdentifyResponse), StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-	[ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
-	[Produces("application/json")]
-	[Authorize]
-	public async Task<IActionResult> IdentifyUser() {
+        var user = await service.GetUserByEmailAsync(userID ?? "");
 
-		var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (user == null)
+            return BadRequest(
+                new APIError { Code = APIErrorCode.UnexpectedError, Details = ["Invalid user"] }
+            );
 
-		var user = await service.GetUserByEmailAsync(userID ?? "");
+        var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-		if(user==null) return BadRequest(new APIError {Code=APIErrorCode.UnexpectedError, Details=["Invalid user"]});
+        return Ok(
+            new UserIdentifyResponse
+            {
+                UserId = user.Id,
+                Name = user.Name,
+                Surname = user.Surname,
+                Role = roles[0],
+                OwnedSchoolID = user.OwnedSchool?.Id,
+            }
+        );
+    }
 
-		var roles = User.Claims
-                    .Where(c => c.Type == ClaimTypes.Role)
-                    .Select(c => c.Value)
-                    .ToList();
+    [HttpPost("resend-activation")]
+    [ProducesResponseType(typeof(UserIdentifyResponse), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ResendActivationEmail([FromBody] ActivationResendRequest data)
+    {
+        var user = await service.GetUserByEmailAsync(data.Email);
 
-		return Ok(new UserIdentifyResponse {UserId=user.Id, Name=user.Name, Surname=user.Surname, Role=roles[0]});
-	}
+        if (user == null)
+        {
+            await Task.Delay(2000);
+            return Ok();
+        }
 
-	[HttpPost("resend-activation")]
-	[ProducesResponseType(typeof(UserIdentifyResponse), StatusCodes.Status200OK)]
-	public async Task<IActionResult> ResendActivationEmail([FromBody] ActivationResendRequest data) {
-		var user = await service.GetUserByEmailAsync(data.Email);
+        await service.SendActivationEmailAsync(user, "confirm-registration");
 
-		if(user == null) {
-			await Task.Delay(2000);	
-			return Ok();
-		}
+        return Ok();
+    }
 
-		await service.SendActivationEmailAsync(user,"confirm-registration");
+    [HttpPost("activate-account")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ActivateAccount([FromBody] ActivationRequest data)
+    {
+        var result = await service.ActivateAccountAsync(data.Token);
 
-		return Ok();
-	}
+        if (!result.IsSuccess)
+            return BadRequest(new APIError<GenericTokenActionErrors> { Code = result.ErrorCode });
 
-	[HttpPost("activate-account")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
-	public async Task<IActionResult> ActivateAccount([FromBody] ActivationRequest data) {
+        return Ok();
+    }
 
-		var result = await service.ActivateAccountAsync(data.Token);
+    [HttpPost("recover-account")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> RecoverAccount([FromBody] AccountRecoveryRequest data)
+    {
+        var user = await service.GetUserByEmailAsync(data.Email);
 
-		if(!result.IsSuccess)
-			return BadRequest(new APIError<GenericTokenActionErrors> {Code = result.ErrorCode});
+        if (user == null)
+        {
+            await Task.Delay(2000);
+            return Ok();
+        }
 
+        await service.SendRecoveryEmailAsync(user);
 
-		return Ok();
-	}
+        return Ok();
+    }
 
-	[HttpPost("recover-account")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status400BadRequest)]
-	public async Task<IActionResult> RecoverAccount([FromBody] AccountRecoveryRequest data) {
-		var user = await service.GetUserByEmailAsync(data.Email);
+    [HttpPost("change-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest data)
+    {
+        var result = await service.ChangePasswordAsync(data.Token, data.Password);
 
-		if(user==null) {
-			await Task.Delay(2000);
-			return Ok();
-		}
+        if (!result.IsSuccess)
+            return BadRequest(
+                new APIError<ChangePasswordTokenActionErrors>
+                {
+                    Code = result.ErrorCode,
+                    Details = result.Details,
+                }
+            );
 
-		await service.SendRecoveryEmailAsync(user);
+        return Ok();
+    }
 
-		return Ok();
-	}
+    [HttpGet("users")]
+    [Authorize]
+    [ProducesResponseType(typeof(PagingResponse<UserResponseWithRole>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetUsers([FromQuery] OptionalPagingMetadata pagingMeta)
+    {
+        if (pagingMeta.PageNumber != null)
+        {
+            int appliedPageSize;
 
-	[HttpPost("change-password")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status400BadRequest)]
-	public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest data) {
+            PagingMetadata metadata =
+                new() { PageNumber = (int)pagingMeta.PageNumber, PageSize = pagingMeta.PageSize };
 
-		var result = await service.ChangePasswordAsync(data.Token, data.Password);
+            var results = await service.GetUsersAsync(metadata, out appliedPageSize).ToListAsync();
 
-		if(!result.IsSuccess)
-			return BadRequest(new APIError<ChangePasswordTokenActionErrors> {Code = result.ErrorCode, Details = result.Details});
+            return Paginated(
+                await service.MapToDTOWithRole(results),
+                await service.Count(),
+                appliedPageSize
+            );
+        }
 
-		return Ok();
-	}
-
-	[HttpGet("users")]
-	[Authorize]
-	[ProducesResponseType(typeof(PagingResponse<UserResponseWithRole>), StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status400BadRequest)]
-	public async Task<IActionResult> GetUsers([FromQuery] OptionalPagingMetadata pagingMeta) {
-		if(pagingMeta.PageNumber!=null) {
-			int appliedPageSize;
-
-			PagingMetadata metadata = new() {PageNumber = (int)pagingMeta.PageNumber, PageSize = pagingMeta.PageSize };
-
-			var results = await service.GetUsersAsync(metadata,out appliedPageSize).ToListAsync();
-
-			return Paginated(await service.MapToDTOWithRole(results), await service.Count(),appliedPageSize);
-		}
-
-		var schools = await service.GetAllUsersAsync();
-		return Paginated(await service.MapToDTOWithRole(schools), schools.Count,schools.Count);
-	}
+        var schools = await service.GetAllUsersAsync();
+        return Paginated(await service.MapToDTOWithRole(schools), schools.Count, schools.Count);
+    }
 }

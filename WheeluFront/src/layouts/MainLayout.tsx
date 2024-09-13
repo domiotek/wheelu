@@ -16,7 +16,7 @@ import LoadingScreen from "../components/LoadingScreen/LoadingScreen";
 export default function MainLayout() {
 	const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
-	const { activeTheme, setTheme } = useContext(AppContext);
+	const { activeThemeName: activeTheme, setTheme } = useContext(AppContext);
 
 	const theme = useTheme() as Theme;
 

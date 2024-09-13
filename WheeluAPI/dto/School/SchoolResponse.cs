@@ -1,5 +1,6 @@
 using WheeluAPI.DTO.Location;
 using WheeluAPI.DTO.User;
+using WheeluAPI.Models;
 
 namespace WheeluAPI.DTO.School;
 
@@ -30,4 +31,6 @@ public class SchoolResponse
     public required ImageResponse CoverImage { get; set; }
 
     public required List<City> NearbyCities { get; set; }
+
+    public required List<CourseCategoryType> CourseOffers { get; set; }
 }

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import classes from "../ManageSchoolPage.module.css";
-import { Settings } from "@mui/icons-material";
+import { Folder, Settings } from "@mui/icons-material";
 import { App } from "../../../types/app";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ButtonBase, Paper, Typography } from "@mui/material";
@@ -11,6 +11,13 @@ export default function MainSchoolView() {
 
 	const tiles = useMemo(() => {
 		const uiTiles: App.UI.IInteractiveTileDef[] = [];
+
+		uiTiles.push({
+			caption: "Oferta",
+			type: "link",
+			icon: Folder,
+			link: location.pathname + "/offer",
+		});
 
 		uiTiles.push({
 			caption: "Zarządzaj",

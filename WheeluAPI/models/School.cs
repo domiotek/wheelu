@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using WheeluAPI.Models;
 
 namespace WheeluAPI.models;
@@ -23,6 +24,9 @@ public class School
     public required string NIP { get; set; }
 
     public virtual required User Owner { get; set; }
+
+    [ForeignKey(nameof(Owner))]
+    public required string OwnerId { get; set; }
 
     public virtual required Address Address { get; set; }
 

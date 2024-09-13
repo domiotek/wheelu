@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WheeluAPI.helpers;
@@ -12,9 +13,11 @@ using WheeluAPI.helpers;
 namespace WheeluAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240913181036_LinkUserWithOwnedSchool")]
+    partial class LinkUserWithOwnedSchool
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -409,7 +412,7 @@ namespace WheeluAPI.Migrations
                         {
                             Id = 1,
                             FileName = "placeholder.png",
-                            UploadDate = new DateTime(2024, 9, 13, 18, 22, 12, 307, DateTimeKind.Utc).AddTicks(5573)
+                            UploadDate = new DateTime(2024, 9, 13, 18, 10, 34, 965, DateTimeKind.Utc).AddTicks(8078)
                         });
                 });
 
@@ -450,10 +453,6 @@ namespace WheeluAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("OwnerId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("text");
@@ -463,9 +462,6 @@ namespace WheeluAPI.Migrations
                     b.HasIndex("AddressId");
 
                     b.HasIndex("CoverImageId");
-
-                    b.HasIndex("OwnerId")
-                        .IsUnique();
 
                     b.ToTable("Schools");
                 });
@@ -618,6 +614,9 @@ namespace WheeluAPI.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<int?>("Owner")
+                        .HasColumnType("integer");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
 
@@ -649,6 +648,9 @@ namespace WheeluAPI.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("Owner")
+                        .IsUnique();
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -805,17 +807,18 @@ namespace WheeluAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WheeluAPI.models.User", "Owner")
-                        .WithOne("OwnedSchool")
-                        .HasForeignKey("WheeluAPI.models.School", "OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Address");
 
                     b.Navigation("CoverImage");
+                });
 
-                    b.Navigation("Owner");
+            modelBuilder.Entity("WheeluAPI.models.User", b =>
+                {
+                    b.HasOne("WheeluAPI.models.School", "OwnedSchool")
+                        .WithOne("Owner")
+                        .HasForeignKey("WheeluAPI.models.User", "Owner");
+
+                    b.Navigation("OwnedSchool");
                 });
 
             modelBuilder.Entity("WheeluAPI.models.ZipCode", b =>
@@ -842,16 +845,14 @@ namespace WheeluAPI.Migrations
             modelBuilder.Entity("WheeluAPI.models.School", b =>
                 {
                     b.Navigation("CourseOffers");
+
+                    b.Navigation("Owner")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("WheeluAPI.models.State", b =>
                 {
                     b.Navigation("Cities");
-                });
-
-            modelBuilder.Entity("WheeluAPI.models.User", b =>
-                {
-                    b.Navigation("OwnedSchool");
                 });
 #pragma warning restore 612, 618
         }

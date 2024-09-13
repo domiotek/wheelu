@@ -3,10 +3,8 @@ import { App } from "./app";
 export namespace API {
 	namespace _ {
 		type TCommonServerErrorCodes =
-			| "InternalError"
 			| "BadRequest"
 			| "ServerUnavailable"
-			| "MalformedResponse"
 			| "Unauthorized"
 			| "DbError";
 
@@ -450,6 +448,84 @@ export namespace API {
 				IRequestData,
 				IParams
 			>;
+		}
+	}
+
+	namespace Offers {
+		namespace Courses {
+			namespace GetAllOfSchool {
+				interface IRequestData extends Record<string, number> {
+					schoolID: number;
+				}
+
+				type IResponse = _.IPaginatedResponse<App.Models.ICourseOffer>;
+
+				type IEndpoint = _.IBuildAPIEndpoint<
+					"GET",
+					"/api/v1/offers",
+					_.IPaginatedResponse<App.Models.ICourseOffer>,
+					_.TCommonServerErrorCodes,
+					IRequestData
+				>;
+			}
+
+			namespace Create {
+				interface IRequestData
+					extends Record<string, string | number | boolean> {
+					schoolID: number;
+					category: number;
+					enabled: boolean;
+					hoursCount: number;
+					price: number;
+					pricePerHour: number;
+				}
+
+				type IEndpoint = _.IBuildAPIEndpoint<
+					"POST",
+					"/api/v1/offers",
+					null,
+					"AccessDenied" | "SchoolNotFound" | "InvalidCategory",
+					IRequestData
+				>;
+			}
+
+			namespace Update {
+				interface IRequestData
+					extends Record<string, string | number | boolean> {
+					enabled: boolean;
+					hoursCount: number;
+					price: number;
+					pricePerHour: number;
+				}
+
+				interface IParams extends Record<string, number> {
+					id: number;
+				}
+
+				type IEndpoint = _.IBuildAPIEndpoint<
+					"PUT",
+					"/api/v1/offers/:id",
+					null,
+					_.TCommonServerErrorCodes,
+					IRequestData,
+					IParams
+				>;
+			}
+
+			namespace Delete {
+				interface IParams extends Record<string, number> {
+					id: number;
+				}
+
+				type IEndpoint = _.IBuildAPIEndpoint<
+					"DELETE",
+					"/api/v1/offers/:id",
+					null,
+					_.TCommonServerErrorCodes,
+					null,
+					IParams
+				>;
+			}
 		}
 	}
 }

@@ -14,3 +14,17 @@ export enum SchoolPageTab {
 	Vehicles,
 	Contact,
 }
+
+export enum CourseCategory {
+	AM,
+	A,
+	A1,
+	A2,
+	B,
+	B1,
+	C,
+	C1,
+	D,
+	D1,
+	T,
+}

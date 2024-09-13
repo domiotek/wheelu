@@ -1,8 +1,15 @@
-import { Rating, Tab, Tabs, Typography, useMediaQuery } from "@mui/material";
+import {
+	Button,
+	Rating,
+	Tab,
+	Tabs,
+	Typography,
+	useMediaQuery,
+} from "@mui/material";
 import classes from "./SchoolPage.module.css";
 import CategoriesWidget from "../../components/CategoriesWidget/CategoriesWidget";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
-import { useCallback, useState } from "react";
+import React, { Suspense, useCallback, useContext, useState } from "react";
 import { SchoolPageTab } from "../../modules/enums";
 import { useQuery } from "@tanstack/react-query";
 import { API } from "../../types/api";
@@ -10,6 +17,17 @@ import { callAPI, formatAddress } from "../../modules/utils";
 import LoadingScreen from "../../components/LoadingScreen/LoadingScreen";
 import EntityNotFound from "../AdminPanel/components/EntityNotFound/EntityNotFound";
 import { DateTime } from "luxon";
+import { AppContext } from "../../App";
+
+interface IContext {
+	schoolID: number;
+	schoolData: API.School.Get.IResponse | null;
+}
+
+export const PublicSchooPageContext = React.createContext<IContext>({
+	schoolID: -1,
+	schoolData: null,
+});
 
 export default function SchoolPage() {
 	const [activeTab, setActiveTab] = useState<SchoolPageTab>(
@@ -19,14 +37,14 @@ export default function SchoolPage() {
 	const isDesktop = useMediaQuery("(min-width: 769px)");
 	const navigate = useNavigate();
 	const params = useParams();
+	const { userDetails } = useContext(AppContext);
 
 	const {
 		data: schoolData,
 		error,
-		isFetching,
 		isPending,
 	} = useQuery<API.School.Get.IResponse, API.School.Get.IEndpoint["error"]>({
-		queryKey: ["Schools", "#", params["id"]],
+		queryKey: ["Schools", "#", parseInt(params["id"] ?? "")],
 		queryFn: () =>
 			callAPI<API.School.Get.IEndpoint>(
 				"GET",
@@ -77,7 +95,14 @@ export default function SchoolPage() {
 						alt="Driving school picture"
 					/>
 					<div className={classes.DetailsSection}>
-						<Typography variant="h3">{schoolData?.name}</Typography>
+						<Typography variant="h3">
+							{schoolData?.name}{" "}
+							{userDetails?.ownedSchoolID === schoolData?.id && (
+								<Button onClick={() => navigate("manage")}>
+									Zarządzaj
+								</Button>
+							)}
+						</Typography>
 						<div className={classes.DetailsWrapper}>
 							<div className={classes.DetailCell}>
 								<Typography variant="h6">Adres</Typography>
@@ -127,7 +152,10 @@ export default function SchoolPage() {
 						</div>
 					</div>
 				</div>
-				<CategoriesWidget className={classes.CategoriesWidget} />
+				<CategoriesWidget
+					className={classes.CategoriesWidget}
+					enabledList={new Set(schoolData?.courseOffers)}
+				/>
 			</div>
 			<div className={classes.MainContentWrapper}>
 				<div className={classes.Navigation}>
@@ -148,7 +176,16 @@ export default function SchoolPage() {
 						<Tab label="Kontakt" />
 					</Tabs>
 				</div>
-				<Outlet />
+				<PublicSchooPageContext.Provider
+					value={{
+						schoolData: schoolData ?? null,
+						schoolID: parseInt(params["id"] ?? ""),
+					}}
+				>
+					<Suspense fallback={<LoadingScreen />}>
+						<Outlet />
+					</Suspense>
+				</PublicSchooPageContext.Provider>
 			</div>
 		</div>
 	);

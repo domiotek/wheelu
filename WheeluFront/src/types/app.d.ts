@@ -1,3 +1,4 @@
+import { CourseCategory } from "../modules/enums";
 import AdminPanel from "../pages/AdminPanel/AdminPanel";
 
 export namespace App {
@@ -9,6 +10,7 @@ export namespace App {
 			name: string;
 			surname: string;
 			role: UserRole;
+			ownedSchoolID?: number;
 		}
 
 		interface IShortUser {
@@ -90,6 +92,7 @@ export namespace App {
 			phoneNumber: string;
 			coverImage: IImage;
 			nearbyCities: ICity[];
+			courseOffers: CourseCategory[];
 		}
 
 		interface ICityMatching {
@@ -103,6 +106,24 @@ export namespace App {
 			| "InvalidData"
 			| "PlatformSaturated"
 			| "BadReputation";
+
+		interface ICourseCategory {
+			id: number;
+			name: string;
+			requiredAge?: number;
+			specialRequirements: boolean;
+		}
+
+		interface ICourseOffer {
+			id: number;
+			category: ICourseCategory;
+			enabled: boolean;
+			hoursCount: number;
+			price: number;
+			pricePerHour: number;
+			createdAt: string;
+			lastUpdatedAt: string;
+		}
 	}
 
 	namespace UI {
@@ -143,7 +164,8 @@ export namespace App {
 	interface IAppContext {
 		lightTheme: import("@mui/material").Theme;
 		darkTheme: import("@mui/material").Theme;
-		activeTheme: "dark" | "light";
+		activeThemeName: "dark" | "light";
+		activeTheme: import("@mui/material").Theme;
 		setTheme: (theme: "dark" | "light") => void;
 		userDetails: Models.IIdentityUser | null;
 		accessLevel: AccessLevel;

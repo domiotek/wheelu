@@ -61,7 +61,7 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 		isFetching,
 		isPending,
 	} = useQuery<API.School.Get.IResponse, API.School.Get.IEndpoint["error"]>({
-		queryKey: ["Schools", "#", params["id"]],
+		queryKey: ["Schools", "#", parseInt(params["id"] ?? "")],
 		queryFn: () =>
 			callAPI<API.School.Get.IEndpoint>(
 				"GET",

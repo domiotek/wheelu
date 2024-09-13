@@ -1,0 +1,33 @@
+.Modal {
+	min-width: 320px;
+    width: 60%;
+    max-width: 500px;
+    height: 600px;
+}
+
+.ModalContent {
+	padding: 1em 0;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.Form {
+	margin-top: 2em;
+	padding: 0 1em;
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+	flex: 1;
+}
+
+.Form >:global(.MuiFormControl-root) {
+	max-width: 300px;
+}
+
+.ButtonsBar {
+	margin-top: auto;
+	display: flex;
+	gap: 0.5em;
+	justify-content: flex-end;
+}

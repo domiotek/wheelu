@@ -56,6 +56,7 @@ public class Schoolervice(
             PhoneNumber = source.PhoneNumber,
             CoverImage = imageService.GetDTO(source.CoverImage),
             NearbyCities = source.NearbyCities.Select(locationService.GetCityDTO).ToList(),
+            CourseOffers = source.CourseOffers.Select(o => o.Category.Id).Distinct().ToList(),
         };
     }
 
@@ -86,6 +87,7 @@ public class Schoolervice(
             Name = requestData.SchoolName,
             NIP = requestData.Nip,
             Owner = requestData.Owner,
+            OwnerId = requestData.Owner.Id,
             Address = requestData.Address,
             Established = requestData.EstablishedDate,
             Joined = DateTime.UtcNow,
