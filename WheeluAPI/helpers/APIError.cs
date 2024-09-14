@@ -5,7 +5,7 @@ namespace WheeluAPI.helpers;
 
 public enum APIErrorCode
 {
-    UnexpectedError,
+    DbError,
     AccessDenied,
     EntityNotFound,
 }

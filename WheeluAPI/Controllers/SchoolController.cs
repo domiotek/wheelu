@@ -71,7 +71,7 @@ public class SchoolController(ISchoolService service, IUserService userService) 
         var user = await userService.GetUserByEmailAsync(userID ?? "");
 
         var ownsSchool = school.Owner.Id == userID;
-        var isAdmin = await userService.HasRole(user!, "Administrator");
+        var isAdmin = await userService.HasRole(user!, UserRole.Administrator);
 
         if (!ownsSchool && !isAdmin)
             return Unauthorized(
@@ -115,7 +115,7 @@ public class SchoolController(ISchoolService service, IUserService userService) 
         var user = await userService.GetUserByEmailAsync(userID ?? "");
 
         var ownsSchool = school.Owner.Id == userID;
-        var isAdmin = await userService.HasRole(user!, "Administrator");
+        var isAdmin = await userService.HasRole(user!, UserRole.Administrator);
 
         if (!ownsSchool && !isAdmin)
             return Unauthorized(
@@ -157,7 +157,7 @@ public class SchoolController(ISchoolService service, IUserService userService) 
         var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var user = await userService.GetUserByEmailAsync(userID ?? "");
 
-        if (!await userService.HasRole(user!, "Administrator"))
+        if (!await userService.HasRole(user!, UserRole.Administrator))
             return Unauthorized(
                 new APIError<ChangeSchoolStateErrors>
                 {

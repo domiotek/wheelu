@@ -88,7 +88,7 @@ public class SecurityController(IJwtHandler jwtHandler, IUserService service) : 
 
         if (user == null)
             return BadRequest(
-                new APIError { Code = APIErrorCode.UnexpectedError, Details = ["Invalid user"] }
+                new APIError { Code = APIErrorCode.DbError, Details = ["Invalid user"] }
             );
 
         var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();

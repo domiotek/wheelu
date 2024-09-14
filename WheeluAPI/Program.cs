@@ -65,6 +65,8 @@ builder.Services.AddScoped<ISchoolService, Schoolervice>();
 builder.Services.AddSingleton<IMailService, MailService>();
 builder.Services.AddScoped<ILocationService, LocationService>();
 builder.Services.AddScoped<ICourseOfferService, CourseOfferService>();
+builder.Services.AddScoped<IInstructorService, InstructorService>();
+builder.Services.AddScoped<ISchoolInstructorService, SchoolInstructorService>();
 builder.Services.AddHttpClient();
 
 builder.Services.AddCors(options =>

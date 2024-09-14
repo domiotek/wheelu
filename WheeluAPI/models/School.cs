@@ -41,4 +41,13 @@ public class School
     public virtual required List<City> NearbyCities { get; set; }
 
     public virtual required List<CourseOffer> CourseOffers { get; set; }
+
+    [InverseProperty("School")]
+    public virtual required List<SchoolInstructor> Instructors { get; set; }
+
+    [NotMapped]
+    public List<SchoolInstructor> ActiveInstructors
+    {
+        get { return Instructors.Where(i => !i.Detached).ToList(); }
+    }
 }

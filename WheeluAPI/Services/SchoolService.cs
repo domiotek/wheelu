@@ -95,6 +95,7 @@ public class Schoolervice(
             CoverImage = placeholderImage,
             NearbyCities = requestData.NearbyCities,
             CourseOffers = [],
+            Instructors = [],
         };
 
         dbContext.Schools.Add(school);

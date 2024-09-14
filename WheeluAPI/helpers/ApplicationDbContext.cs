@@ -24,11 +24,17 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public DbSet<AccountToken> AccountTokens { get; set; }
 
+    public DbSet<InstructorInviteToken> InstructorInviteTokens { get; set; }
+
     public DbSet<Image> Images { get; set; }
 
     public DbSet<CourseOffer> CourseOffers { get; set; }
 
     public DbSet<CourseCategory> CourseCategories { get; set; }
+
+    public DbSet<Instructor> Instructors { get; set; }
+
+    public DbSet<SchoolInstructor> SchoolInstructors { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
