@@ -12,6 +12,7 @@ import { InstructorsContext } from "../Instructors.tsx";
 import { DateTime } from "luxon";
 import { AppContext } from "../../../../../App.tsx";
 import { useSnackbar } from "notistack";
+import { SchoolPageContext } from "../../../ManageSchoolPage.tsx";
 
 interface IProps {
 	schoolID: number;
@@ -25,6 +26,7 @@ export default function InviteTable({ schoolID }: IProps) {
 
 	const { snackBarProps } = useContext(AppContext);
 	const { baseQueryKey } = useContext(InstructorsContext);
+	const { viewPoint } = useContext(SchoolPageContext);
 	const snackBar = useSnackbar();
 	const qClient = useQueryClient();
 
@@ -147,6 +149,7 @@ export default function InviteTable({ schoolID }: IProps) {
 				width: 75,
 				type: "actions",
 				getActions: (params) => {
+					if (viewPoint == "admin") return [];
 					return [
 						<GridActionsCellItem
 							label="Wyślij ponownie"
