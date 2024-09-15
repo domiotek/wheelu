@@ -2,7 +2,7 @@ import { Button, Typography } from "@mui/material";
 import ViewWrapper from "../Wrapper";
 import CourseTable from "./components/CourseTable";
 import { Add } from "@mui/icons-material";
-import classes from "./Offer.module.css";
+import classes from "../common.module.css";
 import { useParams } from "react-router-dom";
 import React, { useCallback, useContext, useMemo } from "react";
 import { AppContext } from "../../../../App";

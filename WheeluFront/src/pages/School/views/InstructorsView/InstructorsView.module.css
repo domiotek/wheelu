@@ -1,0 +1,15 @@
+.OfferPanel {
+	margin: 1em 0;
+}
+
+.OfferPanel > * {
+	padding: 1em;
+	width: 100%;
+	display: flex;
+}
+
+.RightOfferPanel {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+}

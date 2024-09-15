@@ -13,7 +13,8 @@ namespace WheeluAPI.Controllers;
 public class InstructorController(
     IUserService userService,
     IInstructorService service,
-    ISchoolInstructorService instructorService
+    ISchoolInstructorService instructorService,
+    IInstructorInviteService inviteService
 ) : BaseAPIController
 {
     [HttpPost]
@@ -27,7 +28,7 @@ public class InstructorController(
             Code = InstructorRegisterErrors.DbError,
         };
 
-        var token = await instructorService.GetInstructorInviteTokenAsync(request.Token);
+        var token = await inviteService.GetInviteTokenAsync(request.Token);
 
         if (token == null)
         {
@@ -84,7 +85,7 @@ public class InstructorController(
             Code = InstructorJoinErrors.DbError,
         };
 
-        var token = await instructorService.GetInstructorInviteTokenAsync(request.Token);
+        var token = await inviteService.GetInviteTokenAsync(request.Token);
 
         if (token == null)
         {

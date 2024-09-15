@@ -14,7 +14,8 @@ namespace WheeluAPI.Controllers;
 public class SchoolInstructorController(
     ISchoolService schoolService,
     ISchoolInstructorService service,
-    IUserService userService
+    IUserService userService,
+    IInstructorInviteService inviteService
 ) : BaseAPIController
 {
     [HttpGet("{instructorID}")]
@@ -55,7 +56,7 @@ public class SchoolInstructorController(
             var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await userService.GetUserByEmailAsync(userID ?? "");
 
-            var ownsSchool = school.Owner.Id == userID;
+            var ownsSchool = school.Owner.Email == userID;
             var isAdmin = await userService.HasRole(user!, UserRole.Administrator);
 
             if (!ownsSchool && !isAdmin)
@@ -74,7 +75,10 @@ public class SchoolInstructorController(
     [ProducesResponseType(typeof(List<SchoolInstructorResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> InviteInstructor(int schoolID, [FromBody] string email)
+    public async Task<IActionResult> InviteInstructor(
+        int schoolID,
+        [FromBody] InstructorInviteRequest request
+    )
     {
         var school = await schoolService.GetSchoolByID(schoolID);
 
@@ -88,10 +92,10 @@ public class SchoolInstructorController(
             );
 
         var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userID != school.OwnerId)
+        if (userID != school.Owner.Email)
             return BadRequest(new APIError { Code = APIErrorCode.AccessDenied });
 
-        var result = await service.ResolveInstructorInviteAsync(school, email);
+        var result = await inviteService.ResolveInviteAsync(school, request.Email);
 
         if (!result.IsSuccess)
             return BadRequest(
@@ -142,7 +146,7 @@ public class SchoolInstructorController(
 
         var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        if (userID != school.OwnerId)
+        if (userID != school.Owner.Email)
             return BadRequest(new APIError { Code = APIErrorCode.AccessDenied });
 
         using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -238,7 +242,7 @@ public class SchoolInstructorController(
             );
 
         var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userID != school.OwnerId)
+        if (userID != school.Owner.Email)
             return BadRequest(new APIError { Code = APIErrorCode.AccessDenied });
 
         var result = await service.DetachInstructorAsync(instructor);

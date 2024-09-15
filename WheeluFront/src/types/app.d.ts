@@ -1,3 +1,4 @@
+import { Email } from "@mui/icons-material";
 import { CourseCategory } from "../modules/enums";
 import AdminPanel from "../pages/AdminPanel/AdminPanel";
 
@@ -123,6 +124,39 @@ export namespace App {
 			pricePerHour: number;
 			createdAt: string;
 			lastUpdatedAt: string;
+		}
+
+		interface IShortInstructorProfile {
+			id: number;
+			user: IShortUser;
+		}
+
+		interface IInstructorProfile extends IShortInstructorProfile {
+			employmentHistory: IEmployedInstructor[];
+		}
+
+		interface IEmploymentRecord {
+			id: number;
+			startTime: string;
+			endTime: string;
+		}
+
+		interface IEmployedInstructor {
+			id: number;
+			instructor: IShortInstructorProfile;
+			schoolId: number;
+			detached: boolean;
+			employmentRecords: IEmploymentRecord[];
+			visible: boolean;
+			maximumConcurrentStudens: number;
+			allowedCategories: CourseCategory[];
+		}
+
+		interface IInstructorInvite {
+			id: string;
+			schoolId: number;
+			email: string;
+			createdAt: string;
 		}
 	}
 

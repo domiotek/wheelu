@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import classes from "./ManageSchoolPage.module.css";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { QueryKey, useQuery } from "@tanstack/react-query";
 import { API } from "../../types/api";
 import {
 	c,
@@ -26,6 +26,7 @@ import {
 	Suspense,
 	useContext,
 	useLayoutEffect,
+	useMemo,
 	useState,
 } from "react";
 import { AppContext } from "../../App";
@@ -39,12 +40,14 @@ interface IProps {
 interface IManageSchoolPageContext extends IProps {
 	setCoverPhotoPreview: (preview: any) => void;
 	schoolData: App.Models.ISchool | null;
+	queryKey: QueryKey;
 }
 
 export const SchoolPageContext = createContext<IManageSchoolPageContext>({
 	viewPoint: null as any,
 	setCoverPhotoPreview: OutsideContextNotifier,
 	schoolData: null,
+	queryKey: [],
 });
 
 export default function ManageSchoolPage({ viewPoint }: IProps) {
@@ -55,13 +58,18 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 
 	const { accessLevel, userDetails } = useContext(AppContext);
 
+	const queryKey = useMemo(
+		() => ["Schools", "#", parseInt(params["id"] ?? "")],
+		[params]
+	);
+
 	const {
 		data: schoolData,
 		error,
 		isFetching,
 		isPending,
 	} = useQuery<API.School.Get.IResponse, API.School.Get.IEndpoint["error"]>({
-		queryKey: ["Schools", "#", parseInt(params["id"] ?? "")],
+		queryKey,
 		queryFn: () =>
 			callAPI<API.School.Get.IEndpoint>(
 				"GET",
@@ -171,6 +179,7 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 					viewPoint,
 					setCoverPhotoPreview,
 					schoolData: schoolData ?? null,
+					queryKey,
 				}}
 			>
 				<Suspense fallback={<LoadingScreen />}>

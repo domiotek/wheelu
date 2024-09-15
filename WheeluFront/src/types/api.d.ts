@@ -6,6 +6,7 @@ export namespace API {
 			| "BadRequest"
 			| "ServerUnavailable"
 			| "Unauthorized"
+			| "AccessDenied"
 			| "DbError";
 
 		interface ISuccessGetResponse<T> {
@@ -403,10 +404,7 @@ export namespace API {
 				"PUT",
 				"/api/v1/schools/:id",
 				null,
-				| "SchoolNotFound"
-				| "AccessDenied"
-				| "InvalidFile"
-				| "AddressResolvingError",
+				"SchoolNotFound" | "InvalidFile" | "AddressResolvingError",
 				IRequestData,
 				IParams
 			>;
@@ -425,7 +423,7 @@ export namespace API {
 				"PUT",
 				"/api/v1/schools/:id/visibility",
 				null,
-				"SchoolNotFound" | "AccessDenied",
+				"SchoolNotFound",
 				IRequestData,
 				IParams
 			>;
@@ -444,7 +442,7 @@ export namespace API {
 				"PUT",
 				"/api/v1/schools/:id/blockade",
 				null,
-				"SchoolNotFound" | "AccessDenied",
+				"SchoolNotFound",
 				IRequestData,
 				IParams
 			>;
@@ -484,7 +482,7 @@ export namespace API {
 					"POST",
 					"/api/v1/offers",
 					null,
-					"AccessDenied" | "SchoolNotFound" | "InvalidCategory",
+					"SchoolNotFound" | "InvalidCategory",
 					IRequestData
 				>;
 			}
@@ -526,6 +524,96 @@ export namespace API {
 					IParams
 				>;
 			}
+		}
+	}
+
+	namespace Instructors {
+		interface IParams extends Record<string, number> {
+			schoolID: number;
+		}
+
+		namespace Invities {
+			interface IParams extends Record<string, number | string> {
+				schoolID: number;
+				tokenID: string;
+			}
+
+			type URL = "/api/v1/schools/:schoolID/instructors/invites/:tokenID";
+
+			namespace GetAllOfSchool {
+				type IResponse = App.Models.IInstructorInvite[];
+
+				type IEndpoint = _.IBuildAPIEndpoint<
+					"GET",
+					"/api/v1/schools/:schoolID/instructors/invites",
+					IResponse,
+					_.TCommonServerErrorCodes,
+					null,
+					Instructors.IParams
+				>;
+			}
+
+			namespace Resend {
+				type IEndpoint = _.IBuildAPIEndpoint<
+					"POST",
+					URL,
+					null,
+					_.TCommonServerErrorCodes,
+					null,
+					IParams
+				>;
+			}
+
+			namespace Renew {
+				type IEndpoint = _.IBuildAPIEndpoint<
+					"PUT",
+					URL,
+					null,
+					_.TCommonServerErrorCodes,
+					null,
+					IParams
+				>;
+			}
+
+			namespace Cancel {
+				type IEndpoint = _.IBuildAPIEndpoint<
+					"DELETE",
+					URL,
+					null,
+					_.TCommonServerErrorCodes,
+					null,
+					IParams
+				>;
+			}
+		}
+
+		namespace GetAllOfSchool {
+			type IResponse =
+				_.IPaginatedResponse<App.Models.IEmployedInstructor>;
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/schools/:schoolID/instructors",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				null,
+				IParams
+			>;
+		}
+
+		namespace SendInvite {
+			interface IRequest extends Record<string, string> {
+				email: string;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"POST",
+				"/api/v1/schools/:schoolID/instructors",
+				null,
+				"MailServiceProblem" | "InvalidAccountType" | "AlreadyEmployed",
+				IRequest,
+				IParams
+			>;
 		}
 	}
 }

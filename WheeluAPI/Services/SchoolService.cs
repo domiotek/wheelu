@@ -5,6 +5,7 @@ using WheeluAPI.DTO.Location;
 using WheeluAPI.DTO.School;
 using WheeluAPI.DTO.SchoolApplication;
 using WheeluAPI.helpers;
+using WheeluAPI.Helpers;
 using WheeluAPI.models;
 
 namespace WheeluAPI.Services;
@@ -12,7 +13,8 @@ namespace WheeluAPI.Services;
 public class Schoolervice(
     ApplicationDbContext dbContext,
     IImageService imageService,
-    ILocationService locationService
+    ILocationService locationService,
+    IUserService userService
 ) : BaseService, ISchoolService
 {
     public ValueTask<School?> GetSchoolByID(int id)
@@ -229,6 +231,30 @@ public class Schoolervice(
 
         return new ServiceActionResult<ChangeSchoolStateErrors> { IsSuccess = true };
     }
+
+    public async Task<bool> ValidateSchoolManagementAccess(
+        School school,
+        string email,
+        SchoolManagementAccessMode mode = SchoolManagementAccessMode.OwnerOnly
+    )
+    {
+        var user = await userService.GetUserByEmailAsync(email);
+
+        var ownsSchool = school.Owner.Email == email;
+
+        if (ownsSchool)
+            return true;
+
+        if (mode == SchoolManagementAccessMode.OwnerOnly)
+            return false;
+
+        var isAdmin = await userService.HasRole(user!, UserRole.Administrator);
+
+        if (isAdmin)
+            return true;
+
+        return false;
+    }
 }
 
 public interface ISchoolService
@@ -261,4 +287,10 @@ public interface ISchoolService
     );
 
     Task<ServiceActionResult<ChangeSchoolStateErrors>> SetSchoolBlockade(School school, bool state);
+
+    Task<bool> ValidateSchoolManagementAccess(
+        School school,
+        string email,
+        SchoolManagementAccessMode mode = SchoolManagementAccessMode.OwnerOnly
+    );
 }

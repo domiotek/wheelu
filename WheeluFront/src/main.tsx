@@ -57,6 +57,17 @@ const SchoolManagementOfferView = React.lazy(
 	() => import("./pages/ManageSchool/views/OfferView/Offer.tsx")
 );
 
+const SchoolManagementInstructorsView = React.lazy(
+	() => import("./pages/ManageSchool/views/InstructorView/Instructors.tsx")
+);
+
+const SchoolManagementInviteInstructorView = React.lazy(
+	() =>
+		import(
+			"./pages/ManageSchool/views/InviteInstructorView/InviteInstructorView.tsx"
+		)
+);
+
 const PublicSchoolPage = React.lazy(
 	() => import("./pages/School/SchoolPage.tsx")
 );
@@ -67,6 +78,10 @@ const PublicSchoolCoursesView = React.lazy(
 
 const PublicSchoolCourseView = React.lazy(
 	() => import("./pages/School/views/CourseView/CourseView.tsx")
+);
+
+const PublicSchoolInstructorsView = React.lazy(
+	() => import("./pages/School/views/InstructorsView/InstructorsView.tsx")
 );
 
 const qClient = new QueryClient();
@@ -80,6 +95,14 @@ const schoolManagementViews = (
 		<Route path="*" element={<SchoolManagementMainView />} />
 		<Route path="manage" element={<SchoolManagementManageView />} />
 		<Route path="offer" element={<SchoolManagementOfferView />} />
+		<Route
+			path="instructors"
+			element={<SchoolManagementInstructorsView />}
+		/>
+		<Route
+			path="instructors/invite"
+			element={<SchoolManagementInviteInstructorView />}
+		/>
 	</>
 );
 
@@ -136,6 +159,12 @@ root.render(
 									<Route
 										path="courses/:courseId"
 										element={<PublicSchoolCourseView />}
+									/>
+									<Route
+										path="instructors"
+										element={
+											<PublicSchoolInstructorsView />
+										}
 									/>
 								</Route>
 								<Route

@@ -61,6 +61,9 @@ export function callAPI<T extends API._.IBaseAPIEndpoint>(
 						serverErrorData?.code != "InvalidCredentials":
 						errCode = "Unauthorized";
 						break;
+					case error.response?.status == 403:
+						errCode = "AccessDenied";
+						break;
 					case serverErrorData != undefined:
 						errCode = serverErrorData.code;
 						error.message =
@@ -192,7 +195,9 @@ export function translateGenericErrorCodes(
 		case "ServerUnavailable":
 			return "Serwer jest obecnie niedostępny, sprawdź połączenie z internetem.";
 		case "Unauthorized":
-			return "Nie masz uprawnień, aby uzyskać dostęp do tych zasobów.";
+			return "Twoja sesja wygasła. Odśwież stronę i zaloguj się ponownie.";
+		case "AccessDenied":
+			return "Nie masz wystarczających uprawnień, aby wykonać tę akcję, lub wyświetlić te dane.";
 	}
 }
 

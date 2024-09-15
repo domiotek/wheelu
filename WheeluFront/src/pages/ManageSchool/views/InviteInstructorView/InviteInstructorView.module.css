@@ -1,0 +1,16 @@
+.Wrapper, .Form {
+	display: flex;
+	flex-direction: column;
+	gap: 2em;
+	container-type: inline-size;
+}
+
+.Form > div {
+	max-width: 400px;
+}
+
+@container (min-width: 400px) {
+	.Form > button {
+		width: fit-content;
+	}
+}

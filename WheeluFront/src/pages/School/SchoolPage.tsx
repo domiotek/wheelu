@@ -144,7 +144,7 @@ export default function SchoolPage() {
 								<Typography variant="body2">2013</Typography>
 							</div>
 						</div>
-						<div className={classes.RatingWrapper}>
+						<div>
 							<Rating />
 							<Typography variant="body2">
 								4.0 (14 ocen)
@@ -158,7 +158,7 @@ export default function SchoolPage() {
 				/>
 			</div>
 			<div className={classes.MainContentWrapper}>
-				<div className={classes.Navigation}>
+				<div>
 					<Tabs
 						orientation={isDesktop ? "vertical" : "horizontal"}
 						variant={isDesktop ? "standard" : "scrollable"}
