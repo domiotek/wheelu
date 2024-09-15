@@ -129,8 +129,11 @@ public class SchoolInstructorService(
             .Where(i => i.Instructor == instructor)
             .SingleOrDefaultAsync();
 
+        var created = false;
+
         if (employeeProfile == null)
         {
+            created = true;
             employeeProfile = new SchoolInstructor
             {
                 School = school,
@@ -150,7 +153,8 @@ public class SchoolInstructorService(
             new EmploymentRecord { StartTime = DateTime.UtcNow, Instructor = employeeProfile }
         );
 
-        dbContext.SchoolInstructors.Update(employeeProfile);
+        if (!created)
+            dbContext.SchoolInstructors.Update(employeeProfile);
 
         if (await dbContext.SaveChangesAsync() == 0)
         {

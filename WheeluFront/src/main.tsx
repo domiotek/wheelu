@@ -11,6 +11,8 @@ import ResendActivationPortal from "./portals/ResendActivationPortal.tsx";
 import ActivateAccountPortal from "./portals/ActivateAccountPortal.tsx";
 import ResolveApplication from "./pages/AdminPanel/views/ResolveApplication.tsx";
 import ResetPasswordPortal from "./portals/ResetPasswordPortal.tsx";
+import RegisterInstructorPortal from "./portals/RegisterPortal/RegisterInstructorPortal.tsx";
+import JoinSchoolPortal from "./portals/JoinSchoolPortal.tsx";
 
 const LandingPage = React.lazy(() => import("./pages/LandingPage.tsx"));
 const RegisterSchoolPage = React.lazy(
@@ -195,6 +197,11 @@ root.render(
 								path="reset-password"
 								element={<ResetPasswordPortal />}
 							/>
+							<Route
+								path="create-instructor"
+								element={<RegisterInstructorPortal />}
+							/>
+							<Route path="join" element={<JoinSchoolPortal />} />
 						</Route>
 					</Route>
 				</Routes>

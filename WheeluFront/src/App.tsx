@@ -116,13 +116,19 @@ export default function App({ useSplash }: IProps) {
 	useEffect(() => {
 		if (!isFetching) {
 			const currentURL = location.pathname;
-			const anonymousRoutes = ["/", "/register-school", "/logout"];
+			const anonymousRoutes = [
+				"/",
+				"/register-school",
+				"/logout",
+				"/join",
+			];
 			const unauthenticatedRoutes = [
 				"/login",
 				"/register",
 				"/resend-activation-link",
 				"/activate-account",
 				"/reset-password",
+				"/create-instructor",
 			];
 			const isAuthenticated = error == null;
 

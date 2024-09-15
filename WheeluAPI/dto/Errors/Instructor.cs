@@ -12,5 +12,6 @@ public enum InstructorJoinErrors
 {
     DbError,
     InvalidToken,
+    UserNotFound,
     JoinSchoolError,
 }

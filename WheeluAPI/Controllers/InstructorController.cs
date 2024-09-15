@@ -1,6 +1,6 @@
 using System.Transactions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WheeluAPI.DTO;
 using WheeluAPI.DTO.Errors;
 using WheeluAPI.DTO.Instructor;
 using WheeluAPI.helpers;
@@ -18,7 +18,6 @@ public class InstructorController(
 ) : BaseAPIController
 {
     [HttpPost]
-    [Authorize(Roles = "SchoolManager,Administrator")]
     public async Task<IActionResult> CreateInstructorAccount(
         [FromBody] RegisterInstructorRequest request
     )
@@ -68,6 +67,8 @@ public class InstructorController(
                 return BadRequest(errorResponse);
             }
 
+            await inviteService.CancelInviteAsync(token);
+
             scope.Complete();
         }
 
@@ -75,10 +76,7 @@ public class InstructorController(
     }
 
     [HttpPost("join")]
-    [Authorize(Roles = "SchoolManager,Administrator")]
-    public async Task<IActionResult> AttachInstructorAccount(
-        [FromBody] RegisterInstructorRequest request
-    )
+    public async Task<IActionResult> AttachInstructorAccount([FromBody] TokenActionRequest request)
     {
         var errorResponse = new APIError<InstructorJoinErrors>
         {
@@ -98,7 +96,10 @@ public class InstructorController(
             var user = await userService.GetUserByEmailAsync(token.Email);
 
             if (user == null)
+            {
+                errorResponse.Code = InstructorJoinErrors.UserNotFound;
                 return BadRequest(errorResponse);
+            }
 
             var profile = await service.GetFromUserAsync(user);
 
@@ -120,6 +121,8 @@ public class InstructorController(
                 ];
                 return BadRequest(errorResponse);
             }
+
+            await inviteService.CancelInviteAsync(token);
 
             scope.Complete();
         }

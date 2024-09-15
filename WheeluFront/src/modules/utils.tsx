@@ -50,7 +50,7 @@ export function callAPI<T extends API._.IBaseAPIEndpoint>(
 				let errCode: T["errCodes"];
 
 				const serverErrorData = error.response?.data as
-					| API._.IFailureGetResponse<T["errCodes"]>
+					| API._.IFailureResponse<T["errCodes"]>
 					| undefined;
 
 				switch (true) {
@@ -64,10 +64,14 @@ export function callAPI<T extends API._.IBaseAPIEndpoint>(
 					case error.response?.status == 403:
 						errCode = "AccessDenied";
 						break;
-					case serverErrorData != undefined:
+					case error.response?.status === 404 &&
+						serverErrorData?.code == undefined:
+						errCode = "EntityNotFound";
+						break;
+					case typeof serverErrorData == "object":
 						errCode = serverErrorData.code;
-						error.message =
-							serverErrorData.message ?? error.message;
+						(error as any as API._.IError<T["errCodes"]>).details =
+							serverErrorData!.details;
 						break;
 					default:
 						errCode = "InternalError";

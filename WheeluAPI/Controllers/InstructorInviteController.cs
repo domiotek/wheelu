@@ -62,6 +62,20 @@ public class InstructorInviteController(
         return result;
     }
 
+    [HttpGet("/api/v1/instructors/invites/{tokenID}")]
+    [ProducesResponseType(typeof(InstructorInviteTokenResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetSchoolInvites(string tokenID)
+    {
+        var token = await inviteService.GetInviteTokenAsync(tokenID);
+
+        if (token == null)
+            return NotFound();
+
+        return Ok(inviteService.GetDTO(token));
+    }
+
     [HttpGet]
     [Authorize(Roles = "SchoolManager,Administrator")]
     [ProducesResponseType(typeof(List<InstructorInviteTokenResponse>), StatusCodes.Status200OK)]

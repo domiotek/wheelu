@@ -9,14 +9,8 @@ export namespace API {
 			| "AccessDenied"
 			| "DbError";
 
-		interface ISuccessGetResponse<T> {
-			state: true;
-			data: T;
-		}
-
-		interface IFailureGetResponse<T> {
-			state: false;
-			message?: string;
+		interface IFailureResponse<T> {
+			details: string[];
 			code: T;
 		}
 
@@ -26,8 +20,8 @@ export namespace API {
 			returnData: any;
 			errCodes: TCommonServerErrorCodes | string;
 			returnPacket:
-				| ISuccessGetResponse<this["returnData"]>
-				| IFailureGetResponse<this["errCodes"]>;
+				| this["returnData"]
+				| IFailureResponse<this["errCodes"]>;
 			requestData: Record<
 				string,
 				string | number | string[] | object[] | undefined | boolean
@@ -51,18 +45,15 @@ export namespace API {
 			url: U;
 			returnData: R;
 			errCodes: TCommonServerErrorCodes | E;
-			returnPacket:
-				| ISuccessGetResponse<R>
-				| IFailureGetResponse<TCommonServerErrorCodes | E>;
+			returnPacket: R | IFailureResponse<TCommonServerErrorCodes | E>;
 			urlParams: P;
 			requestData: D;
 			error: IError<TCommonServerErrorCodes | E>;
 		};
 
 		interface IError<T> extends AxiosError {
-			status?: number;
 			code: T;
-			message?: string;
+			details: string[];
 		}
 
 		interface IPagingRequest extends Record<string, number> {
@@ -553,6 +544,23 @@ export namespace API {
 				>;
 			}
 
+			namespace Get {
+				interface IParams extends Record<string, string> {
+					tokenID: string;
+				}
+
+				type IResponse = App.Models.IInstructorInvite;
+
+				type IEndpoint = _.IBuildAPIEndpoint<
+					"GET",
+					"/api/v1/instructors/invites/:tokenID",
+					IResponse,
+					_.TCommonServerErrorCodes,
+					null,
+					IParams
+				>;
+			}
+
 			namespace Resend {
 				type IEndpoint = _.IBuildAPIEndpoint<
 					"POST",
@@ -613,6 +621,34 @@ export namespace API {
 				"MailServiceProblem" | "InvalidAccountType" | "AlreadyEmployed",
 				IRequest,
 				IParams
+			>;
+		}
+
+		namespace CreateAccount {
+			interface IRequest extends Auth.SignUp.IRequestData {
+				Token: string;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"POST",
+				"/api/v1/instructors",
+				null,
+				"InvalidToken" | "AccountCreationError" | "JoinSchoolError",
+				IRequest
+			>;
+		}
+
+		namespace ConnectProfile {
+			interface IRequest extends Record<string, string> {
+				Token: string;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"POST",
+				"/api/v1/instructors/join",
+				null,
+				"InvalidToken" | "UserNotFound" | "JoinSchoolError",
+				IRequest
 			>;
 		}
 	}
