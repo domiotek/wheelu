@@ -12,7 +12,7 @@ public class SchoolInstructorResponse
 
     public required bool Detached { get; set; }
 
-    public required List<EmploymentRecord> EmploymentRecords { get; set; }
+    public required List<EmploymentRecordResponse> EmploymentRecords { get; set; }
 
     public required bool Visible { get; set; }
 

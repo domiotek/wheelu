@@ -596,8 +596,7 @@ export namespace API {
 		}
 
 		namespace GetAllOfSchool {
-			type IResponse =
-				_.IPaginatedResponse<App.Models.IEmployedInstructor>;
+			type IResponse = App.Models.IEmployedInstructor[];
 
 			type IEndpoint = _.IBuildAPIEndpoint<
 				"GET",

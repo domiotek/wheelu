@@ -8,5 +8,5 @@ public class EmploymentRecord
 
     public required DateTime StartTime { get; set; } = DateTime.UtcNow;
 
-    public DateTime EndTime { get; set; }
+    public DateTime? EndTime { get; set; } = null;
 }

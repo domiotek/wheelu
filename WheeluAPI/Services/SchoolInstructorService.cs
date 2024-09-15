@@ -59,7 +59,14 @@ public class SchoolInstructorService(
             SchoolId = source.School.Id,
             Detached = source.Detached,
             Visible = source.Detached,
-            EmploymentRecords = source.EmploymentRecords,
+            EmploymentRecords = source
+                .EmploymentRecords.Select(rec => new EmploymentRecordResponse
+                {
+                    Id = rec.Id,
+                    StartTime = rec.StartTime,
+                    EndTime = rec.EndTime,
+                })
+                .ToList(),
             MaximumConcurrentStudends = source.MaximumConcurrentStudends,
             AllowedCategories = source.AllowedCategories.Select(c => c.Id).ToList(),
         };

@@ -9,8 +9,9 @@ import {
 	TABLE_PAGE_SIZE_OPTIONS,
 } from "../../../../constants.ts";
 import { InstructorsContext } from "../Instructors.tsx";
-import { IconButton } from "@mui/material";
+import { Chip, IconButton } from "@mui/material";
 import { Message } from "@mui/icons-material";
+import { CourseCategoriesMapping } from "../../../../../modules/constants.ts";
 
 interface IProps {
 	schoolID: number;
@@ -69,13 +70,34 @@ export default function InstructorTable({ schoolID }: IProps) {
 				headerName: "Kategorie",
 				width: 150,
 				type: "custom",
-				renderCell: () => <></>,
+				renderCell: (params) => (
+					<>
+						{CourseCategoriesMapping.filter((cat) =>
+							params.row.allowedCategories.includes(cat.id)
+						).map((category) => {
+							return (
+								<Chip
+									key={category.id}
+									label={category.name}
+									size="small"
+									color="secondary"
+									sx={{ ml: "0.15em", mr: "0.15em" }}
+								/>
+							);
+						})}
+					</>
+				),
 			},
 			{
 				field: "actions",
 				headerName: "",
 				width: 75,
 				type: "custom",
+				filterable: false,
+				sortable: false,
+				hideable: false,
+				disableColumnMenu: true,
+				resizable: false,
 				renderCell: () => {
 					return (
 						<IconButton>
@@ -92,7 +114,7 @@ export default function InstructorTable({ schoolID }: IProps) {
 	return (
 		<>
 			<DataGrid
-				rows={data?.entries ?? []}
+				rows={data ?? []}
 				paginationMode="client"
 				columns={columns}
 				pageSizeOptions={TABLE_PAGE_SIZE_OPTIONS}
@@ -108,6 +130,17 @@ export default function InstructorTable({ schoolID }: IProps) {
 								sort: "asc",
 							},
 						],
+					},
+					filter: {
+						filterModel: {
+							items: [
+								{
+									field: "detached",
+									value: "true",
+									operator: "is",
+								},
+							],
+						},
 					},
 				}}
 			/>
