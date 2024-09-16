@@ -12,6 +12,7 @@ import { InstructorsContext } from "../Instructors.tsx";
 import { Chip, IconButton } from "@mui/material";
 import { Message } from "@mui/icons-material";
 import { CourseCategoriesMapping } from "../../../../../modules/constants.ts";
+import { useNavigate } from "react-router-dom";
 
 interface IProps {
 	schoolID: number;
@@ -24,6 +25,7 @@ export default function InstructorTable({ schoolID }: IProps) {
 	});
 
 	const { baseQueryKey: queryKey } = useContext(InstructorsContext);
+	const navigate = useNavigate();
 
 	const { data, isFetching } = useQuery<
 		API.Instructors.GetAllOfSchool.IResponse,
@@ -143,6 +145,9 @@ export default function InstructorTable({ schoolID }: IProps) {
 						},
 					},
 				}}
+				onRowDoubleClick={(params) =>
+					navigate(params.row.id.toString())
+				}
 			/>
 		</>
 	);

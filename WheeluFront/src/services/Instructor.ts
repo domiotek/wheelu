@@ -16,4 +16,19 @@ export default class InstructorService {
 				return translateGenericErrorCodes(errCode);
 		}
 	}
+
+	public static translateDetachSubmitErrorCode(
+		errCode: API.Instructors.Detach.IEndpoint["errCodes"]
+	): string {
+		switch (errCode) {
+			case "AlreadyDetached":
+				return "Ten instruktor został już odłączony.";
+			case "InstructorVisible":
+				return "Instruktor jest widoczny";
+			case "EntityNotFound":
+				return "Instruktor nie istnieje.";
+			default:
+				return translateGenericErrorCodes(errCode);
+		}
+	}
 }

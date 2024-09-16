@@ -1,0 +1,73 @@
+.Container {
+	display: flex;
+	flex-direction: column;
+	gap: 2em;
+}
+
+.Container section {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5em;
+}
+
+.RatingItem {
+	justify-content: space-between;
+}
+
+.CategoriesWidgetWrapper {
+	display: flex;
+	flex-direction: column-reverse;
+	gap: 1em;
+	margin-top: 1em;
+}
+
+.ButtonsBar {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5em;
+}
+
+.PropertiesForm {
+	margin-top: 2em;
+}
+
+.PropertiesForm :global(.MuiFormControl-root) {
+	width: 100%;
+	max-width: 400px;
+}
+
+.PropertiesForm .ButtonsBar {
+	margin-top: 2em;
+}
+
+.DetachSection {
+	gap: 2em!important;
+}
+
+.ErrorMessage > img {
+	max-width: 300px!important;
+	margin-top: -4.5em;
+}
+
+.DetachButtonWrapper {
+	width: fit-content;
+}
+
+@media (min-width: 426px) {
+	.DetachSection > button {
+		width: fit-content;
+	}
+}
+
+@media (min-width: 1025px) {
+	.TopSection {
+		flex-direction: row!important;
+		align-items: flex-start;
+		gap: 5em!important;
+	}
+	
+	.CategoriesWidgetWrapper {
+		flex-direction: column;
+		flex-basis: 40%;
+	}
+}

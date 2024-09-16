@@ -7,9 +7,14 @@ import { CourseCategory } from "../../modules/enums";
 interface IProps {
 	className?: string;
 	enabledList?: Set<CourseCategory>;
+	onChipClick?: (category: CourseCategory) => void;
 }
 
-export default function CategoriesWidget({ className, enabledList }: IProps) {
+export default function CategoriesWidget({
+	className,
+	enabledList,
+	onChipClick,
+}: IProps) {
 	return (
 		<div
 			className={c([
@@ -24,7 +29,9 @@ export default function CategoriesWidget({ className, enabledList }: IProps) {
 					variant={
 						enabledList?.has(category.id) ? "filled" : "outlined"
 					}
+					clickable={onChipClick != undefined}
 					color="secondary"
+					onClick={() => onChipClick && onChipClick(category.id)}
 				/>
 			))}
 		</div>

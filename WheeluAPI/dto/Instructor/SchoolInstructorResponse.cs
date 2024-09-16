@@ -16,7 +16,7 @@ public class SchoolInstructorResponse
 
     public required bool Visible { get; set; }
 
-    public required int MaximumConcurrentStudends { get; set; }
+    public required int MaximumConcurrentStudents { get; set; }
 
     public required List<CourseCategoryType> AllowedCategories { get; set; } = [];
 }

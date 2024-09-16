@@ -148,7 +148,7 @@ export namespace App {
 			detached: boolean;
 			employmentRecords: IEmploymentRecord[];
 			visible: boolean;
-			maximumConcurrentStudens: number;
+			maximumConcurrentStudents: number;
 			allowedCategories: CourseCategory[];
 		}
 

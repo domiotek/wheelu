@@ -17,7 +17,7 @@ public class SchoolInstructor
 
     public required bool Visible { get; set; }
 
-    public required int MaximumConcurrentStudends { get; set; }
+    public required int MaximumConcurrentStudents { get; set; }
 
     public virtual required List<CourseCategory> AllowedCategories { get; set; } = [];
 }

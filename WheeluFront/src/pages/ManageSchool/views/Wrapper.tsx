@@ -6,7 +6,7 @@ import { popUrlSegment } from "../../../modules/utils";
 
 interface IProps {
 	children: JSX.Element;
-	headline: string;
+	headline: string | JSX.Element;
 }
 
 export default function ViewWrapper({ children, headline }: IProps) {

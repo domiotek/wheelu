@@ -18,7 +18,7 @@ import LoadingScreen from "../../../../components/LoadingScreen/LoadingScreen";
 import InlineDot from "../../../../components/InlineDot/InlineDot";
 import { CurrencyFormatter } from "../../../../modules/formatters";
 import { useNavigate } from "react-router-dom";
-import NoResultsMessage from "../../../../components/NoResultsMessage/NoResultsMessage";
+import MessagePanel from "../../../../components/MessagePanel/MessagePanel";
 
 export default function CoursesView() {
 	const { schoolID } = useContext(PublicSchooPageContext);
@@ -50,7 +50,7 @@ export default function CoursesView() {
 			{isFetching && <LoadingScreen />}
 
 			{data?.entries.length == 0 && !isFetching ? (
-				<NoResultsMessage caption="Brak ofert" />
+				<MessagePanel image="/no-results.svg" caption="Brak ofert" />
 			) : (
 				<List>
 					{data?.entries.map((offer) => (

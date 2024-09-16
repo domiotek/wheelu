@@ -1,3 +1,4 @@
+import { CourseCategory } from "../modules/enums";
 import { App } from "./app";
 
 export namespace API {
@@ -595,6 +596,10 @@ export namespace API {
 			}
 		}
 
+		interface IActionParams extends IParams {
+			instructorID: number;
+		}
+
 		namespace GetAllOfSchool {
 			type IResponse = App.Models.IEmployedInstructor[];
 
@@ -605,6 +610,19 @@ export namespace API {
 				_.TCommonServerErrorCodes,
 				null,
 				IParams
+			>;
+		}
+
+		namespace Get {
+			type IResponse = App.Models.IEmployedInstructor;
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/schools/:schoolID/instructors/:instructorID",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				null,
+				IActionParams
 			>;
 		}
 
@@ -648,6 +666,38 @@ export namespace API {
 				null,
 				"InvalidToken" | "UserNotFound" | "JoinSchoolError",
 				IRequest
+			>;
+		}
+
+		namespace Update {
+			interface IInstructorProperties {
+				maximumConcurrentStudents: number;
+			}
+
+			interface IRequest extends Record<string, string | bool | array> {
+				visibilityState?: boolean;
+				properties?: IInstructorProperties;
+				allowedCategories?: CourseCategory[];
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"PUT",
+				"/api/v1/schools/:schoolID/instructors/:instructorID",
+				null,
+				_.TCommonServerErrorCodes,
+				IRequest,
+				IActionParams
+			>;
+		}
+
+		namespace Detach {
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"DELETE",
+				"/api/v1/schools/:schoolID/instructors/:instructorID",
+				null,
+				"AlreadyDetached" | "InstructorVisible" | "EntityNotFound",
+				null,
+				IActionParams
 			>;
 		}
 	}

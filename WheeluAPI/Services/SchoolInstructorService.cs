@@ -58,7 +58,7 @@ public class SchoolInstructorService(
             },
             SchoolId = source.School.Id,
             Detached = source.Detached,
-            Visible = source.Detached,
+            Visible = source.Visible,
             EmploymentRecords = source
                 .EmploymentRecords.Select(rec => new EmploymentRecordResponse
                 {
@@ -67,7 +67,7 @@ public class SchoolInstructorService(
                     EndTime = rec.EndTime,
                 })
                 .ToList(),
-            MaximumConcurrentStudends = source.MaximumConcurrentStudends,
+            MaximumConcurrentStudents = source.MaximumConcurrentStudents,
             AllowedCategories = source.AllowedCategories.Select(c => c.Id).ToList(),
         };
     }
@@ -90,7 +90,7 @@ public class SchoolInstructorService(
         SchoolInstructorProperties properties
     )
     {
-        instructor.MaximumConcurrentStudends = properties.MaximumConcurrentStudends;
+        instructor.MaximumConcurrentStudents = properties.MaximumConcurrentStudents;
 
         dbContext.SchoolInstructors.Update(instructor);
 
@@ -102,16 +102,25 @@ public class SchoolInstructorService(
         List<CourseCategoryType> allowedCategories
     )
     {
-        var result = new List<CourseCategory>();
+        for (var i = 0; i < instructor.AllowedCategories.Count; i++)
+        {
+            var category = instructor.AllowedCategories[i];
+
+            if (allowedCategories.Contains(category.Id))
+                allowedCategories.Remove(category.Id);
+            else
+            {
+                instructor.AllowedCategories.Remove(category);
+                i--;
+            }
+        }
 
         foreach (var categoryID in allowedCategories)
         {
             var category = await courseOfferService.GetCourseCategoryAsync(categoryID);
             if (category != null)
-                result.Add(category);
+                instructor.AllowedCategories.Add(category);
         }
-
-        instructor.AllowedCategories = result;
 
         dbContext.SchoolInstructors.Update(instructor);
 
@@ -148,7 +157,7 @@ public class SchoolInstructorService(
                 Detached = false,
                 EmploymentRecords = [],
                 Visible = false,
-                MaximumConcurrentStudends = 0,
+                MaximumConcurrentStudents = 0,
                 AllowedCategories = [],
             };
 
