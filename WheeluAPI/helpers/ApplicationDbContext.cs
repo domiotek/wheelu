@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WheeluAPI.models;
 using WheeluAPI.Models;
+using WheeluAPI.Models.Vehicle;
 
 namespace WheeluAPI.helpers;
 
@@ -35,6 +36,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Instructor> Instructors { get; set; }
 
     public DbSet<SchoolInstructor> SchoolInstructors { get; set; }
+
+    public DbSet<VehiclePartType> VehiclePartTypes { get; set; }
+
+    public DbSet<Vehicle> Vehicles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -138,6 +143,25 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                         RequiredAge = 16,
                         CourseOffers = [],
                     },
+                ]
+            );
+
+        modelBuilder
+            .Entity<VehiclePartType>()
+            .HasData(
+                [
+                    new VehiclePartType { Id = VehiclePartTypeId.Tires, LifespanInDays = 1095 },
+                    new VehiclePartType { Id = VehiclePartTypeId.Brakes, LifespanInDays = 365 },
+                    new VehiclePartType { Id = VehiclePartTypeId.Clutch, LifespanInDays = 730 },
+                    new VehiclePartType
+                    {
+                        Id = VehiclePartTypeId.Suspension,
+                        LifespanInDays = 1825,
+                    },
+                    new VehiclePartType { Id = VehiclePartTypeId.Oil, LifespanInDays = 90 },
+                    new VehiclePartType { Id = VehiclePartTypeId.Igniters, LifespanInDays = 730 },
+                    new VehiclePartType { Id = VehiclePartTypeId.Battery, LifespanInDays = 1095 },
+                    new VehiclePartType { Id = VehiclePartTypeId.Ligths, LifespanInDays = 1095 },
                 ]
             );
     }

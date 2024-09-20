@@ -98,6 +98,7 @@ public class Schoolervice(
             NearbyCities = requestData.NearbyCities,
             CourseOffers = [],
             Instructors = [],
+            Vehicles = [],
         };
 
         dbContext.Schools.Add(school);

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using WheeluAPI.Models;
+using WheeluAPI.Models.Vehicle;
 
 namespace WheeluAPI.models;
 
@@ -50,4 +51,6 @@ public class School
     {
         get { return Instructors.Where(i => !i.Detached).ToList(); }
     }
+
+    public virtual required List<Vehicle> Vehicles { get; set; }
 }
