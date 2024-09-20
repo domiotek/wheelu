@@ -56,37 +56,6 @@ public class CourseOfferService(ApplicationDbContext dbContext) : BaseService, I
         return dbContext.CourseOffers.CountAsync();
     }
 
-    private static CourseCategoryResponse GetCategotyDTO(CourseCategory source)
-    {
-        return new CourseCategoryResponse
-        {
-            Id = source.Id,
-            Name = source.Name,
-            RequiredAge = source.RequiredAge,
-            SpecialRequirements = source.SpecialRequirements,
-        };
-    }
-
-    public CourseOfferResponse GetDTO(CourseOffer source)
-    {
-        return new CourseOfferResponse
-        {
-            Id = source.Id,
-            Enabled = source.Enabled,
-            Category = GetCategotyDTO(source.Category),
-            HoursCount = source.HoursCount,
-            Price = source.Price,
-            PricePerHour = source.PricePerHour,
-            CreatedAt = source.CreatedAt,
-            LastUpdatedAt = source.LastUpdatedAt,
-        };
-    }
-
-    public List<CourseOfferResponse> MapToDTO(List<CourseOffer> source)
-    {
-        return source.Select(GetDTO).ToList();
-    }
-
     public async Task<
         ServiceActionWithDataResult<CreateCourseOfferErrors, CourseOffer>
     > CreateOfferAsync(CourseOfferData requestData, School targetSchool)
@@ -170,10 +139,6 @@ public interface ICourseOfferService
     IQueryable<CourseOffer> GetOffersPageAsync(PagingMetadata meta, out int appliedPageSize);
 
     Task<int> CountAsync();
-
-    CourseOfferResponse GetDTO(CourseOffer source);
-
-    List<CourseOfferResponse> MapToDTO(List<CourseOffer> source);
 
     Task<ServiceActionWithDataResult<CreateCourseOfferErrors, CourseOffer>> CreateOfferAsync(
         CourseOfferData requestData,

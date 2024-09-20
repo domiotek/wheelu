@@ -46,37 +46,6 @@ public class SchoolInstructorService(
         return dbContext.SchoolInstructors.CountAsync();
     }
 
-    public SchoolInstructorResponse GetDTO(SchoolInstructor source)
-    {
-        return new SchoolInstructorResponse
-        {
-            Id = source.Id,
-            Instructor = new ShortInstructorResponse
-            {
-                Id = source.Instructor.Id,
-                User = source.Instructor.User.GetShortDTO(),
-            },
-            SchoolId = source.School.Id,
-            Detached = source.Detached,
-            Visible = source.Visible,
-            EmploymentRecords = source
-                .EmploymentRecords.Select(rec => new EmploymentRecordResponse
-                {
-                    Id = rec.Id,
-                    StartTime = rec.StartTime,
-                    EndTime = rec.EndTime,
-                })
-                .ToList(),
-            MaximumConcurrentStudents = source.MaximumConcurrentStudents,
-            AllowedCategories = source.AllowedCategories.Select(c => c.Id).ToList(),
-        };
-    }
-
-    public List<SchoolInstructorResponse> MapToDTO(List<SchoolInstructor> source)
-    {
-        return source.Select(GetDTO).ToList();
-    }
-
     public async Task<bool> UpdateInstructorVisibilityAsync(SchoolInstructor instructor, bool state)
     {
         instructor.Visible = state;
@@ -265,10 +234,6 @@ public interface ISchoolInstructorService
     );
 
     Task<int> CountAsync();
-
-    SchoolInstructorResponse GetDTO(SchoolInstructor source);
-
-    List<SchoolInstructorResponse> MapToDTO(List<SchoolInstructor> source);
 
     Task<bool> UpdateInstructorVisibilityAsync(SchoolInstructor instructor, bool state);
 

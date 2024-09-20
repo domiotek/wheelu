@@ -1,8 +1,10 @@
 import {
-	ButtonBase,
+	Avatar,
+	Button,
 	Divider,
 	List,
 	ListItem,
+	ListItemAvatar,
 	ListItemText,
 	Paper,
 	Typography,
@@ -16,23 +18,22 @@ import { useContext } from "react";
 import { PublicSchooPageContext } from "../../SchoolPage";
 import LoadingScreen from "../../../../components/LoadingScreen/LoadingScreen";
 import InlineDot from "../../../../components/InlineDot/InlineDot";
-import { CurrencyFormatter } from "../../../../modules/formatters";
-import { useNavigate } from "react-router-dom";
 import MessagePanel from "../../../../components/MessagePanel/MessagePanel";
+import { initialsAvatarProps } from "../../../../modules/features";
 
 export default function InstructorsView() {
 	const { schoolID } = useContext(PublicSchooPageContext);
-	const navigate = useNavigate();
 
 	const { data, isFetching } = useQuery<
-		API.Offers.Courses.GetAllOfSchool.IResponse,
-		API.Offers.Courses.GetAllOfSchool.IEndpoint["error"]
+		API.Instructors.GetAllOfSchool.IResponse,
+		API.Instructors.GetAllOfSchool.IEndpoint["error"]
 	>({
-		queryKey: ["Schools", "#", parseInt("3"), "Offers"],
+		queryKey: ["Schools", "#", schoolID, "Instructors"],
 		queryFn: () =>
-			callAPI<API.Offers.Courses.GetAllOfSchool.IEndpoint>(
+			callAPI<API.Instructors.GetAllOfSchool.IEndpoint>(
 				"GET",
-				"/api/v1/offers",
+				"/api/v1/schools/:schoolID/instructors",
+				null,
 				{ schoolID }
 			),
 		retry: true,
@@ -43,49 +44,46 @@ export default function InstructorsView() {
 	return (
 		<div className={commonClasses.ViewContainer}>
 			<Typography variant="h5" gutterBottom>
-				Kursy
+				Instruktorzy
 			</Typography>
 			<Divider />
 
 			{isFetching && <LoadingScreen />}
 
-			{data?.entries.length == 0 && !isFetching ? (
-				<MessagePanel image="/no-results.svg" caption="Brak ofert" />
+			{data?.length == 0 && !isFetching ? (
+				<MessagePanel
+					image="/no-results.svg"
+					caption="Brak instruktorów"
+				/>
 			) : (
 				<List>
-					{data?.entries.map((offer) => (
-						<ButtonBase
-							key={offer.id}
-							className={classes.OfferPanel}
+					{data?.map((instructor) => (
+						<Paper
+							key={instructor.id}
+							className={classes.InstructorPanel}
 							component={ListItem}
-							onClick={() =>
-								navigate(
-									`/schools/${schoolID}/courses/${offer.id}`
-								)
-							}
 						>
-							<Paper>
-								<ListItemText
-									primary={`Kategoria ${offer.category.name}`}
-									secondary={
-										<>
-											2 instruktorów{" "}
-											<InlineDot color="secondary" /> 4
-											pojazdy{" "}
-											<InlineDot color="secondary" /> 23
-											kursantów (1 aktywny)
-										</>
-									}
-								/>
-								<ListItemText
-									className={classes.RightOfferPanel}
-									primary={CurrencyFormatter.format(
-										offer.price
+							<ListItemAvatar>
+								<Avatar
+									{...initialsAvatarProps(
+										`${instructor.instructor.user.name} ${instructor.instructor.user.surname}`
 									)}
-									secondary={`${offer.hoursCount} godzin(y)`}
 								/>
-							</Paper>
-						</ButtonBase>
+							</ListItemAvatar>
+							<ListItemText
+								primary={`${instructor.instructor.user.name} ${instructor.instructor.user.surname}`}
+								secondary={
+									<>
+										23 kursantów (1 aktywny)
+										<InlineDot color="secondary" />
+										4.65
+									</>
+								}
+							/>
+							<Button variant="outlined" color="secondary">
+								Recenzje
+							</Button>
+						</Paper>
 					))}
 				</List>
 			)}

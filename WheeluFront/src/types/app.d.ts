@@ -124,6 +124,7 @@ export namespace App {
 			pricePerHour: number;
 			createdAt: string;
 			lastUpdatedAt: string;
+			instructors: IEmployedInstructor[];
 		}
 
 		interface IShortInstructorProfile {

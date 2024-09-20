@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using WheeluAPI.DTO.Course.CourseOffer;
 using WheeluAPI.DTO.Errors;
 using WheeluAPI.helpers;
+using WheeluAPI.Mappers;
 using WheeluAPI.Services;
 
 namespace WheeluAPI.Controllers;
@@ -14,7 +15,8 @@ namespace WheeluAPI.Controllers;
 public class CourseOfferController(
     ICourseOfferService service,
     ISchoolService schoolService,
-    IUserService userService
+    IUserService userService,
+    CourseOfferDTOMapper mapper
 ) : BaseAPIController
 {
     [HttpGet("{offerID}")]
@@ -27,7 +29,8 @@ public class CourseOfferController(
 
         if (offer == null)
             return NotFound();
-        return Ok(service.GetDTO(offer));
+
+        return Ok(mapper.GetDTO(offer));
     }
 
     [HttpGet]
@@ -54,17 +57,13 @@ public class CourseOfferController(
 
             var results = await query.ToListAsync();
 
-            return Paginated(
-                service.MapToDTO(results),
-                await service.CountAsync(),
-                appliedPageSize
-            );
+            return Paginated(mapper.MapToDTO(results), await service.CountAsync(), appliedPageSize);
         }
 
         if (schoolID == null)
         {
             var offers = await service.GetOffersAsync();
-            return Paginated(service.MapToDTO(offers), offers.Count, offers.Count);
+            return Paginated(mapper.MapToDTO(offers), offers.Count, offers.Count);
         }
 
         var school = await schoolService.GetSchoolByID((int)schoolID);
@@ -76,7 +75,7 @@ public class CourseOfferController(
 
         var schoolOffers = await service.GetOffersAsync(school);
 
-        return Paginated(service.MapToDTO(schoolOffers), schoolOffers.Count, schoolOffers.Count);
+        return Paginated(mapper.MapToDTO(schoolOffers), schoolOffers.Count, schoolOffers.Count);
     }
 
     [HttpPost]

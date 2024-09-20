@@ -2,6 +2,10 @@
 	margin: 1em 0;
 }
 
+.OfferPanel:first-of-type {
+	margin-top: 3em;
+}
+
 .OfferPanel > * {
 	padding: 1em;
 	width: 100%;

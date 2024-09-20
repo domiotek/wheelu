@@ -6,6 +6,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using WheeluAPI.helpers;
+using WheeluAPI.Mappers;
 using WheeluAPI.models;
 using WheeluAPI.Services;
 
@@ -68,6 +69,11 @@ builder.Services.AddScoped<ICourseOfferService, CourseOfferService>();
 builder.Services.AddScoped<IInstructorService, InstructorService>();
 builder.Services.AddScoped<IInstructorInviteService, InstructorInviteService>();
 builder.Services.AddScoped<ISchoolInstructorService, SchoolInstructorService>();
+
+builder.Services.AddSingleton<CourseOfferDTOMapper>();
+builder.Services.AddSingleton<CourseCategoryDTOMapper>();
+builder.Services.AddSingleton<InstructorDTOMapper>();
+builder.Services.AddSingleton<SchoolInstructorDTOMapper>();
 builder.Services.AddHttpClient();
 
 builder.Services.AddCors(options =>

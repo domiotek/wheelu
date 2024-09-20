@@ -1,3 +1,5 @@
+using WheeluAPI.DTO.Instructor;
+
 namespace WheeluAPI.DTO.Course.CourseOffer;
 
 public class CourseOfferResponse
@@ -17,4 +19,6 @@ public class CourseOfferResponse
     public required DateTime CreatedAt { get; set; }
 
     public required DateTime LastUpdatedAt { get; set; }
+
+    public required List<ShortSchoolInstructorResponse> Instructors { get; set; }
 }

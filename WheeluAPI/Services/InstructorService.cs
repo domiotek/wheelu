@@ -1,15 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using WheeluAPI.DTO.Instructor;
 using WheeluAPI.helpers;
 using WheeluAPI.models;
 using WheeluAPI.Models;
 
 namespace WheeluAPI.Services;
 
-public class InstructorService(
-    ApplicationDbContext dbContext,
-    ISchoolInstructorService instructorsService
-) : BaseService, IInstructorService
+public class InstructorService(ApplicationDbContext dbContext) : BaseService, IInstructorService
 {
     public async Task<Instructor?> CreateProfileAsync(User user)
     {
@@ -24,31 +20,6 @@ public class InstructorService(
     {
         return dbContext.Instructors.Where(i => i.User == user).SingleOrDefaultAsync();
     }
-
-    public InstructorResponse GetDTO(Instructor source)
-    {
-        return new InstructorResponse
-        {
-            Id = source.Id,
-            User = source.User.GetShortDTO(),
-            EmploymentHistory = instructorsService.MapToDTO(source.EmploymentHistory),
-        };
-    }
-
-    public List<InstructorResponse> MapToDTO(List<Instructor> source)
-    {
-        return source.Select(GetDTO).ToList();
-    }
-
-    public ShortInstructorResponse GetShortDTO(Instructor source)
-    {
-        return new ShortInstructorResponse { Id = source.Id, User = source.User.GetShortDTO() };
-    }
-
-    public List<ShortInstructorResponse> MapToShortDTO(List<Instructor> source)
-    {
-        return source.Select(GetShortDTO).ToList();
-    }
 }
 
 public interface IInstructorService
@@ -56,12 +27,4 @@ public interface IInstructorService
     Task<Instructor?> CreateProfileAsync(User user);
 
     Task<Instructor?> GetFromUserAsync(User user);
-
-    InstructorResponse GetDTO(Instructor source);
-
-    List<InstructorResponse> MapToDTO(List<Instructor> source);
-
-    ShortInstructorResponse GetShortDTO(Instructor source);
-
-    List<ShortInstructorResponse> MapToShortDTO(List<Instructor> source);
 }

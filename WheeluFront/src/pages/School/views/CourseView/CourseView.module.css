@@ -18,3 +18,7 @@
 	flex-direction: column;
 	gap: 1em;
 }
+
+.InstructorSection ul {
+	margin-top: 2em;
+}

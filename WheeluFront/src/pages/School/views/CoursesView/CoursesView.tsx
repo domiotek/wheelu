@@ -69,7 +69,11 @@ export default function CoursesView() {
 									primary={`Kategoria ${offer.category.name}`}
 									secondary={
 										<>
-											2 instruktorów{" "}
+											{offer.instructors.length}{" "}
+											instruktor
+											{offer.instructors.length == 1
+												? ""
+												: "ów"}{" "}
 											<InlineDot color="secondary" /> 4
 											pojazdy{" "}
 											<InlineDot color="secondary" /> 23

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using WheeluAPI.DTO.Errors;
 using WheeluAPI.DTO.Instructor;
 using WheeluAPI.helpers;
+using WheeluAPI.Mappers;
 using WheeluAPI.Services;
 
 namespace WheeluAPI.Controllers;
@@ -15,7 +16,8 @@ public class SchoolInstructorController(
     ISchoolService schoolService,
     ISchoolInstructorService service,
     IUserService userService,
-    IInstructorInviteService inviteService
+    IInstructorInviteService inviteService,
+    SchoolInstructorDTOMapper mapper
 ) : BaseAPIController
 {
     [HttpGet("{instructorID}")]
@@ -33,7 +35,7 @@ public class SchoolInstructorController(
 
         if (instructor == null)
             return NotFound();
-        return Ok(service.GetDTO(instructor));
+        return Ok(mapper.GetDTO(instructor));
     }
 
     [HttpGet]
@@ -65,9 +67,7 @@ public class SchoolInstructorController(
                 );
         }
 
-        return Ok(
-            service.MapToDTO(IncludeArchived ? school.ActiveInstructors : school.Instructors)
-        );
+        return Ok(mapper.MapToDTO(IncludeArchived ? school.ActiveInstructors : school.Instructors));
     }
 
     [HttpPost]
