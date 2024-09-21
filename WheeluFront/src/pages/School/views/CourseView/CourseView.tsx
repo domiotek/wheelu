@@ -25,6 +25,8 @@ import { CurrencyFormatter } from "../../../../modules/formatters";
 import LoadingScreen from "../../../../components/LoadingScreen/LoadingScreen";
 import { initialsAvatarProps } from "../../../../modules/features";
 import InlineDot from "../../../../components/InlineDot/InlineDot";
+import MessagePanel from "../../../../components/MessagePanel/MessagePanel";
+import VehicleService from "../../../../services/Vehicle.tsx";
 
 export default function CourseView() {
 	const location = useLocation();
@@ -161,47 +163,82 @@ export default function CourseView() {
 				<Typography variant="h6">Instruktorzy</Typography>
 				<Divider />
 
-				<List>
-					{data.instructors.map((instructor) => {
-						const fullName = `${instructor.instructor.user.name} ${instructor.instructor.user.surname}`;
-						return (
-							<>
-								<ListItem key={instructor.id}>
-									<ListItemAvatar>
-										<Avatar
-											{...initialsAvatarProps(fullName)}
+				{data.instructors.length > 0 ? (
+					<List>
+						{data.instructors.map((instructor) => {
+							const fullName = `${instructor.instructor.user.name} ${instructor.instructor.user.surname}`;
+							return (
+								<>
+									<ListItem key={instructor.id}>
+										<ListItemAvatar>
+											<Avatar
+												{...initialsAvatarProps(
+													fullName
+												)}
+											/>
+										</ListItemAvatar>
+										<ListItemText
+											primary={fullName}
+											secondary={
+												<>
+													23 kursantów (1 aktywny)
+													<InlineDot color="secondary" />
+													4.65
+												</>
+											}
 										/>
-									</ListItemAvatar>
+										<Button
+											variant="outlined"
+											color="secondary"
+											disableRipple
+											size="small"
+										>
+											2/
+											{
+												instructor.maximumConcurrentStudents
+											}
+											<br />
+											Dostępny
+										</Button>
+									</ListItem>
+									<Divider variant="inset" component="li" />
+								</>
+							);
+						})}
+					</List>
+				) : (
+					<MessagePanel
+						image="/no-results.svg"
+						caption="Brak instruktorów"
+					/>
+				)}
+			</section>
+			<section className={classes.InstructorSection}>
+				<Typography variant="h6">Pojazdy</Typography>
+				<Divider />
+
+				{data.vehicles.length > 0 ? (
+					<List>
+						{data.vehicles.map((vehicle) => (
+							<>
+								<ListItem key={vehicle.id}>
 									<ListItemText
-										primary={fullName}
-										secondary={
-											<>
-												23 kursantów (1 aktywny)
-												<InlineDot color="secondary" />
-												4.65
-											</>
-										}
+										primary={vehicle.model}
+										secondary={VehicleService.getListSecondaryText(
+											vehicle
+										)}
 									/>
-									<Button
-										variant="outlined"
-										color="secondary"
-										disableRipple
-										size="small"
-									>
-										2/{instructor.maximumConcurrentStudents}
-										<br />
-										Dostępny
-									</Button>
 								</ListItem>
 								<Divider variant="inset" component="li" />
 							</>
-						);
-					})}
-				</List>
-			</section>
-			<section>
-				<Typography variant="h6">Pojazdy</Typography>
-				<Divider />
+						))}
+					</List>
+				) : (
+					<MessagePanel
+						image="/no-results.svg"
+						caption="Brak pojazdów"
+					/>
+				)}
 			</section>
 		</div>
 	);

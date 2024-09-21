@@ -1,4 +1,6 @@
+import InlineDot from "../components/InlineDot/InlineDot";
 import { TransmissionType, VehiclePartType } from "../modules/enums";
+import { App } from "../types/app";
 
 interface IEngineProps {
 	displacement?: number;
@@ -62,5 +64,42 @@ export default class VehicleService {
 				label: "Automatyczna",
 			},
 		];
+	}
+
+	public static getListSecondaryText(vehicle: App.Models.IShortVehicle) {
+		return (
+			<>
+				{vehicle.manufacturingYear}
+				{vehicle.displacement && (
+					<>
+						<InlineDot color="secondary" />
+						{vehicle.displacement}L
+					</>
+				)}
+
+				{vehicle.power && (
+					<>
+						<InlineDot color="secondary" />
+						{vehicle.power}KM
+					</>
+				)}
+
+				{(vehicle.tranmissionType ||
+					vehicle.transmissionSpeedCount) && (
+					<>
+						<InlineDot color="secondary" />
+						{vehicle.transmissionSpeedCount &&
+							`${vehicle.transmissionSpeedCount}-biegowa`}
+						{vehicle.tranmissionType &&
+							`${
+								VehicleService.getTransmissionTypes()[
+									vehicle.tranmissionType
+								].label
+							}`}
+						skrzynia
+					</>
+				)}
+			</>
+		);
 	}
 }

@@ -9,9 +9,7 @@ import { AppContext } from "../../../../../App";
 import { useSnackbar } from "notistack";
 import { VehicleContext } from "../Vehicles";
 import VehicleModal from "../../../../../modals/VehicleModal/VehicleModal";
-import VehicleService from "../../../../../services/Vehicle";
-import { CourseCategoriesMapping } from "../../../../../modules/constants";
-import { Chip } from "@mui/material";
+import VehicleService from "../../../../../services/Vehicle.tsx";
 import { renderCategoryChips } from "../../../../../modules/features";
 
 interface IProps {

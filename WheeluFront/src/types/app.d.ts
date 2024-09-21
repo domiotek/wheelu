@@ -132,6 +132,7 @@ export namespace App {
 			createdAt: string;
 			lastUpdatedAt: string;
 			instructors: IEmployedInstructor[];
+			vehicles: IShortVehicle[];
 		}
 
 		interface IShortInstructorProfile {

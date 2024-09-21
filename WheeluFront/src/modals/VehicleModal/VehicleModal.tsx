@@ -13,7 +13,7 @@ import { callAPI } from "../../modules/utils";
 import LoadingScreen from "../../components/LoadingScreen/LoadingScreen";
 import { VehiclePartType } from "../../modules/enums";
 import { DateTime } from "luxon";
-import VehicleService from "../../services/Vehicle";
+import VehicleService from "../../services/Vehicle.tsx";
 
 interface ICommonProps {
 	onSuccess?: () => void;

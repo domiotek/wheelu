@@ -5,7 +5,7 @@ import classes from "../VehicleModal.module.css";
 import { DateTime } from "luxon";
 import { App } from "../../../types/app";
 import { useMemo } from "react";
-import VehicleService from "../../../services/Vehicle";
+import VehicleService from "../../../services/Vehicle.tsx";
 
 interface IProps {
 	data: App.Models.IVehicle;

@@ -15,9 +15,8 @@ import { callAPI } from "../../../../modules/utils";
 import { useCallback, useContext, useMemo } from "react";
 import { PublicSchooPageContext } from "../../SchoolPage";
 import LoadingScreen from "../../../../components/LoadingScreen/LoadingScreen";
-import InlineDot from "../../../../components/InlineDot/InlineDot";
 import MessagePanel from "../../../../components/MessagePanel/MessagePanel";
-import VehicleService from "../../../../services/Vehicle";
+import VehicleService from "../../../../services/Vehicle.tsx";
 import { AppContext } from "../../../../App";
 import VehicleModal from "../../../../modals/VehicleModal/VehicleModal";
 import { renderCategoryChips } from "../../../../modules/features";
@@ -94,41 +93,9 @@ export default function VehiclesView() {
 											)}
 										</>
 									}
-									secondary={
-										<>
-											{vehicle.manufacturingYear}
-											{vehicle.displacement && (
-												<>
-													<InlineDot color="secondary" />
-													{vehicle.displacement}L
-												</>
-											)}
-
-											{vehicle.power && (
-												<>
-													<InlineDot color="secondary" />
-													{vehicle.power}KM
-												</>
-											)}
-
-											{(vehicle.tranmissionType ||
-												vehicle.transmissionSpeedCount) && (
-												<>
-													<InlineDot color="secondary" />
-													{vehicle.transmissionSpeedCount &&
-														`${vehicle.transmissionSpeedCount}-biegowa`}
-													{vehicle.tranmissionType &&
-														`${
-															VehicleService.getTransmissionTypes()[
-																vehicle
-																	.tranmissionType
-															].label
-														}`}
-													skrzynia
-												</>
-											)}
-										</>
-									}
+									secondary={VehicleService.getListSecondaryText(
+										vehicle
+									)}
 								/>
 							</div>
 							<Button

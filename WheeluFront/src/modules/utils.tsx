@@ -216,3 +216,16 @@ export function formatAddress(address: App.Models.IAddress) {
 export function popUrlSegment(url: string): string {
 	return url.split("/").slice(0, -1).join("/");
 }
+
+export function formatPolishWordSuffix(count: number) {
+	const lastDigit = Math.abs(count) % 10;
+
+	switch (true) {
+		case count === 1:
+			return "";
+		case lastDigit == 2 || lastDigit == 3 || lastDigit == 4:
+			return "y";
+		default:
+			"ów";
+	}
+}

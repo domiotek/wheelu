@@ -11,7 +11,7 @@ import classes from "./CoursesView.module.css";
 import commonClasses from "../Common.module.css";
 import { useQuery } from "@tanstack/react-query";
 import { API } from "../../../../types/api";
-import { callAPI } from "../../../../modules/utils";
+import { callAPI, formatPolishWordSuffix } from "../../../../modules/utils";
 import { useContext } from "react";
 import { PublicSchooPageContext } from "../../SchoolPage";
 import LoadingScreen from "../../../../components/LoadingScreen/LoadingScreen";
@@ -74,8 +74,12 @@ export default function CoursesView() {
 											{offer.instructors.length == 1
 												? ""
 												: "ów"}{" "}
-											<InlineDot color="secondary" /> 4
-											pojazdy{" "}
+											<InlineDot color="secondary" />{" "}
+											{offer.vehicles.length + " "}
+											pojazd
+											{formatPolishWordSuffix(
+												offer.vehicles.length
+											)}{" "}
 											<InlineDot color="secondary" /> 23
 											kursantów (1 aktywny)
 										</>

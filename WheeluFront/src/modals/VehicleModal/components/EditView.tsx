@@ -28,7 +28,7 @@ import { App } from "../../../types/app";
 import { DateTime } from "luxon";
 import { API } from "../../../types/api";
 import { useMutation } from "@tanstack/react-query";
-import VehicleService from "../../../services/Vehicle";
+import VehicleService from "../../../services/Vehicle.tsx";
 
 interface IProps {
 	schoolID: number;

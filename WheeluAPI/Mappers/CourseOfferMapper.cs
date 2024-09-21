@@ -5,13 +5,18 @@ namespace WheeluAPI.Mappers;
 
 public class CourseOfferDTOMapper(
     CourseCategoryDTOMapper categoryMapper,
-    SchoolInstructorDTOMapper instructorMapper
+    SchoolInstructorDTOMapper instructorMapper,
+    VehicleMapper vehicleMapper
 )
 {
     public CourseOfferResponse GetDTO(CourseOffer source)
     {
         var instructors = source
             .School.ActiveInstructors.Where(i => i.AllowedCategories.Contains(source.Category))
+            .ToList();
+
+        var vehicles = source
+            .School.Vehicles.Where(v => v.AllowedIn.Contains(source.Category.Id))
             .ToList();
 
         return new CourseOfferResponse
@@ -25,6 +30,7 @@ public class CourseOfferDTOMapper(
             CreatedAt = source.CreatedAt,
             LastUpdatedAt = source.LastUpdatedAt,
             Instructors = instructorMapper.MapToShortDTO(instructors),
+            Vehicles = vehicleMapper.MapToShortDTO(vehicles),
         };
     }
 
