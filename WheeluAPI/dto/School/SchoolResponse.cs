@@ -33,4 +33,8 @@ public class SchoolResponse
     public required List<City> NearbyCities { get; set; }
 
     public required List<CourseCategoryType> CourseOffers { get; set; }
+
+    public required int VehicleCount { get; set; }
+
+    public int? OldestVehicleYear { get; set; }
 }

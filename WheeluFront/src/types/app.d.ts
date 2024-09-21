@@ -99,6 +99,8 @@ export namespace App {
 			coverImage: IImage;
 			nearbyCities: ICity[];
 			courseOffers: CourseCategory[];
+			vehicleCount: number;
+			oldestVehicleYear?: number;
 		}
 
 		interface ICityMatching {

@@ -59,6 +59,9 @@ public class Schoolervice(
             CoverImage = imageService.GetDTO(source.CoverImage),
             NearbyCities = source.NearbyCities.Select(locationService.GetCityDTO).ToList(),
             CourseOffers = source.CourseOffers.Select(o => o.Category.Id).Distinct().ToList(),
+            VehicleCount = source.Vehicles.Count,
+            OldestVehicleYear =
+                source.Vehicles.Count > 0 ? source.Vehicles.Min(v => v.ManufacturingYear) : null,
         };
     }
 

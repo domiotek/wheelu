@@ -135,13 +135,18 @@ export default function SchoolPage() {
 							</div>
 							<div className={classes.DetailCell}>
 								<Typography variant="h6">Pojazdy</Typography>
-								<Typography variant="body2">12</Typography>
+								<Typography variant="body2">
+									{schoolData?.vehicleCount ?? 0}
+								</Typography>
 							</div>
 							<div className={classes.DetailCell}>
 								<Typography variant="h6">
 									Najstarszy pojazd
 								</Typography>
-								<Typography variant="body2">2013</Typography>
+								<Typography variant="body2">
+									{schoolData?.oldestVehicleYear ??
+										"Nie dotyczy"}
+								</Typography>
 							</div>
 						</div>
 						<div>
