@@ -18,11 +18,11 @@ public class VehiclePropsData
 
     public int? Power { get; set; } = null;
 
-    public int? Displacement { get; set; } = null;
+    public decimal? Displacement { get; set; } = null;
 
     public int? TransmissionSpeedCount { get; set; } = null;
 
     public TransmissionType? TransmissionType { get; set; } = null;
 
-    public String? Note { get; set; }
+    public string? Note { get; set; }
 }

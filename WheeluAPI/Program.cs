@@ -69,11 +69,13 @@ builder.Services.AddScoped<ICourseOfferService, CourseOfferService>();
 builder.Services.AddScoped<IInstructorService, InstructorService>();
 builder.Services.AddScoped<IInstructorInviteService, InstructorInviteService>();
 builder.Services.AddScoped<ISchoolInstructorService, SchoolInstructorService>();
+builder.Services.AddScoped<VehicleService>();
 
-builder.Services.AddSingleton<CourseOfferDTOMapper>();
-builder.Services.AddSingleton<CourseCategoryDTOMapper>();
-builder.Services.AddSingleton<InstructorDTOMapper>();
-builder.Services.AddSingleton<SchoolInstructorDTOMapper>();
+builder.Services.AddScoped<CourseOfferDTOMapper>();
+builder.Services.AddScoped<CourseCategoryDTOMapper>();
+builder.Services.AddScoped<InstructorDTOMapper>();
+builder.Services.AddScoped<SchoolInstructorDTOMapper>();
+builder.Services.AddScoped<VehicleMapper>();
 builder.Services.AddHttpClient();
 
 builder.Services.AddCors(options =>

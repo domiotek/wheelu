@@ -28,3 +28,19 @@ export enum CourseCategory {
 	D1,
 	T,
 }
+
+export enum VehiclePartType {
+	Tires,
+	Brakes,
+	Clutch,
+	Igniters,
+	Suspension,
+	Oil,
+	Battery,
+	Ligths,
+}
+
+export enum TransmissionType {
+	Manual,
+	Automatic,
+}

@@ -9,6 +9,8 @@
     padding: 1em 1.15em!important;
     border-radius: 1em!important;
 	min-width: 4em;
+	border-width: 1px;
+    border-style: solid;
 }
 
 .Wrapper > * > span {

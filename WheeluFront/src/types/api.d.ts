@@ -701,4 +701,67 @@ export namespace API {
 			>;
 		}
 	}
+
+	namespace Vehicles {
+		interface IParams extends Record<string, number> {
+			schoolID: number;
+		}
+
+		interface IExtendedParams extends IParams {
+			vehicleID: number;
+		}
+
+		namespace GetOne {
+			interface IParams extends Record<string, number> {
+				schoolID: number;
+				vehicleID: number;
+			}
+
+			type IResponse = App.Models.IVehicle;
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/schools/:schoolID/vehicles/:vehicleID",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				null,
+				IParams
+			>;
+		}
+
+		namespace GetAllOfSchool {
+			type IResponse = App.Models.IShortVehicle[];
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/schools/:schoolID/vehicles",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				null,
+				IParams
+			>;
+		}
+
+		namespace CreateOrUpdate {
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"POST" | "PUT",
+				`/api/v1/schools/:schoolID/vehicles${"" | "/:vehicleID"}`,
+				null,
+				"InvalidImage",
+				any,
+				IExtendedParams
+			>;
+		}
+
+		namespace Delete {
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"DELETE",
+				`/api/v1/schools/:schoolID/vehicles/:vehicleID`,
+				null,
+				_.TCommonServerErrorCodes,
+				null,
+				IExtendedParams
+			>;
+		}
+	}
 }

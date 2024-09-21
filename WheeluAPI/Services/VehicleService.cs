@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WheeluAPI.DTO.Errors;
+using WheeluAPI.DTO.Image;
 using WheeluAPI.DTO.Vehicle;
 using WheeluAPI.helpers;
 using WheeluAPI.models;
@@ -21,14 +22,28 @@ public class VehicleService(ApplicationDbContext dbContext, IImageService imageS
     {
         var result = new ServiceActionWithDataResult<AlterVehicleErrors, Vehicle>();
 
-        var imageSaveResult = await imageService.SaveImage(requestData.Image);
+        var placeholderImage =
+            await imageService.GetImage(1)
+            ?? new Image
+            {
+                Id = 0,
+                FileName = "",
+                UploadDate = DateTime.UtcNow,
+            };
 
-        if (!imageSaveResult.IsSuccess)
+        SaveImageResult? imageSaveResult = null;
+
+        if (requestData.Image != null)
         {
-            result.ErrorCode = AlterVehicleErrors.InvalidImage;
-            result.Details = [imageSaveResult.ErrorCode.ToString()];
+            imageSaveResult = await imageService.SaveImage(requestData.Image);
 
-            return result;
+            if (!imageSaveResult.IsSuccess)
+            {
+                result.ErrorCode = AlterVehicleErrors.InvalidImage;
+                result.Details = [imageSaveResult.ErrorCode.ToString()];
+
+                return result;
+            }
         }
 
         var partTypes = await dbContext.VehiclePartTypes.ToListAsync();
@@ -41,7 +56,7 @@ public class VehicleService(ApplicationDbContext dbContext, IImageService imageS
                 {
                     Part = part,
                     LastCheckDate = requestData
-                        .Parts.Find(p =>
+                        .Parts?.Find(p =>
                             Enum.IsDefined(typeof(VehiclePartTypeId), p.PartType)
                             && (VehiclePartTypeId)p.PartType == part.Id
                         )
@@ -56,7 +71,7 @@ public class VehicleService(ApplicationDbContext dbContext, IImageService imageS
             Model = requestData.Model,
             Plate = requestData.Plate,
             ManufacturingYear = requestData.ManufacturingYear,
-            CoverImage = imageSaveResult.Image!,
+            CoverImage = imageSaveResult?.Image ?? placeholderImage,
             LastInspection = requestData.LastInspection,
             Mileage = requestData.Mileage,
             Power = requestData.Power,
@@ -64,7 +79,7 @@ public class VehicleService(ApplicationDbContext dbContext, IImageService imageS
             TransmissionSpeedCount = requestData.TransmissionSpeedCount,
             TransmissionType = requestData.TransmissionType,
             Parts = parts,
-            AllowedIn = requestData.AllowedIn,
+            AllowedIn = requestData.AllowedIn ?? [],
         };
 
         dbContext.Add(vehicle);
@@ -82,7 +97,7 @@ public class VehicleService(ApplicationDbContext dbContext, IImageService imageS
 
     public async Task<ServiceActionResult<AlterVehicleErrors>> UpdateVehicleAsync(
         Vehicle vehicle,
-        UpdateVehicleData requestData
+        AddVehicleData requestData
     )
     {
         var result = new ServiceActionResult<AlterVehicleErrors>();
@@ -108,34 +123,48 @@ public class VehicleService(ApplicationDbContext dbContext, IImageService imageS
             vehicle.CoverImage = imageSaveResult.Image!;
         }
 
-        if (requestData.AllowedIn != null)
+        requestData.AllowedIn ??= [];
+
+        for (var i = 0; i < vehicle.AllowedIn.Count; i++)
         {
-            vehicle.AllowedIn = requestData.AllowedIn;
+            var category = vehicle.AllowedIn[i];
+
+            if (requestData.AllowedIn.Contains(category))
+                requestData.AllowedIn.Remove(category);
+            else
+            {
+                vehicle.AllowedIn.Remove(category);
+                i--;
+            }
+        }
+
+        foreach (var categoryID in requestData.AllowedIn)
+        {
+            vehicle.AllowedIn.Add(categoryID);
         }
 
         if (requestData.Parts != null)
         {
             foreach (var part in requestData.Parts)
             {
-                var partDef = vehicle.Parts.Find(p => p.Id == part.PartType);
+                var partDef = vehicle.Parts.Find(p =>
+                    p.Part.Id == (VehiclePartTypeId)part.PartType
+                );
                 if (partDef != null)
                     partDef.LastCheckDate = part.LastCheckDate;
             }
         }
 
-        if (requestData.Props != null)
-        {
-            vehicle.Model = requestData.Props.Model;
-            vehicle.ManufacturingYear = requestData.Props.ManufacturingYear;
-            vehicle.Plate = requestData.Props.Plate;
-            vehicle.LastInspection = requestData.Props.LastInspection;
-            vehicle.Mileage = requestData.Props.Mileage;
-            vehicle.MileageUpdateDate = requestData.Props.MileageUpdateDate;
-            vehicle.Power = requestData.Props.Power;
-            vehicle.Displacement = requestData.Props.Displacement;
-            vehicle.TransmissionSpeedCount = requestData.Props.TransmissionSpeedCount;
-            vehicle.TransmissionType = requestData.Props.TransmissionType;
-        }
+        vehicle.Model = requestData.Model;
+        vehicle.ManufacturingYear = requestData.ManufacturingYear;
+        vehicle.Plate = requestData.Plate;
+        vehicle.LastInspection = requestData.LastInspection;
+        vehicle.Mileage = requestData.Mileage;
+        vehicle.MileageUpdateDate = requestData.MileageUpdateDate;
+        vehicle.Power = requestData.Power;
+        vehicle.Displacement = requestData.Displacement;
+        vehicle.TransmissionSpeedCount = requestData.TransmissionSpeedCount;
+        vehicle.TransmissionType = requestData.TransmissionType;
 
         dbContext.Update(vehicle);
 
@@ -155,6 +184,11 @@ public class VehicleService(ApplicationDbContext dbContext, IImageService imageS
         {
             imageService.DeleteImage(vehicle.CoverImage.FileName);
             dbContext.Images.Remove(vehicle.CoverImage);
+        }
+
+        foreach (var part in vehicle.Parts)
+        {
+            dbContext.Remove(part);
         }
 
         dbContext.Remove(vehicle);

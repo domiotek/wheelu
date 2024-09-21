@@ -74,6 +74,10 @@ const SchoolManagementInviteInstructorView = React.lazy(
 		)
 );
 
+const SchoolManagementVehiclesView = React.lazy(
+	() => import("./pages/ManageSchool/views/VehiclesView/Vehicles.tsx")
+);
+
 const PublicSchoolPage = React.lazy(
 	() => import("./pages/School/SchoolPage.tsx")
 );
@@ -113,6 +117,7 @@ const schoolManagementViews = (
 			path="instructors/:instructorId"
 			element={<SchoolManagementInstructorView />}
 		/>
+		<Route path="vehicles" element={<SchoolManagementVehiclesView />} />
 	</>
 );
 

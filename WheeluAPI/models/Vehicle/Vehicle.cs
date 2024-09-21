@@ -25,7 +25,7 @@ public class Vehicle
 
     public int? Power { get; set; } = null;
 
-    public int? Displacement { get; set; } = null;
+    public decimal? Displacement { get; set; } = null;
 
     public int? TransmissionSpeedCount { get; set; } = null;
 
@@ -36,5 +36,5 @@ public class Vehicle
     public required List<CourseCategoryType> AllowedIn { get; set; } = [];
 
     [MaxLength(255)]
-    public String? Note { get; set; }
+    public string? Note { get; set; }
 }

@@ -25,6 +25,7 @@ export const ModalContext = createContext<App.IModalContext>({
 	setOnCoverCloseAttemptListener: ctxNotify,
 	setHostClassName: ctxNotify,
 	setRenderHost: ctxNotify,
+	hostRef: null,
 });
 
 export default function ModalContainer({ show, onClose, children }: IProps) {
@@ -107,6 +108,7 @@ export default function ModalContainer({ show, onClose, children }: IProps) {
 							setAllowCoverClosing: setAllowCoverExit,
 							setHostClassName,
 							setRenderHost,
+							hostRef: hostRef.current,
 						}}
 					>
 						{renderHost ? (

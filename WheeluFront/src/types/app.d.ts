@@ -1,6 +1,11 @@
 import { Email } from "@mui/icons-material";
-import { CourseCategory } from "../modules/enums";
+import {
+	CourseCategory,
+	TransmissionType,
+	VehiclePartType,
+} from "../modules/enums";
 import AdminPanel from "../pages/AdminPanel/AdminPanel";
+import { DateTime } from "luxon";
 
 export namespace App {
 	namespace Models {
@@ -159,6 +164,52 @@ export namespace App {
 			email: string;
 			createdAt: string;
 		}
+
+		interface IShortVehicle {
+			id: number;
+			schoolId: number;
+			model: string;
+			manufacturingYear: number;
+			plate: string;
+			lastInspection?: string;
+			power?: number;
+			displacement?: number;
+			transmissionSpeedCount?: number;
+			tranmissionType?: TransmissionType;
+			allowedIn: CourseCategory[];
+			worstPart: IVehiclePartUsage;
+		}
+
+		interface IVehiclePartUsage {
+			id: number;
+			part: {
+				id: VehiclePartType;
+				lifespanInDays: number;
+			};
+			lastCheckDate: string;
+		}
+
+		interface IVehicleProps {
+			model: string;
+			manufacturingYear: number;
+			plate: string;
+			lastInspection?: string;
+			power?: number;
+			displacement?: number;
+			transmissionSpeedCount?: number;
+			transmissionType?: TransmissionType;
+			mileage?: number;
+			mileageUpdateDate?: string;
+			note?: string;
+		}
+
+		interface IVehicle extends IShortVehicle {
+			coverImage: IImage;
+			mileage?: number;
+			mileageUpdateDate?: string;
+			parts: IVehiclePartUsage[];
+			note?: string;
+		}
 	}
 
 	namespace UI {
@@ -192,6 +243,15 @@ export namespace App {
 			| (T extends "action"
 					? IInteractiveTileBaseDef & { type: T; action: () => void }
 					: never);
+
+		interface IVehiclePartDef {
+			[key: number]: {
+				lastCheckDate: DateTime | null;
+				lifespan: number | null;
+				icon: string;
+				name: string;
+			};
+		}
 	}
 
 	type AccessLevel = import("../modules/enums").AccessLevel;
@@ -218,5 +278,6 @@ export namespace App {
 		) => void;
 		setHostClassName: (className: string | null) => void;
 		setRenderHost: (state: boolean) => void;
+		hostRef: HTMLElement | null;
 	}
 }

@@ -1,0 +1,59 @@
+.Wrapper {
+	position: relative;
+	width: fit-content;
+	padding-bottom: 1.5em;
+	width: 6em;
+	height: 6em;
+}
+
+.Wrapper img {
+	position: absolute;
+	top: 1.75em;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 2em;
+	height: 2em;
+}
+
+.Wrapper span {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	text-align: center;
+	font-size: 0.8em;
+}
+
+.Wrapper .Input {
+	font-size: 0.8em;
+    width: 100%;
+	position: absolute;
+	bottom: 3px;
+}
+
+.Wrapper .Input > div {
+	font-size: inherit;
+}
+
+.ActionButton {
+	aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    font-size: 0.25em;
+    padding: 1em;
+    min-width: 0;
+	width: 6em;
+	position: absolute;
+}
+
+.ActionButton svg {
+	font-size: 3em;
+}
+
+.RightButton {
+	top: -10px;
+    right: 5px;
+}
+
+.LeftButton {
+	top: -10px;
+	left: 5px;
+}

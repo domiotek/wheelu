@@ -60,7 +60,7 @@ public class VehicleController(
             );
         }
 
-        return Ok(mapper.MapToDTO(school.Vehicles));
+        return Ok(mapper.MapToShortDTO(school.Vehicles));
     }
 
     [HttpPost]
@@ -99,7 +99,7 @@ public class VehicleController(
     public async Task<IActionResult> UpdateExisting(
         int schoolID,
         int vehicleID,
-        [FromForm] UpdateVehicleData request
+        [FromForm] AddVehicleData request
     )
     {
         var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -127,7 +127,7 @@ public class VehicleController(
         if (!result.IsSuccess)
             return BadRequest(new APIError<AlterVehicleErrors> { Code = result.ErrorCode });
 
-        return StatusCode(201);
+        return Ok();
     }
 
     [HttpDelete("{vehicleID}")]
