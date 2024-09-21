@@ -20,6 +20,7 @@ interface ICommonProps {
 	schoolID: number;
 	baseQuery: QueryKey;
 	allowEdit: boolean;
+	hideNote?: boolean;
 }
 
 interface ICreateProps {
@@ -39,8 +40,9 @@ export default function VehicleModal({
 	baseQuery,
 	schoolID,
 	vehicleID,
-	onSuccess,
 	allowEdit,
+	hideNote,
+	onSuccess,
 }: IProps) {
 	const [editMode, setEditMode] = useState(false);
 
@@ -135,12 +137,14 @@ export default function VehicleModal({
 						closeModal();
 						onSuccess && onSuccess();
 					}}
+					hideNote={hideNote}
 				/>
 			) : (
 				<PresentationView
 					data={data!}
 					parts={parts}
 					onClose={() => closeModal()}
+					hideNote={hideNote}
 				/>
 			)}
 		</div>

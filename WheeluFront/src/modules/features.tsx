@@ -1,7 +1,9 @@
 import { Home } from "@mui/icons-material";
-import { Link, Typography } from "@mui/material";
+import { Chip, Link, Typography } from "@mui/material";
 import { ReactNode } from "react";
 import { Link as RouterLink } from "react-router-dom";
+import { CourseCategory } from "./enums";
+import { CourseCategoriesMapping } from "./constants";
 
 interface IProps {
 	rootLink: string;
@@ -87,4 +89,20 @@ export function initialsAvatarProps(name: string) {
 	return {
 		children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
 	};
+}
+
+export function renderCategoryChips(enabledCategories: CourseCategory[]) {
+	return CourseCategoriesMapping.filter((cat) =>
+		enabledCategories.includes(cat.id)
+	).map((category) => {
+		return (
+			<Chip
+				key={category.id}
+				label={category.name}
+				size="small"
+				color="secondary"
+				sx={{ ml: "0.15em", mr: "0.15em" }}
+			/>
+		);
+	});
 }

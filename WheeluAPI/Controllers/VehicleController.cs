@@ -41,7 +41,15 @@ public class VehicleController(
                 new APIError { Code = APIErrorCode.EntityNotFound, Details = ["Vehicle not found"] }
             );
 
-        return Ok(mapper.GetDTO(vehicle));
+        var dto = mapper.GetDTO(vehicle);
+
+        var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await userService.GetUserByEmailAsync(userID ?? "");
+
+        if (school.Owner.Id != user?.Id && await userService.HasRole(user!, UserRole.Administrator))
+            dto.Note = null;
+
+        return Ok(dto);
     }
 
     [HttpGet]

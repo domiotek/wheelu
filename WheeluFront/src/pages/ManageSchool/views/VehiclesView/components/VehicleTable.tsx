@@ -12,6 +12,7 @@ import VehicleModal from "../../../../../modals/VehicleModal/VehicleModal";
 import VehicleService from "../../../../../services/Vehicle";
 import { CourseCategoriesMapping } from "../../../../../modules/constants";
 import { Chip } from "@mui/material";
+import { renderCategoryChips } from "../../../../../modules/features";
 
 interface IProps {
 	schoolID: number;
@@ -118,21 +119,7 @@ export default function VehicleTable({ schoolID, limitActions }: IProps) {
 				width: 150,
 				type: "custom",
 				renderCell: (params) => (
-					<>
-						{CourseCategoriesMapping.filter((cat) =>
-							params.row.allowedIn.includes(cat.id)
-						).map((category) => {
-							return (
-								<Chip
-									key={category.id}
-									label={category.name}
-									size="small"
-									color="secondary"
-									sx={{ ml: "0.15em", mr: "0.15em" }}
-								/>
-							);
-						})}
-					</>
+					<>{renderCategoryChips(params.row.allowedIn)}</>
 				),
 			},
 			{

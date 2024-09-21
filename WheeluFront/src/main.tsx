@@ -94,6 +94,10 @@ const PublicSchoolInstructorsView = React.lazy(
 	() => import("./pages/School/views/InstructorsView/InstructorsView.tsx")
 );
 
+const PublicSchoolVehiclesView = React.lazy(
+	() => import("./pages/School/views/VehiclesView/VehiclesView.tsx")
+);
+
 const qClient = new QueryClient();
 
 const root = ReactDOM.createRoot(
@@ -180,6 +184,10 @@ root.render(
 										element={
 											<PublicSchoolInstructorsView />
 										}
+									/>
+									<Route
+										path="vehicles"
+										element={<PublicSchoolVehiclesView />}
 									/>
 								</Route>
 								<Route

@@ -19,7 +19,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { c, callAPI, prepareFieldErrorMessage } from "../../../modules/utils";
 import { Error, ExpandLess, ExpandMore } from "@mui/icons-material";
-import { CourseCategory, TransmissionType } from "../../../modules/enums";
+import { CourseCategory } from "../../../modules/enums";
 import ModalContainer from "../../../components/ModalContainer/ModalContainer";
 import UploadImageModal, {
 	IFileData,
@@ -34,6 +34,7 @@ interface IProps {
 	schoolID: number;
 	data?: App.Models.IVehicle;
 	parts: App.UI.IVehiclePartDef;
+	hideNote?: boolean;
 	onBack: () => void;
 	onSuccess: () => void;
 }
@@ -42,6 +43,7 @@ export default function EditView({
 	schoolID,
 	data,
 	parts,
+	hideNote,
 	onBack,
 	onSuccess,
 }: IProps) {
@@ -305,16 +307,7 @@ export default function EditView({
 								label="Typ skrzyni"
 								size="small"
 								color="secondary"
-								options={[
-									{
-										id: TransmissionType.Manual,
-										label: "Manualna",
-									},
-									{
-										id: TransmissionType.Automatic,
-										label: "Automatyczna",
-									},
-								]}
+								options={VehicleService.getTransmissionTypes()}
 								labelKey="label"
 								valueKey="id"
 							/>
@@ -354,29 +347,31 @@ export default function EditView({
 						/>
 					</ListItem>
 				</List>
-				<List>
-					<ListItem>
-						<TextFieldElement
-							name="note"
-							rules={{ maxLength: 255 }}
-							label="Notatka"
-							multiline
-							color="secondary"
-							maxRows={4}
-							sx={{ width: 1.0 }}
-							inputProps={{ maxLength: 255 }}
-							parseError={(err) =>
-								prepareFieldErrorMessage(err, {
-									maxLength: "255 znaków",
-								})
-							}
-							onChange={(e) =>
-								setNoteLength(e.target.value.length)
-							}
-							helperText={`${noteLength}/255`}
-						/>
-					</ListItem>
-				</List>
+				{!hideNote && (
+					<List>
+						<ListItem>
+							<TextFieldElement
+								name="note"
+								rules={{ maxLength: 255 }}
+								label="Notatka"
+								multiline
+								color="secondary"
+								maxRows={4}
+								sx={{ width: 1.0 }}
+								inputProps={{ maxLength: 255 }}
+								parseError={(err) =>
+									prepareFieldErrorMessage(err, {
+										maxLength: "255 znaków",
+									})
+								}
+								onChange={(e) =>
+									setNoteLength(e.target.value.length)
+								}
+								helperText={`${noteLength}/255`}
+							/>
+						</ListItem>
+					</List>
+				)}
 				<div className={classes.ButtonsBar}>
 					<Collapse
 						className={classes.ErrMessageWrapper}

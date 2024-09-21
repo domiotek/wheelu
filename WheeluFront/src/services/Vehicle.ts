@@ -50,4 +50,17 @@ export default class VehicleService {
 				return { icon: "damper.png", name: "Amortyzatory" };
 		}
 	}
+
+	public static getTransmissionTypes() {
+		return [
+			{
+				id: TransmissionType.Manual,
+				label: "Manualna",
+			},
+			{
+				id: TransmissionType.Automatic,
+				label: "Automatyczna",
+			},
+		];
+	}
 }

@@ -11,9 +11,15 @@ interface IProps {
 	data: App.Models.IVehicle;
 	parts: App.UI.IVehiclePartDef;
 	onClose: () => void;
+	hideNote?: boolean;
 }
 
-export default function PresentationView({ data, parts, onClose }: IProps) {
+export default function PresentationView({
+	data,
+	parts,
+	onClose,
+	hideNote,
+}: IProps) {
 	const partComponets = useMemo(() => {
 		const result = [];
 
@@ -114,6 +120,16 @@ export default function PresentationView({ data, parts, onClose }: IProps) {
 						/>
 					</ListItem>
 				</List>
+				{!hideNote && (
+					<List>
+						<ListItem>
+							<ListItemText
+								primary="Notatka"
+								secondary={data.note ?? "Nie ustawiono"}
+							/>
+						</ListItem>
+					</List>
+				)}
 			</div>
 			<div className={classes.ButtonsBar}>
 				<Button variant="contained" onClick={() => onClose()}>
