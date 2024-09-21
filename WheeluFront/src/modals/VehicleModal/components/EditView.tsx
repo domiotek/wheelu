@@ -16,7 +16,7 @@ import {
 	TextFieldElement,
 	useForm,
 } from "react-hook-form-mui";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { c, callAPI, prepareFieldErrorMessage } from "../../../modules/utils";
 import { Error, ExpandLess, ExpandMore } from "@mui/icons-material";
 import { CourseCategory } from "../../../modules/enums";
@@ -29,6 +29,7 @@ import { DateTime } from "luxon";
 import { API } from "../../../types/api";
 import { useMutation } from "@tanstack/react-query";
 import VehicleService from "../../../services/Vehicle.tsx";
+import { AppContext } from "../../../App.tsx";
 
 interface IProps {
 	schoolID: number;
@@ -61,6 +62,7 @@ export default function EditView({
 	>({});
 
 	const formContext = useForm<App.Models.IVehicleProps>();
+	const { activeThemeName } = useContext(AppContext);
 
 	const saveChanges = useMutation<
 		null,
@@ -136,7 +138,10 @@ export default function EditView({
 					name={parts[partID].name}
 					editable={true}
 					imageSrc={parts[partID].icon}
-					className={classes.VehiclePart}
+					className={c([
+						classes.VehiclePart,
+						[classes.DarkMode, activeThemeName == "dark"],
+					])}
 					replacedDate={partReplaceDates[partID] ?? undefined}
 					lifeSpan={parts[partID].lifespan ?? undefined}
 					onChange={(date) =>

@@ -4,8 +4,10 @@ import { Button, List, ListItem, ListItemText } from "@mui/material";
 import classes from "../VehicleModal.module.css";
 import { DateTime } from "luxon";
 import { App } from "../../../types/app";
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import VehicleService from "../../../services/Vehicle.tsx";
+import { c } from "../../../modules/utils.tsx";
+import { AppContext } from "../../../App.tsx";
 
 interface IProps {
 	data: App.Models.IVehicle;
@@ -20,6 +22,8 @@ export default function PresentationView({
 	onClose,
 	hideNote,
 }: IProps) {
+	const { activeThemeName } = useContext(AppContext);
+
 	const partComponets = useMemo(() => {
 		const result = [];
 
@@ -30,14 +34,17 @@ export default function PresentationView({
 					name={parts[partID].name}
 					editable={false}
 					imageSrc={parts[partID].icon}
-					className={classes.VehiclePart}
+					className={c([
+						classes.VehiclePart,
+						[classes.DarkMode, activeThemeName == "dark"],
+					])}
 					replacedDate={parts[partID].lastCheckDate ?? undefined}
 					lifeSpan={parts[partID].lifespan ?? undefined}
 				/>
 			);
 		}
 		return result;
-	}, []);
+	}, [activeThemeName]);
 
 	const engineText = useMemo(() => {
 		return VehicleService.getEngineText({

@@ -43,6 +43,10 @@
 	font-size: 0.85em;
 }
 
+.VehiclePart.DarkMode img {
+	filter: invert(1);
+}
+
 .CategoriesWidget {
 	width: 208px;
     margin: auto;
