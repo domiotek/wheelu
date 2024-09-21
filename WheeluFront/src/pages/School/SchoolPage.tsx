@@ -8,8 +8,14 @@ import {
 } from "@mui/material";
 import classes from "./SchoolPage.module.css";
 import CategoriesWidget from "../../components/CategoriesWidget/CategoriesWidget";
-import { Outlet, useNavigate, useParams } from "react-router-dom";
-import React, { Suspense, useCallback, useContext, useState } from "react";
+import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
+import React, {
+	Suspense,
+	useCallback,
+	useContext,
+	useEffect,
+	useState,
+} from "react";
 import { SchoolPageTab } from "../../modules/enums";
 import { useQuery } from "@tanstack/react-query";
 import { API } from "../../types/api";
@@ -38,6 +44,7 @@ export default function SchoolPage() {
 	const navigate = useNavigate();
 	const params = useParams();
 	const { userDetails } = useContext(AppContext);
+	const location = useLocation();
 
 	const {
 		data: schoolData,
@@ -81,6 +88,28 @@ export default function SchoolPage() {
 		}
 
 		setActiveTab(tabID);
+	}, []);
+
+	useEffect(() => {
+		const parts = location.pathname.split("/");
+		const section = parts[parts.length - 1];
+
+		let tab;
+
+		switch (section) {
+			case "instructors":
+				tab = SchoolPageTab.Instructors;
+				break;
+			case "vehicles":
+				tab = SchoolPageTab.Vehicles;
+				break;
+			case "courses":
+			default:
+				tab = SchoolPageTab.Courses;
+				break;
+		}
+
+		setActiveTab(tab);
 	}, []);
 
 	if (isPending) return <LoadingScreen />;
