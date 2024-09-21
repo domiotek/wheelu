@@ -19,7 +19,10 @@ import { PublicSchooPageContext } from "../../SchoolPage";
 import LoadingScreen from "../../../../components/LoadingScreen/LoadingScreen";
 import InlineDot from "../../../../components/InlineDot/InlineDot";
 import MessagePanel from "../../../../components/MessagePanel/MessagePanel";
-import { initialsAvatarProps } from "../../../../modules/features";
+import {
+	initialsAvatarProps,
+	renderCategoryChips,
+} from "../../../../modules/features";
 
 export default function InstructorsView() {
 	const { schoolID } = useContext(PublicSchooPageContext);
@@ -63,23 +66,36 @@ export default function InstructorsView() {
 							className={classes.InstructorPanel}
 							component={ListItem}
 						>
-							<ListItemAvatar>
-								<Avatar
-									{...initialsAvatarProps(
-										`${instructor.instructor.user.name} ${instructor.instructor.user.surname}`
-									)}
+							<div className={classes.Content}>
+								<ListItemAvatar>
+									<Avatar
+										{...initialsAvatarProps(
+											`${instructor.instructor.user.name} ${instructor.instructor.user.surname}`
+										)}
+									/>
+								</ListItemAvatar>
+								<ListItemText
+									className={classes.Text}
+									primary={
+										<>
+											{instructor.instructor.user.name}{" "}
+											{instructor.instructor.user.surname}
+											<br />
+											{renderCategoryChips(
+												instructor.allowedCategories
+											)}
+										</>
+									}
+									secondary={
+										<>
+											23 kursantów (1 aktywny)
+											<InlineDot color="secondary" />
+											4.65
+										</>
+									}
 								/>
-							</ListItemAvatar>
-							<ListItemText
-								primary={`${instructor.instructor.user.name} ${instructor.instructor.user.surname}`}
-								secondary={
-									<>
-										23 kursantów (1 aktywny)
-										<InlineDot color="secondary" />
-										4.65
-									</>
-								}
-							/>
+							</div>
+
 							<Button variant="outlined" color="secondary">
 								Recenzje
 							</Button>

@@ -13,6 +13,7 @@ import { Chip, IconButton } from "@mui/material";
 import { Message } from "@mui/icons-material";
 import { CourseCategoriesMapping } from "../../../../../modules/constants.ts";
 import { useNavigate } from "react-router-dom";
+import { renderCategoryChips } from "../../../../../modules/features.tsx";
 
 interface IProps {
 	schoolID: number;
@@ -73,21 +74,7 @@ export default function InstructorTable({ schoolID }: IProps) {
 				width: 150,
 				type: "custom",
 				renderCell: (params) => (
-					<>
-						{CourseCategoriesMapping.filter((cat) =>
-							params.row.allowedCategories.includes(cat.id)
-						).map((category) => {
-							return (
-								<Chip
-									key={category.id}
-									label={category.name}
-									size="small"
-									color="secondary"
-									sx={{ ml: "0.15em", mr: "0.15em" }}
-								/>
-							);
-						})}
-					</>
+					<>{renderCategoryChips(params.row.allowedCategories)}</>
 				),
 			},
 			{

@@ -1,7 +1,36 @@
 .InstructorPanel {
 	margin: 1em 0;
+	flex-direction: column;
+	gap: 2em;
+	align-items: flex-start;
+}
+
+.InstructorPanel button {
+	align-self: center;
 }
 
 .InstructorPanel:first-of-type {
 	margin-top: 3em;
+}
+
+.Content {
+	display: flex;
+	flex: 1;
+}
+
+.Content :global(.MuiListItemAvatar-root) {
+	margin-top: 6px;
+}
+
+.Content .Text {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5em;
+}
+
+
+@media (min-width: 600px) {
+	.InstructorPanel {
+		flex-direction: row;
+	}
 }
