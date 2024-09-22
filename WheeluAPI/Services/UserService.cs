@@ -177,6 +177,7 @@ public class UserService(
         var newToken = new AccountToken()
         {
             Id = Guid.NewGuid(),
+            Token = Guid.NewGuid(),
             TokenType = tokenType,
             User = user,
             CreatedAt = DateTime.UtcNow,
@@ -215,7 +216,7 @@ public class UserService(
 
         var templateData = new ConfirmRegistrationTemplateVariables
         {
-            Link = $"http://localhost:5173/activate-account?token={token?.Id}",
+            Link = $"http://localhost:5173/activate-account?token={token?.Token}",
         };
 
         if (
@@ -237,7 +238,7 @@ public class UserService(
         var token = dbContext
             .AccountTokens.Include(t => t.User)
             .FirstOrDefault(t =>
-                t.Id == Guid.Parse(tokenID) && t.TokenType == AccountTokenType.ActivationToken
+                t.Token == Guid.Parse(tokenID) && t.TokenType == AccountTokenType.ActivationToken
             );
 
         if (token == null || DateTime.UtcNow > token.CreatedAt.AddHours(24))
@@ -284,7 +285,7 @@ public class UserService(
         var templateData = new AccountRecoveryTemplateVariables
         {
             Name = user.Name,
-            Link = $"http://localhost:5173/reset-password?token={token?.Id}",
+            Link = $"http://localhost:5173/reset-password?token={token?.Token}",
         };
 
         if (
@@ -307,7 +308,7 @@ public class UserService(
         var token = dbContext
             .AccountTokens.Include(t => t.User)
             .FirstOrDefault(t =>
-                t.Id == Guid.Parse(tokenID) && t.TokenType == AccountTokenType.PasswordResetToken
+                t.Token == Guid.Parse(tokenID) && t.TokenType == AccountTokenType.PasswordResetToken
             );
 
         if (token == null || DateTime.UtcNow > token.CreatedAt.AddHours(24))

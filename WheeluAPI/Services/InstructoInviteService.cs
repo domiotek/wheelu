@@ -32,6 +32,7 @@ public class InstructorInviteService(
         var newToken = new InstructorInviteToken
         {
             Id = Guid.NewGuid(),
+            Token = Guid.NewGuid(),
             TargetSchool = targetSchool,
             Email = email,
             CreatedAt = DateTime.UtcNow,
@@ -57,7 +58,7 @@ public class InstructorInviteService(
         }
 
         var existingToken = await dbContext
-            .InstructorInviteTokens.Where(t => t.Id == guid)
+            .InstructorInviteTokens.Where(t => t.Token == guid)
             .SingleOrDefaultAsync();
 
         if (existingToken != null)
@@ -123,7 +124,7 @@ public class InstructorInviteService(
         var templateData = new InstructorInviteCreateTemplateVariables
         {
             SchoolName = targetSchool.Name,
-            Link = $"http://localhost:5173/create-instructor?token={token?.Id}",
+            Link = $"http://localhost:5173/create-instructor?token={token?.Token}",
         };
 
         if (
@@ -165,7 +166,7 @@ public class InstructorInviteService(
         {
             FirstName = instructor.Name,
             SchoolName = targetSchool.Name,
-            Link = $"http://localhost:5173/join?token={token?.Id}",
+            Link = $"http://localhost:5173/join?token={token?.Token}",
         };
 
         if (
