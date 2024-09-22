@@ -96,6 +96,7 @@ export namespace App {
 			established: string;
 			joined: string;
 			phoneNumber: string;
+			email: string;
 			coverImage: IImage;
 			nearbyCities: ICity[];
 			courseOffers: CourseCategory[];

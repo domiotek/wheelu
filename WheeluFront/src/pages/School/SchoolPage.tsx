@@ -103,6 +103,9 @@ export default function SchoolPage() {
 			case "vehicles":
 				tab = SchoolPageTab.Vehicles;
 				break;
+			case "contact":
+				tab = SchoolPageTab.Contact;
+				break;
 			case "courses":
 			default:
 				tab = SchoolPageTab.Courses;

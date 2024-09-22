@@ -56,6 +56,7 @@ public class Schoolervice(
             Established = source.Established,
             Joined = source.Joined,
             PhoneNumber = source.PhoneNumber,
+            Email = source.Owner.Email!,
             CoverImage = imageService.GetDTO(source.CoverImage),
             NearbyCities = source.NearbyCities.Select(locationService.GetCityDTO).ToList(),
             CourseOffers = source.CourseOffers.Select(o => o.Category.Id).Distinct().ToList(),

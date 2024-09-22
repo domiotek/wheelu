@@ -28,6 +28,8 @@ public class SchoolResponse
 
     public required string PhoneNumber { get; set; }
 
+    public required string Email { get; set; }
+
     public required ImageResponse CoverImage { get; set; }
 
     public required List<City> NearbyCities { get; set; }

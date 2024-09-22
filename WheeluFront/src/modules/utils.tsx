@@ -102,11 +102,20 @@ export function fetchLocalFile(file: File) {
 }
 
 function resolveClasses(
-	classes: string | (string | [string, boolean])[]
+	classes: string | [string, boolean] | (string | [string, boolean])[]
 ): string {
 	if (typeof classes == "string") return classes;
 
 	if (Array.isArray(classes)) {
+		if (classes.length == 2) {
+			if (
+				typeof classes[0] == "string" &&
+				typeof classes[1] == "boolean"
+			) {
+				if (classes[1]) return classes[0];
+			}
+		}
+
 		const committed = [];
 		for (const item of classes) {
 			if (!Array.isArray(item)) committed.push(item);
