@@ -72,6 +72,33 @@ public class InstructorInviteService(
         return existingToken;
     }
 
+    public async Task<InstructorInviteToken?> GetInviteTokenByIdAsync(string tokenID)
+    {
+        Guid guid;
+        try
+        {
+            guid = Guid.Parse(tokenID);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+
+        var existingToken = await dbContext
+            .InstructorInviteTokens.Where(t => t.Id == guid)
+            .SingleOrDefaultAsync();
+
+        if (existingToken != null)
+        {
+            if (DateTime.UtcNow <= existingToken.CreatedAt.AddHours(24))
+                return existingToken;
+
+            dbContext.InstructorInviteTokens.Remove(existingToken);
+        }
+
+        return existingToken;
+    }
+
     public Task<List<InstructorInviteToken>> GetInviteTokensAsync(School? targetSchool = null)
     {
         var query = dbContext.InstructorInviteTokens.AsQueryable();
@@ -256,7 +283,10 @@ public class InstructorInviteService(
 public interface IInstructorInviteService
 {
     Task<InstructorInviteToken?> GetInviteTokenAsync(School targetSchool, string email);
+
     Task<InstructorInviteToken?> GetInviteTokenAsync(string token);
+
+    Task<InstructorInviteToken?> GetInviteTokenByIdAsync(string tokenID);
 
     Task<List<InstructorInviteToken>> GetInviteTokensAsync(School? targetSchool = null);
 

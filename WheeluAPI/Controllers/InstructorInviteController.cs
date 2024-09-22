@@ -45,7 +45,7 @@ public class InstructorInviteController(
             return result;
         }
 
-        var token = await inviteService.GetInviteTokenAsync(tokenID);
+        var token = await inviteService.GetInviteTokenByIdAsync(tokenID);
 
         if (token == null)
         {
@@ -66,9 +66,9 @@ public class InstructorInviteController(
     [ProducesResponseType(typeof(InstructorInviteTokenResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetSchoolInvites(string tokenID)
+    public async Task<IActionResult> GetSchoolInvite(string tokenID)
     {
-        var token = await inviteService.GetInviteTokenAsync(tokenID);
+        var token = await inviteService.GetInviteTokenByIdAsync(tokenID);
 
         if (token == null)
             return NotFound();
