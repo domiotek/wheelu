@@ -64,7 +64,14 @@ export default function InviteTable({ schoolID }: IProps) {
 				null,
 				data
 			),
-		onSuccess: invalidateQuery,
+		onSuccess: () => {
+			invalidateQuery();
+			snackBar.enqueueSnackbar({
+				...snackBarProps,
+				message: "Wiadomość wysłana!",
+				variant: "success",
+			});
+		},
 		onError: () =>
 			snackBar.enqueueSnackbar({
 				...snackBarProps,
@@ -85,7 +92,14 @@ export default function InviteTable({ schoolID }: IProps) {
 				null,
 				data
 			),
-		onSuccess: invalidateQuery,
+		onSuccess: () => {
+			invalidateQuery();
+			snackBar.enqueueSnackbar({
+				...snackBarProps,
+				message: "Ważność zaproszenia odnowiona!",
+				variant: "success",
+			});
+		},
 		onError: () =>
 			snackBar.enqueueSnackbar({
 				...snackBarProps,
@@ -106,7 +120,14 @@ export default function InviteTable({ schoolID }: IProps) {
 				null,
 				data
 			),
-		onSuccess: invalidateQuery,
+		onSuccess: () => {
+			invalidateQuery();
+			snackBar.enqueueSnackbar({
+				...snackBarProps,
+				message: "Zaproszenie anulowane!",
+				variant: "success",
+			});
+		},
 		onError: () =>
 			snackBar.enqueueSnackbar({
 				...snackBarProps,
