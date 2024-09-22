@@ -15,7 +15,7 @@ import commonClasses from "../Common.module.css";
 import classes from "./CourseView.module.css";
 import { Link as RouterLink, useLocation, useParams } from "react-router-dom";
 import { c, callAPI, popUrlSegment } from "../../../../modules/utils";
-import { useContext, useMemo } from "react";
+import { Fragment, useContext, useMemo } from "react";
 import { AppContext } from "../../../../App";
 import { PublicSchooPageContext } from "../../SchoolPage";
 import { useQuery } from "@tanstack/react-query";
@@ -168,8 +168,8 @@ export default function CourseView() {
 						{data.instructors.map((instructor) => {
 							const fullName = `${instructor.instructor.user.name} ${instructor.instructor.user.surname}`;
 							return (
-								<>
-									<ListItem key={instructor.id}>
+								<Fragment key={instructor.id}>
+									<ListItem>
 										<ListItemAvatar>
 											<Avatar
 												{...initialsAvatarProps(
@@ -202,7 +202,7 @@ export default function CourseView() {
 										</Button>
 									</ListItem>
 									<Divider variant="inset" component="li" />
-								</>
+								</Fragment>
 							);
 						})}
 					</List>
@@ -220,8 +220,8 @@ export default function CourseView() {
 				{data.vehicles.length > 0 ? (
 					<List>
 						{data.vehicles.map((vehicle) => (
-							<>
-								<ListItem key={vehicle.id}>
+							<Fragment key={vehicle.id}>
+								<ListItem>
 									<ListItemText
 										primary={vehicle.model}
 										secondary={VehicleService.getListSecondaryText(
@@ -230,7 +230,7 @@ export default function CourseView() {
 									/>
 								</ListItem>
 								<Divider variant="inset" component="li" />
-							</>
+							</Fragment>
 						))}
 					</List>
 				) : (
