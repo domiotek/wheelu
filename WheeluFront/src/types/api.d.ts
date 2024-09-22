@@ -8,7 +8,8 @@ export namespace API {
 			| "ServerUnavailable"
 			| "Unauthorized"
 			| "AccessDenied"
-			| "DbError";
+			| "DbError"
+			| "EntityNotFound";
 
 		interface IFailureResponse<T> {
 			details: string[];
@@ -567,7 +568,9 @@ export namespace API {
 					"POST",
 					URL,
 					null,
-					_.TCommonServerErrorCodes,
+					| "MailServiceProblem"
+					| "InvalidAccountType"
+					| "AlreadyEmployed",
 					null,
 					IParams
 				>;
