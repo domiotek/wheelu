@@ -12,7 +12,11 @@ using WheeluAPI.Services;
 
 [ApiController]
 [Route("/api/v1/schools")]
-public class SchoolController(ISchoolService service, IUserService userService) : BaseAPIController
+public class SchoolController(
+    ISchoolService service,
+    IUserService userService,
+    ISchoolService schoolService
+) : BaseAPIController
 {
     [HttpGet("{schoolID}")]
     [Authorize]
@@ -67,16 +71,22 @@ public class SchoolController(ISchoolService service, IUserService userService) 
                 new APIError<UpdateSchoolErrors> { Code = UpdateSchoolErrors.SchoolNotFound }
             );
 
-        var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var user = await userService.GetUserByEmailAsync(userID ?? "");
+        var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await userService.GetUserByEmailAsync(userEmail ?? "");
 
-        var ownsSchool = school.Owner.Id == userID;
-        var isAdmin = await userService.HasRole(user!, UserRole.Administrator);
-
-        if (!ownsSchool && !isAdmin)
+        if (
+            !await schoolService.ValidateSchoolManagementAccess(
+                school,
+                userEmail ?? "",
+                Helpers.SchoolManagementAccessMode.AllPrivileged
+            )
+        )
+        {
             return Unauthorized(
                 new APIError<UpdateSchoolErrors> { Code = UpdateSchoolErrors.AccessDenied }
             );
+        }
+        var isAdmin = await userService.HasRole(user!, UserRole.Administrator);
 
         var result = await service.UpdateSchool(
             school,

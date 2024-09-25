@@ -168,7 +168,20 @@ public class Schoolervice(
 
                 school.Address = address.Address!;
 
-                var cities = await locationService.ResolveNearbyCities(requestData.NearbyCities);
+                var cities = await locationService.ResolveNearbyCities(
+                    requestData.NearbyCities ?? []
+                );
+
+                for (var i = 0; i < school.NearbyCities.Count; i++)
+                {
+                    var city = school.NearbyCities[i];
+
+                    if (!cities.Remove(city))
+                    {
+                        school.NearbyCities.Remove(city);
+                        i--;
+                    }
+                }
 
                 foreach (var city in cities)
                 {

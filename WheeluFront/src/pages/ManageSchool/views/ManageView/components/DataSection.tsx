@@ -48,6 +48,7 @@ export default function DataSection({
 	const [descriptionLength, setDescriptionLength] = useState<number | null>(
 		null
 	);
+	const [preSubmitting, setPreSubmitting] = useState(false);
 
 	const params = useParams();
 	const { setModalContent, snackBarProps } = useContext(AppContext);
@@ -91,12 +92,16 @@ export default function DataSection({
 		},
 	});
 
-	const submitCallback = useCallback(
-		(data: API.School.Update.IRequestData) => {
+	const submitCallback = useCallback(async () => {
+		setPreSubmitting(true);
+		await new Promise((r) => setTimeout(r, 0));
+		const data = formContext.getValues();
+		setPreSubmitting(false);
+
 			const formData = new FormData();
 
 			for (const prop in data) {
-				formData.set(prop, data[prop]);
+			if (data[prop]) formData.set(prop, data[prop]);
 			}
 
 			if (data.subBuildingNumber == undefined)
@@ -119,9 +124,7 @@ export default function DataSection({
 
 			saveChanges.mutate(formData);
 			onSavingChanges(true);
-		},
-		[nearbyCitiesList, coverPhoto]
-	);
+	}, [nearbyCitiesList, coverPhoto]);
 
 	const updatePhotoButtonClick = useCallback(() => {
 		setModalContent(
@@ -211,7 +214,10 @@ export default function DataSection({
 							pattern: "Niewłaściwy format NIP.",
 						})
 					}
-					disabled={!isAdmin || saveChanges.isPending || disabled}
+					disabled={
+						!preSubmitting &&
+						(!isAdmin || saveChanges.isPending || disabled)
+					}
 				/>
 				<TextFieldElement
 					name="phoneNumber"
@@ -283,7 +289,10 @@ export default function DataSection({
 							maxLength: "75 znaków",
 						})
 					}
-					disabled={!isAdmin || saveChanges.isPending || disabled}
+					disabled={
+						!preSubmitting &&
+						(!isAdmin || saveChanges.isPending || disabled)
+					}
 				/>
 
 				<TextFieldElement
@@ -298,7 +307,10 @@ export default function DataSection({
 							maxLength: "10 znaków",
 						})
 					}
-					disabled={!isAdmin || saveChanges.isPending || disabled}
+					disabled={
+						!preSubmitting &&
+						(!isAdmin || saveChanges.isPending || disabled)
+					}
 				/>
 
 				<TextFieldElement
@@ -311,7 +323,10 @@ export default function DataSection({
 					parseError={(err) =>
 						prepareFieldErrorMessage(err, { min: 1 })
 					}
-					disabled={!isAdmin || saveChanges.isPending || disabled}
+					disabled={
+						!preSubmitting &&
+						(!isAdmin || saveChanges.isPending || disabled)
+					}
 				/>
 			</div>
 			<div className={classes.InputGroup}>
@@ -331,7 +346,10 @@ export default function DataSection({
 							pattern: "Niewłaściwy format kodu pocztowego.",
 						})
 					}
-					disabled={!isAdmin || saveChanges.isPending || disabled}
+					disabled={
+						!preSubmitting &&
+						(!isAdmin || saveChanges.isPending || disabled)
+					}
 				/>
 
 				<TextFieldElement
@@ -359,7 +377,10 @@ export default function DataSection({
 							? ""
 							: "Miasto zostanie dodane"
 					}
-					disabled={!isAdmin || saveChanges.isPending || disabled}
+					disabled={
+						!preSubmitting &&
+						(!isAdmin || saveChanges.isPending || disabled)
+					}
 				/>
 
 				<div className={classes.InputGroup}>
@@ -373,7 +394,10 @@ export default function DataSection({
 						valueKey="name"
 						labelKey="name"
 						parseError={prepareFieldErrorMessage}
-						disabled={!isAdmin || saveChanges.isPending || disabled}
+						disabled={
+							!preSubmitting &&
+							(!isAdmin || saveChanges.isPending || disabled)
+						}
 					/>
 				</div>
 			</div>
