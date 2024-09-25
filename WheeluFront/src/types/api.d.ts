@@ -53,7 +53,9 @@ export namespace API {
 			error: IError<TCommonServerErrorCodes | E>;
 		};
 
-		interface IError<T> extends AxiosError {
+		type BaseError = import("axios").AxiosError;
+
+		interface IError<T> extends BaseError {
 			code: T;
 			details: string[];
 		}
