@@ -15,6 +15,9 @@ public class SchoolUpdateRequest
     [StringLength(16)]
     public required string PhoneNumber { get; set; }
 
+    [StringLength(50)]
+    public required string Email { get; set; }
+
     [StringLength(maximumLength: 250)]
     public string? Description { get; set; }
 
