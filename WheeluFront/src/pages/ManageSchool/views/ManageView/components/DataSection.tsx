@@ -98,32 +98,32 @@ export default function DataSection({
 		const data = formContext.getValues();
 		setPreSubmitting(false);
 
-			const formData = new FormData();
+		const formData = new FormData();
 
-			for (const prop in data) {
+		for (const prop in data) {
 			if (data[prop]) formData.set(prop, data[prop]);
-			}
+		}
 
-			if (data.subBuildingNumber == undefined)
-				formData.delete("subBuildingNumber");
+		if (data.subBuildingNumber == undefined)
+			formData.delete("subBuildingNumber");
 
-			for (let i = 0; i < nearbyCitiesList.length; i++) {
-				const city = nearbyCitiesList[i];
+		for (let i = 0; i < nearbyCitiesList.length; i++) {
+			const city = nearbyCitiesList[i];
 
-				if (city.identifier)
-					formData.set(
-						`nearbyCities[${i}].Id`,
-						city.identifier.toString()
-					);
-				if (city.cityName)
-					formData.set(`nearbyCities[${i}].Name`, city.cityName);
-				formData.set(`nearbyCities[${i}].State`, city.state ?? "");
-			}
+			if (city.identifier)
+				formData.set(
+					`nearbyCities[${i}].Id`,
+					city.identifier.toString()
+				);
+			if (city.cityName)
+				formData.set(`nearbyCities[${i}].Name`, city.cityName);
+			formData.set(`nearbyCities[${i}].State`, city.state ?? "");
+		}
 
-			if (coverPhoto) formData.set("coverPhoto", coverPhoto.blob);
+		if (coverPhoto) formData.set("coverPhoto", coverPhoto.blob);
 
-			saveChanges.mutate(formData);
-			onSavingChanges(true);
+		saveChanges.mutate(formData);
+		onSavingChanges(true);
 	}, [nearbyCitiesList, coverPhoto]);
 
 	const updatePhotoButtonClick = useCallback(() => {
@@ -149,6 +149,7 @@ export default function DataSection({
 		formContext.setValue("name", schoolData.name);
 		formContext.setValue("nip", schoolData.nip);
 		formContext.setValue("phoneNumber", schoolData.phoneNumber);
+		formContext.setValue("email", schoolData.email);
 		formContext.setValue("description", schoolData.description ?? "");
 
 		for (const prop in schoolData.address) {
@@ -218,6 +219,22 @@ export default function DataSection({
 						!preSubmitting &&
 						(!isAdmin || saveChanges.isPending || disabled)
 					}
+				/>
+			</div>
+			<div className={classes.InputGroup}>
+				<TextFieldElement
+					name="email"
+					type="email"
+					color="secondary"
+					variant="filled"
+					label="Email kontaktowy"
+					required
+					parseError={(err) =>
+						prepareFieldErrorMessage(err, {
+							pattern: "Niepoprawny adres email.",
+						})
+					}
+					disabled={saveChanges.isPending || disabled}
 				/>
 				<TextFieldElement
 					name="phoneNumber"

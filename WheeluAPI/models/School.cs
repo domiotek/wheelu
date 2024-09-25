@@ -37,6 +37,8 @@ public class School
 
     public required string PhoneNumber { get; set; }
 
+    public string? Email { get; set; } = null;
+
     public virtual required Image CoverImage { get; set; }
 
     public virtual required List<City> NearbyCities { get; set; }

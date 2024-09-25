@@ -56,7 +56,7 @@ public class Schoolervice(
             Established = source.Established,
             Joined = source.Joined,
             PhoneNumber = source.PhoneNumber,
-            Email = source.Owner.Email!,
+            Email = source.Email ?? source.Owner.Email!,
             CoverImage = imageService.GetDTO(source.CoverImage),
             NearbyCities = source.NearbyCities.Select(locationService.GetCityDTO).ToList(),
             CourseOffers = source.CourseOffers.Select(o => o.Category.Id).Distinct().ToList(),
@@ -121,6 +121,8 @@ public class Schoolervice(
         {
             school.Name = requestData.Name;
             school.PhoneNumber = requestData.PhoneNumber;
+            school.Email = requestData.Email != school.Owner.Email ? requestData.Email : null;
+            school.Email = requestData.Email;
             school.Description = requestData.Description;
 
             if (requestData.CoverPhoto != null)

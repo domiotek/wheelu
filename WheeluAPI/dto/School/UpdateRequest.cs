@@ -34,7 +34,7 @@ public class SchoolUpdateRequest
 
     public required string State { get; set; }
 
-    public required List<NearbyCityDefinition> NearbyCities { get; set; }
+    public List<NearbyCityDefinition>? NearbyCities { get; set; }
 
     [JsonProperty("coverPhoto")]
     public IFormFile? CoverPhoto { get; set; }
