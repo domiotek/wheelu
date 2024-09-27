@@ -38,5 +38,7 @@ public class SchoolResponse
 
     public required int VehicleCount { get; set; }
 
+    public required List<int> Instructors { get; set; }
+
     public int? OldestVehicleYear { get; set; }
 }

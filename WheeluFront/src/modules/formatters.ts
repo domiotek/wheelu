@@ -14,6 +14,8 @@ export const RoleFormatter = {
 				return "Właściciel szkoły";
 			case "Student":
 				return "Kursant";
+			case "Instructor":
+				return "Instruktor";
 			default:
 				return "";
 		}

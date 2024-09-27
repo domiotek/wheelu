@@ -1,39 +1,43 @@
 import { Breadcrumbs, Typography } from "@mui/material";
-import {  useMemo } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { useContext, useEffect, useMemo } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { ILevelLeaf, RenderBreadcrumbs } from "../../modules/features";
 import classes from "./AdminPanel.module.css";
 import { NavigateNext } from "@mui/icons-material";
+import { AppContext } from "../../App";
+import { AccessLevel } from "../../modules/enums";
 
 export default function AdminPanel() {
+	const { accessLevel } = useContext(AppContext);
 
 	const location = useLocation();
+	const navigate = useNavigate();
 
-	const breadcrumbs = useMemo(()=>{
+	const breadcrumbs = useMemo(() => {
 		return RenderBreadcrumbs(
-			location.pathname, 
-			{rootLink: "/panel"},
+			location.pathname,
+			{ rootLink: "/panel" },
 			[
-				{id: "applications", label: "Wnioski", link: "applications"},
-				{id: "schools", label: "Szkoły", link: "schools"},
-				{id: "users", label: "Użytkownicy", "link": "users"}
+				{ id: "applications", label: "Wnioski", link: "applications" },
+				{ id: "schools", label: "Szkoły", link: "schools" },
+				{ id: "users", label: "Użytkownicy", link: "users" },
 			],
 			new Map<string, ILevelLeaf[]>([
 				[
-					"applications", 
-					[
-						{id:  "index", label: "Rozpatrz wniosek", link: "#"}
-					]
+					"applications",
+					[{ id: "index", label: "Rozpatrz wniosek", link: "#" }],
 				],
 				[
 					"schools",
-					[
-						{id: "index", label: "Profil szkoły", link: "#"}
-					]
-				]
+					[{ id: "index", label: "Profil szkoły", link: "#" }],
+				],
 			])
 		);
-	},[location]);
+	}, [location]);
+
+	useEffect(() => {
+		if (accessLevel != AccessLevel.Administrator) navigate("/home");
+	}, []);
 
 	return (
 		<>
@@ -42,12 +46,12 @@ export default function AdminPanel() {
 			</Typography>
 
 			<Breadcrumbs aria-label="breadcrumb" separator={<NavigateNext />}>
-				{ breadcrumbs.map(elem=>elem) }
+				{breadcrumbs.map((elem) => elem)}
 			</Breadcrumbs>
-			
+
 			<div className={classes.ContentWindow}>
 				<Outlet />
 			</div>
 		</>
-	)
+	);
 }

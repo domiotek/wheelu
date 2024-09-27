@@ -129,7 +129,7 @@ export default function SchoolPage() {
 					<div className={classes.DetailsSection}>
 						<Typography variant="h3">
 							{schoolData?.name}{" "}
-							{userDetails?.ownedSchoolID === schoolData?.id && (
+							{userDetails?.ownedSchoolId === schoolData?.id && (
 								<Button onClick={() => navigate("manage")}>
 									Zarządzaj
 								</Button>

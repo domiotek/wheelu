@@ -103,6 +103,8 @@ export default function App({ useSplash }: IProps) {
 				return AccessLevel.SchoolOwner;
 			case "Student":
 				return AccessLevel.Student;
+			case "Instructor":
+				return AccessLevel.Instructor;
 			default:
 				return AccessLevel.Anonymous;
 		}

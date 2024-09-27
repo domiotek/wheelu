@@ -23,7 +23,7 @@ export default function ManageSchoolView() {
 	const [savingDataChanges, setSavingDataChanges] = useState(false);
 
 	const { snackBarProps } = useContext(AppContext);
-	const { viewPoint, schoolData } = useContext(SchoolPageContext);
+	const { access, schoolData } = useContext(SchoolPageContext);
 	const params = useParams();
 	const qClient = useQueryClient();
 	const snack = useSnackbar();
@@ -129,12 +129,14 @@ export default function ManageSchoolView() {
 				<DataSection
 					cities={cities!}
 					states={states!}
-					isAdmin={viewPoint == "admin"}
+					isAdmin={access == "admin"}
 					disabled={
 						toggleBlockade.isPending ||
 						toggleVisibility.isPending ||
-						schoolData?.blocked
+						schoolData?.blocked ||
+						access == "instructor"
 					}
+					readonly={access == "instructor"}
 					onSavingChanges={setSavingDataChanges}
 				/>
 				<div className={classes.Section}>
@@ -174,7 +176,7 @@ export default function ManageSchoolView() {
 						}
 					/>
 				</div>
-				{viewPoint == "admin" && (
+				{access == "owner" && (
 					<>
 						<div className={classes.Section}>
 							<Typography variant="h6">

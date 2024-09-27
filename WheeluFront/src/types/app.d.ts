@@ -9,14 +9,19 @@ import { DateTime } from "luxon";
 
 export namespace App {
 	namespace Models {
-		type UserRole = "Student" | "Administrator" | "SchoolManager";
+		type UserRole =
+			| "Student"
+			| "Administrator"
+			| "SchoolManager"
+			| "Instructor";
 
 		interface IIdentityUser {
 			userId: string;
 			name: string;
 			surname: string;
 			role: UserRole;
-			ownedSchoolID?: number;
+			ownedSchoolId?: number;
+			instructorProfileId?: number;
 		}
 
 		interface IShortUser {
@@ -101,6 +106,7 @@ export namespace App {
 			nearbyCities: ICity[];
 			courseOffers: CourseCategory[];
 			vehicleCount: number;
+			instructors: number[];
 			oldestVehicleYear?: number;
 		}
 

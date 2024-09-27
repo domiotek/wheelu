@@ -9,17 +9,17 @@ import {
 	TABLE_PAGE_SIZE_OPTIONS,
 } from "../../../../constants.ts";
 import { InstructorsContext } from "../Instructors.tsx";
-import { Chip, IconButton } from "@mui/material";
+import { IconButton } from "@mui/material";
 import { Message } from "@mui/icons-material";
-import { CourseCategoriesMapping } from "../../../../../modules/constants.ts";
 import { useNavigate } from "react-router-dom";
 import { renderCategoryChips } from "../../../../../modules/features.tsx";
 
 interface IProps {
 	schoolID: number;
+	limitAccess: boolean;
 }
 
-export default function InstructorTable({ schoolID }: IProps) {
+export default function InstructorTable({ schoolID, limitAccess }: IProps) {
 	const [paginationModel, setPaginationModel] = useState({
 		pageSize: DEFAULT_TABLE_PAGE_SIZE,
 		page: 0,
@@ -132,9 +132,9 @@ export default function InstructorTable({ schoolID }: IProps) {
 						},
 					},
 				}}
-				onRowDoubleClick={(params) =>
-					navigate(params.row.id.toString())
-				}
+				onRowDoubleClick={(params) => {
+					if (!limitAccess) navigate(params.row.id.toString());
+				}}
 			/>
 		</>
 	);

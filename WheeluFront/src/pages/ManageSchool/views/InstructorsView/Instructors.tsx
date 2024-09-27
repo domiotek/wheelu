@@ -23,7 +23,7 @@ export const InstructorsContext = React.createContext<IContext>({
 
 export default function InstructorsSchoolView() {
 	const params = useParams();
-	const { viewPoint } = useContext(SchoolPageContext);
+	const { access } = useContext(SchoolPageContext);
 	const qClient = useQueryClient();
 	const navigate = useNavigate();
 
@@ -44,7 +44,7 @@ export default function InstructorsSchoolView() {
 			>
 				<div className={commonClasses.SectionHeader}>
 					<Typography variant="overline"></Typography>
-					{viewPoint == "owner" && (
+					{access == "owner" && (
 						<Button
 							startIcon={<Add />}
 							variant="contained"
@@ -56,18 +56,25 @@ export default function InstructorsSchoolView() {
 					)}
 				</div>
 
-				<InstructorTable schoolID={parseInt(params["id"] ?? "")} />
-
-				<div
-					className={c([
-						commonClasses.SectionHeader,
-						classes.InviteSection,
-					])}
-				>
-					<Typography variant="overline">Zaproszenia</Typography>
-				</div>
-
-				<InviteTable schoolID={parseInt(params["id"] ?? "")} />
+				<InstructorTable
+					schoolID={parseInt(params["id"] ?? "")}
+					limitAccess={access != "owner"}
+				/>
+				{access != "instructor" && (
+					<>
+						<div
+							className={c([
+								commonClasses.SectionHeader,
+								classes.InviteSection,
+							])}
+						>
+							<Typography variant="overline">
+								Zaproszenia
+							</Typography>
+						</div>
+						<InviteTable schoolID={parseInt(params["id"] ?? "")} />
+					</>
+				)}
 			</InstructorsContext.Provider>
 		</ViewWrapper>
 	);

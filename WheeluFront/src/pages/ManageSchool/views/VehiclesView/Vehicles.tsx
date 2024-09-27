@@ -25,7 +25,7 @@ export const VehicleContext = React.createContext<IContext>({
 export default function VehiclesSchoolView() {
 	const params = useParams();
 	const { setModalContent, snackBarProps } = useContext(AppContext);
-	const { viewPoint } = useContext(SchoolPageContext);
+	const { access } = useContext(SchoolPageContext);
 	const qClient = useQueryClient();
 	const snack = useSnackbar();
 
@@ -65,7 +65,7 @@ export default function VehiclesSchoolView() {
 			>
 				<div className={classes.SectionHeader}>
 					<Typography variant="overline"></Typography>
-					{viewPoint == "owner" && (
+					{access == "owner" && (
 						<Button
 							startIcon={<Add />}
 							variant="contained"
@@ -79,7 +79,7 @@ export default function VehiclesSchoolView() {
 
 				<VehicleTable
 					schoolID={parseInt(params["id"] ?? "")}
-					limitActions={viewPoint != "owner"}
+					limitActions={access != "owner"}
 				/>
 			</VehicleContext.Provider>
 		</ViewWrapper>

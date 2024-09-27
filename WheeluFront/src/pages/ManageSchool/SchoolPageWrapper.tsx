@@ -7,7 +7,7 @@ export default function SchoolPageWrapper() {
 			<Typography variant="h4" sx={{ ml: 4, mb: 2 }}>
 				Twoja szkoła jazdy
 			</Typography>
-			<ManageSchoolPage viewPoint="owner" />
+			<ManageSchoolPage viewPoint="others" />
 		</>
 	);
 }

@@ -9,5 +9,7 @@ public class UserIdentifyResponse
 
     public required string Role { get; set; }
 
-    public int? OwnedSchoolID { get; set; }
+    public int? OwnedSchoolId { get; set; }
+
+    public int? InstructorProfileId { get; set; }
 }

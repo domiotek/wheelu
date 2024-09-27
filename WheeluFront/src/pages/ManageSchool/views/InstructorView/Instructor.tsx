@@ -6,7 +6,14 @@ import {
 	prepareFieldErrorMessage,
 } from "../../../../modules/utils";
 import { API } from "../../../../types/api";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+	useCallback,
+	useContext,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useState,
+} from "react";
 import { SchoolPageContext } from "../../ManageSchoolPage";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import classes from "./Instructor.module.css";
@@ -43,7 +50,7 @@ export default function Instructor() {
 	const [editingAllowedCategories, setEditingAllowedCategories] =
 		useState<boolean>(false);
 
-	const { schoolData } = useContext(SchoolPageContext);
+	const { schoolData, access } = useContext(SchoolPageContext);
 	const { snackBarProps } = useContext(AppContext);
 
 	const params = useParams();
@@ -206,6 +213,12 @@ export default function Instructor() {
 			data.maximumConcurrentStudents
 		);
 	}, [data, formContext]);
+
+	useLayoutEffect(() => {
+		if (access != "owner") {
+			navigate(popUrlSegment(location.pathname));
+		}
+	}, []);
 
 	if (isLoading && failureCount < 3) return <LoadingScreen />;
 

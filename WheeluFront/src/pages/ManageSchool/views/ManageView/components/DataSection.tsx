@@ -29,6 +29,7 @@ interface IProps {
 	states: App.Models.IState[];
 	isAdmin: boolean;
 	disabled?: boolean;
+	readonly: boolean;
 	onSavingChanges: (isSavingChanges: boolean) => void;
 }
 
@@ -37,6 +38,7 @@ export default function DataSection({
 	states,
 	isAdmin,
 	disabled,
+	readonly,
 	onSavingChanges,
 }: IProps) {
 	const [nearbyCitiesList, setNearbyCitiesList] = useState<
@@ -45,9 +47,7 @@ export default function DataSection({
 
 	const [coverPhotoName, setCoverPhotoName] = useState<string>("");
 	const [coverPhoto, setCoverPhoto] = useState<IFileData | null>(null);
-	const [descriptionLength, setDescriptionLength] = useState<number | null>(
-		null
-	);
+	const [descriptionLength, setDescriptionLength] = useState<number>(0);
 	const [preSubmitting, setPreSubmitting] = useState(false);
 
 	const params = useParams();
@@ -151,6 +151,7 @@ export default function DataSection({
 		formContext.setValue("phoneNumber", schoolData.phoneNumber);
 		formContext.setValue("email", schoolData.email);
 		formContext.setValue("description", schoolData.description ?? "");
+		setDescriptionLength(schoolData.description?.length ?? 0);
 
 		for (const prop in schoolData.address) {
 			const value = (schoolData.address as any as Record<string, string>)[
@@ -179,14 +180,17 @@ export default function DataSection({
 			formContext={formContext}
 			onSuccess={submitCallback}
 		>
-			<Button
-				className={classes.UpdatePhotoButton}
-				color="secondary"
-				onClick={updatePhotoButtonClick}
-				disabled={saveChanges.isPending || disabled}
-			>
-				Zmień zdjęcie {coverPhoto ? `(${coverPhotoName})` : ""}
-			</Button>
+			{!readonly && (
+				<Button
+					className={classes.UpdatePhotoButton}
+					color="secondary"
+					onClick={updatePhotoButtonClick}
+					disabled={saveChanges.isPending || disabled}
+				>
+					Zmień zdjęcie {coverPhoto ? `(${coverPhotoName})` : ""}
+				</Button>
+			)}
+
 			<Typography variant="h6">Podstawowe informacje</Typography>
 			<div className={classes.InputGroup}>
 				<TextFieldElement
@@ -285,7 +289,7 @@ export default function DataSection({
 			</div>
 
 			<Typography variant="h6">Adres szkoły</Typography>
-			{!isAdmin && (
+			{!isAdmin && !readonly && (
 				<Alert severity="info">
 					Aby zmienić adres siedziby szkoły, skontaktuj się z
 					administratorem.
@@ -428,15 +432,17 @@ export default function DataSection({
 				readonly={!isAdmin || saveChanges.isPending || disabled}
 			/>
 
-			<Button
-				className={classes.SubmitButton}
-				variant="contained"
-				type="submit"
-				color="secondary"
-				disabled={saveChanges.isPending || disabled}
-			>
-				Zapisz
-			</Button>
+			{!readonly && (
+				<Button
+					className={classes.SubmitButton}
+					variant="contained"
+					type="submit"
+					color="secondary"
+					disabled={saveChanges.isPending || disabled}
+				>
+					Zapisz
+				</Button>
+			)}
 		</FormContainer>
 	);
 }

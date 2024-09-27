@@ -24,7 +24,7 @@ export const CourseOffersContext = React.createContext<IContext>({
 export default function OfferSchoolView() {
 	const params = useParams();
 	const { setModalContent } = useContext(AppContext);
-	const { viewPoint } = useContext(SchoolPageContext);
+	const { access } = useContext(SchoolPageContext);
 	const qClient = useQueryClient();
 
 	const queryKey = useMemo(
@@ -54,7 +54,7 @@ export default function OfferSchoolView() {
 			>
 				<div className={classes.SectionHeader}>
 					<Typography variant="overline">Kursy</Typography>
-					{viewPoint == "owner" && (
+					{access == "owner" && (
 						<Button
 							startIcon={<Add />}
 							variant="contained"
@@ -68,7 +68,7 @@ export default function OfferSchoolView() {
 
 				<CourseTable
 					schoolID={parseInt(params["id"] ?? "")}
-					showActions={viewPoint == "owner"}
+					showActions={access == "owner"}
 				/>
 			</CourseOffersContext.Provider>
 		</ViewWrapper>

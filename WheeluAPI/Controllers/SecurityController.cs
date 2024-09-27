@@ -12,7 +12,11 @@ namespace WheeluAPI.Controllers;
 
 [ApiController]
 [Route("/api/v1/auth")]
-public class SecurityController(IJwtHandler jwtHandler, IUserService service) : BaseAPIController
+public class SecurityController(
+    IJwtHandler jwtHandler,
+    IUserService service,
+    IInstructorService instructorService
+) : BaseAPIController
 {
     [HttpPost("signup")]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -100,7 +104,8 @@ public class SecurityController(IJwtHandler jwtHandler, IUserService service) : 
                 Name = user.Name,
                 Surname = user.Surname,
                 Role = roles[0],
-                OwnedSchoolID = user.OwnedSchool?.Id,
+                OwnedSchoolId = user.OwnedSchool?.Id,
+                InstructorProfileId = (await instructorService.GetFromUserAsync(user))?.Id,
             }
         );
     }
@@ -173,7 +178,7 @@ public class SecurityController(IJwtHandler jwtHandler, IUserService service) : 
     }
 
     [HttpGet("users")]
-    [Authorize]
+    [Authorize("Administrator")]
     [ProducesResponseType(typeof(PagingResponse<UserResponseWithRole>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetUsers([FromQuery] OptionalPagingMetadata pagingMeta)

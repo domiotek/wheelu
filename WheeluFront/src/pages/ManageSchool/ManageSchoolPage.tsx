@@ -34,17 +34,18 @@ import { AccessLevel } from "../../modules/enums";
 import { App } from "../../types/app";
 
 interface IProps {
-	viewPoint: "admin" | "owner";
+	viewPoint: "admin" | "others";
 }
 
-interface IManageSchoolPageContext extends IProps {
+interface IManageSchoolPageContext {
+	access: "admin" | "owner" | "instructor";
 	setCoverPhotoPreview: (preview: any) => void;
 	schoolData: App.Models.ISchool | null;
 	queryKey: QueryKey;
 }
 
 export const SchoolPageContext = createContext<IManageSchoolPageContext>({
-	viewPoint: null as any,
+	access: null as any,
 	setCoverPhotoPreview: OutsideContextNotifier,
 	schoolData: null,
 	queryKey: [],
@@ -52,6 +53,8 @@ export const SchoolPageContext = createContext<IManageSchoolPageContext>({
 
 export default function ManageSchoolPage({ viewPoint }: IProps) {
 	const [coverPhotoPreview, setCoverPhotoPreview] = useState(null);
+	const [access, setAccess] =
+		useState<IManageSchoolPageContext["access"]>("instructor");
 
 	const params = useParams();
 	const navigate = useNavigate();
@@ -84,16 +87,31 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 	useLayoutEffect(() => {
 		if (!schoolData) return;
 
-		if (viewPoint == "admin" && accessLevel != AccessLevel.Administrator) {
-			navigate("/");
+		switch (accessLevel) {
+			case AccessLevel.Administrator:
+				setAccess("admin");
+				break;
+			case AccessLevel.SchoolOwner:
+				setAccess("owner");
+				break;
+			case AccessLevel.Instructor:
+				setAccess("instructor");
+				break;
 		}
 
 		if (
-			viewPoint == "owner" &&
-			schoolData.owner.id != userDetails?.userId
+			(accessLevel == AccessLevel.SchoolOwner &&
+				schoolData.owner.id == userDetails?.userId) ||
+			(accessLevel == AccessLevel.Instructor &&
+				schoolData.instructors.includes(
+					userDetails?.instructorProfileId ?? -1
+				)) ||
+			accessLevel == AccessLevel.Administrator
 		) {
-			navigate(`/schools/${params["id"]}`);
+			return;
 		}
+
+		navigate(`/schools/${params["id"]}`);
 	}, [schoolData]);
 
 	if (isPending) return <LoadingScreen />;
@@ -113,7 +131,7 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 				<Alert severity="error">
 					Profil {viewPoint == "admin" ? "tej" : "Twojej"} szkoły jest
 					zablokowany.{" "}
-					{viewPoint == "owner" &&
+					{viewPoint == "others" &&
 						"W razie wątpliwośći Skontaktuj się z administratorem."}
 				</Alert>
 			)}
@@ -176,7 +194,7 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 			</div>
 			<SchoolPageContext.Provider
 				value={{
-					viewPoint,
+					access,
 					setCoverPhotoPreview,
 					schoolData: schoolData ?? null,
 					queryKey,
