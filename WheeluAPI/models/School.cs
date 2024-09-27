@@ -55,4 +55,6 @@ public class School
     }
 
     public virtual required List<Vehicle> Vehicles { get; set; }
+
+    public virtual required List<Course> Courses { get; set; } = [];
 }

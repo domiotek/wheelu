@@ -104,6 +104,7 @@ public class Schoolervice(
             CourseOffers = [],
             Instructors = [],
             Vehicles = [],
+            Courses = [],
         };
 
         dbContext.Schools.Add(school);

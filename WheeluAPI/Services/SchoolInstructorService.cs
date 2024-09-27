@@ -128,6 +128,7 @@ public class SchoolInstructorService(
                 Visible = false,
                 MaximumConcurrentStudents = 0,
                 AllowedCategories = [],
+                Courses = [],
             };
 
             dbContext.SchoolInstructors.Add(employeeProfile);

@@ -20,4 +20,6 @@ public class SchoolInstructor
     public required int MaximumConcurrentStudents { get; set; }
 
     public virtual required List<CourseCategory> AllowedCategories { get; set; } = [];
+
+    public virtual required List<Course> Courses { get; set; } = [];
 }

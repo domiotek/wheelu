@@ -70,12 +70,14 @@ builder.Services.AddScoped<IInstructorService, InstructorService>();
 builder.Services.AddScoped<IInstructorInviteService, InstructorInviteService>();
 builder.Services.AddScoped<ISchoolInstructorService, SchoolInstructorService>();
 builder.Services.AddScoped<VehicleService>();
+builder.Services.AddScoped<CourseService>();
 
 builder.Services.AddScoped<CourseOfferDTOMapper>();
 builder.Services.AddScoped<CourseCategoryDTOMapper>();
 builder.Services.AddScoped<InstructorDTOMapper>();
 builder.Services.AddScoped<SchoolInstructorDTOMapper>();
 builder.Services.AddScoped<VehicleMapper>();
+builder.Services.AddScoped<CourseMapper>();
 builder.Services.AddHttpClient();
 
 builder.Services.AddCors(options =>
