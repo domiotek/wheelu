@@ -176,7 +176,7 @@ export default function ManageSchoolView() {
 						}
 					/>
 				</div>
-				{access == "owner" && (
+				{access == "admin" && (
 					<>
 						<div className={classes.Section}>
 							<Typography variant="h6">
