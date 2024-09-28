@@ -136,6 +136,7 @@ export default function App({ useSplash }: IProps) {
 
 			if (
 				!isAuthenticated &&
+				error.code == "Unauthorized" &&
 				!unauthenticatedRoutes.includes(currentURL) &&
 				!anonymousRoutes.includes(currentURL)
 			) {
@@ -149,7 +150,7 @@ export default function App({ useSplash }: IProps) {
 				return;
 			}
 
-			setTimeout(() => setSplashHidden(true), 400);
+			if (error == null) setTimeout(() => setSplashHidden(true), 400);
 		}
 	}, [data, error, location]);
 
