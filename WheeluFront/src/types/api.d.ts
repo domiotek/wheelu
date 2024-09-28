@@ -769,4 +769,23 @@ export namespace API {
 			>;
 		}
 	}
+
+	namespace Courses {
+		interface IBaseParams extends Record<string, number> {
+			schoolID: number;
+		}
+
+		namespace GetManyOfSchool {
+			type IResponse = _.IPaginatedResponse<App.Models.IShortCourse>;
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/schools/:schoolID/courses",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				Partial<_.IPagingRequest>,
+				IBaseParams
+			>;
+		}
+	}
 }

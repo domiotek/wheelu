@@ -1,6 +1,12 @@
 import { useMemo } from "react";
 import classes from "../ManageSchoolPage.module.css";
-import { CarRental, Folder, People, Settings } from "@mui/icons-material";
+import {
+	CarRental,
+	Folder,
+	People,
+	School,
+	Settings,
+} from "@mui/icons-material";
 import { App } from "../../../types/app";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ButtonBase, Paper, Typography } from "@mui/material";
@@ -24,6 +30,13 @@ export default function MainSchoolView() {
 			type: "link",
 			icon: People,
 			link: location.pathname + "/instructors",
+		});
+
+		uiTiles.push({
+			caption: "Kursy",
+			type: "link",
+			icon: School,
+			link: location.pathname + "/courses",
 		});
 
 		uiTiles.push({

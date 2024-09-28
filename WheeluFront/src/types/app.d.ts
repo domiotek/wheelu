@@ -220,6 +220,19 @@ export namespace App {
 			parts: IVehiclePartUsage[];
 			note?: string;
 		}
+
+		interface IShortCourse {
+			id: number;
+			category: CourseCategory;
+			schoolId: number;
+			student: IShortUser;
+			instructor: IShortUser;
+			instructor: IShortInstructorProfile;
+			hoursCount: number;
+			pricePerHour: number;
+			purchasedAt: string;
+			archived: boolean;
+		}
 	}
 
 	namespace UI {

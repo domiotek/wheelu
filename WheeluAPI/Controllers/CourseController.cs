@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WheeluAPI.DTO.Course;
 using WheeluAPI.helpers;
 using WheeluAPI.Mappers;
@@ -24,7 +25,10 @@ public class CourseController(
     [ProducesResponseType(typeof(List<ShortCourseResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetSchoolCoursesAsync(int schoolID)
+    public async Task<IActionResult> GetSchoolCoursesAsync(
+        int schoolID,
+        [FromQuery] OptionalPagingMetadata pagingMeta
+    )
     {
         var school = await schoolService.GetSchoolByID(schoolID);
 
@@ -35,7 +39,31 @@ public class CourseController(
             );
         }
 
-        return Ok(mapper.MapToShortDTO(school.Courses));
+        if (pagingMeta.PageNumber != null)
+        {
+            int appliedPageSize;
+
+            PagingMetadata metadata =
+                new() { PageNumber = (int)pagingMeta.PageNumber, PageSize = pagingMeta.PageSize };
+
+            var query = courseService.GetCoursesPageAsync(metadata, out appliedPageSize);
+
+            var results = await query.Where(c => c.School == school).ToListAsync();
+
+            return Paginated(
+                mapper.MapToShortDTO(results),
+                await courseService.CountAsync(school),
+                appliedPageSize
+            );
+        }
+
+        return Ok(
+            Paginated(
+                mapper.MapToShortDTO(school.Courses),
+                school.Courses.Count,
+                school.Courses.Count
+            )
+        );
     }
 
     [HttpPost("/api/v1/offers/{offerID}/purchase")]
@@ -69,7 +97,7 @@ public class CourseController(
         var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var user = await userService.GetUserByEmailAsync(userID ?? "");
 
-        var course = await courseService.CreateCourse(
+        var course = await courseService.CreateCourseAsync(
             new CourseData
             {
                 student = user!,

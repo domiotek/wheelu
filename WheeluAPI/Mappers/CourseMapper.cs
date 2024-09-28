@@ -12,6 +12,8 @@ public class CourseMapper
             Id = source.Id,
             Category = source.Category,
             SchoolId = source.School.Id,
+            Student = source.Student.GetShortDTO(),
+            Instructor = source.Instructor.Instructor.User.GetShortDTO(),
             HoursCount = source.HoursCount,
             PricePerHour = source.PricePerHour,
             PurchasedAt = source.PurchasedAt,
