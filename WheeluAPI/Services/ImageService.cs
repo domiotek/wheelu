@@ -1,12 +1,14 @@
+using Microsoft.AspNetCore.Mvc;
 using WheeluAPI.DTO;
 using WheeluAPI.DTO.Errors;
 using WheeluAPI.DTO.Image;
 using WheeluAPI.helpers;
+using WheeluAPI.Helpers;
 using WheeluAPI.models;
 
 namespace WheeluAPI.Services;
 
-public class ImageService(ApplicationDbContext dbContext, IConfiguration config)
+public class ImageService(ApplicationDbContext dbContext, UrlResolver urlHelper)
     : BaseService,
         IImageService
 {
@@ -74,7 +76,7 @@ public class ImageService(ApplicationDbContext dbContext, IConfiguration config)
 
     public ImageResponse GetDTO(Image source)
     {
-        var rootURL = config["HostURL"];
+        var rootURL = urlHelper.GetAPIUrl();
 
         return new ImageResponse
         {

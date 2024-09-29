@@ -1,8 +1,12 @@
 using System.Security.Claims;
+using System.Transactions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WheeluAPI.DTO.Course;
+using WheeluAPI.DTO.Errors;
+using WheeluAPI.DTO.Transaction;
 using WheeluAPI.helpers;
 using WheeluAPI.Mappers;
 using WheeluAPI.Services;
@@ -16,6 +20,7 @@ public class CourseController(
     ISchoolService schoolService,
     ISchoolInstructorService instructorService,
     IUserService userService,
+    TransactionService transactionService,
     CourseService courseService,
     CourseMapper mapper
 ) : BaseAPIController
@@ -68,47 +73,76 @@ public class CourseController(
 
     [HttpPost("/api/v1/offers/{offerID}/purchase")]
     [Authorize(Roles = "Student")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(BuyCourseResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> JustCreateCourseAsync(
+    public async Task<IActionResult> BuyCourseAsync(
         [FromBody] CreateCourseRequest request,
         int offerID
     )
     {
-        var offer = await offerService.GetOfferByIDAsync(offerID);
+        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            var offer = await offerService.GetOfferByIDAsync(offerID);
 
-        if (offer == null)
-            return BadRequest(
-                new APIError { Code = APIErrorCode.EntityNotFound, Details = ["Offer not found."] }
-            );
+            if (offer == null || !offer.Enabled)
+                return BadRequest(
+                    new APIError
+                    {
+                        Code = APIErrorCode.EntityNotFound,
+                        Details = ["Offer not found."],
+                    }
+                );
 
-        var instructor = await instructorService.GetInstructorByIDAsync(request.InstructorId);
+            var instructor = await instructorService.GetInstructorByIDAsync(request.InstructorId);
 
-        if (instructor == null)
-            return BadRequest(
-                new APIError
+            if (instructor == null)
+                return BadRequest(
+                    new APIError
+                    {
+                        Code = APIErrorCode.EntityNotFound,
+                        Details = ["Instructor not found"],
+                    }
+                );
+
+            var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await userService.GetUserByEmailAsync(userID ?? "");
+
+            var course = await courseService.CreateCourseAsync(
+                new CourseData
                 {
-                    Code = APIErrorCode.EntityNotFound,
-                    Details = ["Instructor not found"],
+                    student = user!,
+                    instructor = instructor,
+                    offer = offer,
                 }
             );
 
-        var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var user = await userService.GetUserByEmailAsync(userID ?? "");
+            if (course == null)
+                return BadRequest(new APIError { Code = APIErrorCode.DbError });
 
-        var course = await courseService.CreateCourseAsync(
-            new CourseData
+            var transactionCreateRequest = new CreateTransactionRequest
             {
-                student = user!,
-                instructor = instructor,
-                offer = offer,
+                ClientTotalAmount = request.TotalAmount,
+                Payer = user!,
+                Course = course,
+                Offer = offer,
+            };
+
+            var result = await transactionService.CreateTransaction(transactionCreateRequest);
+
+            if (!result.IsSuccess)
+            {
+                return BadRequest(
+                    new APIError<CreateTransactionErrors>
+                    {
+                        Code = result.ErrorCode,
+                        Details = result.Details,
+                    }
+                );
             }
-        );
 
-        if (course == null)
-            return BadRequest(new APIError { Code = APIErrorCode.DbError });
-
-        return StatusCode(201);
+            scope.Complete();
+            return Ok(new BuyCourseResponse { PaymentUrl = result.Data!.PaymentUrl });
+        }
     }
 }

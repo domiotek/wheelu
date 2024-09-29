@@ -1,4 +1,9 @@
 using System.Text;
+using DotNetEnv;
+using DotNetEnv.Extensions;
+using Hangfire;
+using Hangfire.Dashboard;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -6,9 +11,13 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using WheeluAPI.helpers;
+using WheeluAPI.Helpers;
 using WheeluAPI.Mappers;
+using WheeluAPI.Middlewares;
 using WheeluAPI.models;
 using WheeluAPI.Services;
+
+Env.Load().ToDotEnvDictionary();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +44,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         .UseLazyLoadingProxies();
 });
 
+builder.Services.AddHangfire(config =>
+    config.UsePostgreSqlStorage(opts =>
+        opts.UseNpgsqlConnection(Env.GetString("HANGFIRE_CONN_STR"))
+    )
+);
+builder.Services.AddHangfireServer();
+
 builder.Services.AddAuthorization();
 builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -59,6 +75,7 @@ builder
     });
 
 builder.Services.AddScoped<IJwtHandler, JwtHandler>();
+builder.Services.AddScoped<UrlResolver>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<ISchoolApplicationService, SchoolApplicationService>();
@@ -71,6 +88,8 @@ builder.Services.AddScoped<IInstructorInviteService, InstructorInviteService>();
 builder.Services.AddScoped<ISchoolInstructorService, SchoolInstructorService>();
 builder.Services.AddScoped<VehicleService>();
 builder.Services.AddScoped<CourseService>();
+builder.Services.AddScoped<TransactionService>();
+builder.Services.AddScoped<TPayService>();
 
 builder.Services.AddScoped<CourseOfferDTOMapper>();
 builder.Services.AddScoped<CourseCategoryDTOMapper>();
@@ -78,6 +97,7 @@ builder.Services.AddScoped<InstructorDTOMapper>();
 builder.Services.AddScoped<SchoolInstructorDTOMapper>();
 builder.Services.AddScoped<VehicleMapper>();
 builder.Services.AddScoped<CourseMapper>();
+builder.Services.AddScoped<TransactionMapper>();
 builder.Services.AddHttpClient();
 
 builder.Services.AddCors(options =>
@@ -106,6 +126,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowSpecificOrigin");
+
+app.UseMiddleware<BufferingMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

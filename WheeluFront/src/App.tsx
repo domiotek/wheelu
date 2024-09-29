@@ -150,7 +150,8 @@ export default function App({ useSplash }: IProps) {
 				return;
 			}
 
-			if (error == null) setTimeout(() => setSplashHidden(true), 400);
+			if (error == null || unauthenticatedRoutes.includes(currentURL))
+				setTimeout(() => setSplashHidden(true), 400);
 		}
 	}, [data, error, location]);
 

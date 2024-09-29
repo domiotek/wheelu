@@ -787,5 +787,29 @@ export namespace API {
 				IBaseParams
 			>;
 		}
+
+		namespace Buy {
+			interface IParams extends Record<string, number> {
+				offerID: number;
+			}
+
+			interface IRequest extends Record<string, number> {
+				instructorID: number;
+				totalAmount: number;
+			}
+
+			interface IResponse {
+				paymentUrl: string;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"POST",
+				"/api/v1/offers/:offerID/purchase",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				IRequest,
+				IParams
+			>;
+		}
 	}
 }

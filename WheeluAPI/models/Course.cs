@@ -7,6 +7,8 @@ public class Course
 {
     public int Id { get; set; }
 
+    public bool TransactionComplete { get; set; } = false;
+
     public required CourseCategoryType Category { get; set; }
 
     public virtual CourseOffer? Offer { get; set; }
@@ -21,7 +23,9 @@ public class Course
 
     public required decimal PricePerHour { get; set; }
 
-    public required DateTime PurchasedAt { get; set; }
+    public required DateTime CreatedAt { get; set; }
+
+    public virtual required List<Transaction> Transactions { get; set; }
 
     [NotMapped]
     public bool Archived

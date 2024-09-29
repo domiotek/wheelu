@@ -38,6 +38,12 @@ export default function CoursesView() {
 		retry: true,
 		staleTime: 60000,
 		enabled: schoolID != null,
+		select: (response) => {
+			return {
+				...response,
+				entries: response.entries.filter((offer) => offer.enabled),
+			};
+		},
 	});
 
 	return (

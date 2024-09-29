@@ -2,7 +2,6 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WheeluAPI.DTO.Errors;
-using WheeluAPI.DTO.Instructor;
 using WheeluAPI.DTO.Vehicle;
 using WheeluAPI.helpers;
 using WheeluAPI.Mappers;

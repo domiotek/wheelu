@@ -23,6 +23,10 @@ public class MailService : IMailService
                 Name = "Wheelu - Platforma Szkół Jazdy",
             }
         },
+        {
+            "payments",
+            new Sender { Email = "payments@omiotech.pl", Name = "System płatności Wheelu" }
+        },
     };
 
     private IDictionary<string, ITemplate> _templates = new Dictionary<string, ITemplate>
@@ -35,6 +39,9 @@ public class MailService : IMailService
         { "instructor-invite-create", new InstructorInviteCreateTemplate() },
         { "instructor-invite-join", new InstructorInviteJoinTemplate() },
         { "instructor-detach", new InstructorDetachTemplate() },
+        { "payment-canceled", new PaymentCanceledTemplate() },
+        { "payment-completed", new PaymentCompletedTemplate() },
+        { "payment-refunded", new PaymentRefundedTemplate() },
     };
 
     public MailService(IConfiguration configuration)

@@ -15,7 +15,7 @@ import commonClasses from "../Common.module.css";
 import classes from "./CourseView.module.css";
 import { Link as RouterLink, useLocation, useParams } from "react-router-dom";
 import { c, callAPI, popUrlSegment } from "../../../../modules/utils";
-import { Fragment, useContext, useMemo } from "react";
+import { Fragment, useCallback, useContext, useMemo } from "react";
 import { AppContext } from "../../../../App";
 import { PublicSchooPageContext } from "../../SchoolPage";
 import { useQuery } from "@tanstack/react-query";
@@ -27,11 +27,13 @@ import { initialsAvatarProps } from "../../../../modules/features";
 import InlineDot from "../../../../components/InlineDot/InlineDot";
 import MessagePanel from "../../../../components/MessagePanel/MessagePanel";
 import VehicleService from "../../../../services/Vehicle.tsx";
+import BuyCourseModal from "../../../../modals/BuyCourseModal/BuyCourseModal.tsx";
 
 export default function CourseView() {
 	const location = useLocation();
 	const params = useParams();
-	const { activeTheme, userDetails } = useContext(AppContext);
+	const { activeTheme, userDetails, setModalContent } =
+		useContext(AppContext);
 	const { schoolID } = useContext(PublicSchooPageContext);
 
 	const { data, isFetching, error } = useQuery<
@@ -48,12 +50,17 @@ export default function CourseView() {
 			),
 		select: (data) =>
 			data.entries.find(
-				(val) => val.id == parseInt(params["courseId"] ?? "")
+				(val) =>
+					val.id == parseInt(params["courseId"] ?? "") && val.enabled
 			) ?? null,
 		retry: true,
 		staleTime: 60000,
 		enabled: schoolID != null,
 	});
+
+	const buyCourseModal = useCallback(() => {
+		if (data) setModalContent(<BuyCourseModal offer={data} />);
+	}, [data]);
 
 	const canBuy = useMemo(() => {
 		return userDetails?.role == "Student";
@@ -61,7 +68,10 @@ export default function CourseView() {
 
 	if (isFetching) return <LoadingScreen />;
 
-	if (error || !data) return <></>;
+	if (error || !data)
+		return (
+			<MessagePanel image="/tangled.svg" caption="Coś poszło nie tak" />
+		);
 
 	return (
 		<div className={c([commonClasses.ViewContainer, classes.Container])}>
@@ -96,6 +106,7 @@ export default function CourseView() {
 							variant="contained"
 							size="large"
 							disabled={!canBuy}
+							onClick={buyCourseModal}
 						>
 							Kup kurs
 						</Button>

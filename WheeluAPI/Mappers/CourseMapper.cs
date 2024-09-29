@@ -16,7 +16,7 @@ public class CourseMapper
             Instructor = source.Instructor.Instructor.User.GetShortDTO(),
             HoursCount = source.HoursCount,
             PricePerHour = source.PricePerHour,
-            PurchasedAt = source.PurchasedAt,
+            CreatedAt = source.CreatedAt,
             Archived = source.Archived,
         };
     }

@@ -20,7 +20,7 @@ public class ShortCourseResponse
 
     public required decimal PricePerHour { get; set; }
 
-    public required DateTime PurchasedAt { get; set; }
+    public required DateTime CreatedAt { get; set; }
 
     public required bool Archived { get; set; }
 }

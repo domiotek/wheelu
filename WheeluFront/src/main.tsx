@@ -25,6 +25,14 @@ const RegisterPortal = React.lazy(
 );
 const LogoutPortal = React.lazy(() => import("./portals/LogoutPortal.tsx"));
 
+const PaymentSuccessPortal = React.lazy(
+	() => import("./portals/PaymentSuccessPortal.tsx")
+);
+
+const PaymentFailurePortal = React.lazy(
+	() => import("./portals/PaymentFailurePortal.tsx")
+);
+
 const DashboardPage = React.lazy(() => import("./pages/Dashboard.tsx"));
 
 const AdminPanelPage = React.lazy(
@@ -236,6 +244,14 @@ root.render(
 								element={<RegisterInstructorPortal />}
 							/>
 							<Route path="join" element={<JoinSchoolPortal />} />
+							<Route
+								path="payment-success"
+								element={<PaymentSuccessPortal />}
+							/>
+							<Route
+								path="payment-failure"
+								element={<PaymentFailurePortal />}
+							/>
 						</Route>
 					</Route>
 				</Routes>

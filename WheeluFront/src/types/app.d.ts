@@ -230,7 +230,7 @@ export namespace App {
 			instructor: IShortInstructorProfile;
 			hoursCount: number;
 			pricePerHour: number;
-			purchasedAt: string;
+			createdAt: string;
 			archived: boolean;
 		}
 	}

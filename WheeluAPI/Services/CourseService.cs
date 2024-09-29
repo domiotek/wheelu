@@ -51,7 +51,8 @@ public class CourseService(ApplicationDbContext dbContext) : BaseService
             Instructor = courseData.instructor,
             HoursCount = courseData.offer.HoursCount,
             PricePerHour = courseData.offer.PricePerHour,
-            PurchasedAt = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow,
+            Transactions = [],
         };
 
         dbContext.Courses.Add(course);

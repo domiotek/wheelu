@@ -184,6 +184,9 @@ namespace WheeluAPI.Migrations
                     b.Property<int>("Category")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("HoursCount")
                         .HasColumnType("integer");
 
@@ -196,14 +199,14 @@ namespace WheeluAPI.Migrations
                     b.Property<decimal>("PricePerHour")
                         .HasColumnType("numeric");
 
-                    b.Property<DateTime>("PurchasedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<int>("SchoolId")
                         .HasColumnType("integer");
 
                     b.Property<string>("StudentId")
                         .HasColumnType("text");
+
+                    b.Property<bool>("TransactionComplete")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -462,6 +465,88 @@ namespace WheeluAPI.Migrations
                     b.ToTable("SchoolInstructors");
                 });
 
+            modelBuilder.Entity("WheeluAPI.Models.Transaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("Completed")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("LastUpdate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("Registered")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("State")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TPayPaymentUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TPayTransactionID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TPayTransactionTitle")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Transactions");
+                });
+
+            modelBuilder.Entity("WheeluAPI.Models.TransactionItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RelatedId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid?>("TransactionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TransactionId");
+
+                    b.ToTable("TransactionItem");
+                });
+
             modelBuilder.Entity("WheeluAPI.Models.Vehicle.Vehicle", b =>
                 {
                     b.Property<int>("Id")
@@ -706,7 +791,7 @@ namespace WheeluAPI.Migrations
                         {
                             Id = 1,
                             FileName = "placeholder.png",
-                            UploadDate = new DateTime(2024, 9, 27, 12, 48, 14, 334, DateTimeKind.Utc).AddTicks(256)
+                            UploadDate = new DateTime(2024, 9, 29, 13, 34, 6, 322, DateTimeKind.Utc).AddTicks(8489)
                         });
                 });
 
@@ -1148,6 +1233,30 @@ namespace WheeluAPI.Migrations
                     b.Navigation("School");
                 });
 
+            modelBuilder.Entity("WheeluAPI.Models.Transaction", b =>
+                {
+                    b.HasOne("WheeluAPI.Models.Course", "Course")
+                        .WithMany("Transactions")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WheeluAPI.models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Course");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WheeluAPI.Models.TransactionItem", b =>
+                {
+                    b.HasOne("WheeluAPI.Models.Transaction", null)
+                        .WithMany("Items")
+                        .HasForeignKey("TransactionId");
+                });
+
             modelBuilder.Entity("WheeluAPI.Models.Vehicle.Vehicle", b =>
                 {
                     b.HasOne("WheeluAPI.models.Image", "CoverImage")
@@ -1251,6 +1360,11 @@ namespace WheeluAPI.Migrations
                     b.Navigation("City");
                 });
 
+            modelBuilder.Entity("WheeluAPI.Models.Course", b =>
+                {
+                    b.Navigation("Transactions");
+                });
+
             modelBuilder.Entity("WheeluAPI.Models.CourseCategory", b =>
                 {
                     b.Navigation("CourseOffers");
@@ -1268,6 +1382,11 @@ namespace WheeluAPI.Migrations
                     b.Navigation("Courses");
 
                     b.Navigation("EmploymentRecords");
+                });
+
+            modelBuilder.Entity("WheeluAPI.Models.Transaction", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("WheeluAPI.Models.Vehicle.Vehicle", b =>
