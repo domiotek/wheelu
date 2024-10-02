@@ -3,7 +3,7 @@ using WheeluAPI.Models;
 
 namespace WheeluAPI.Mappers;
 
-public class SchoolInstructorDTOMapper
+public class SchoolInstructorDTOMapper(CourseMapper courseMapper)
 {
     public SchoolInstructorResponse GetDTO(SchoolInstructor source)
     {
@@ -26,6 +26,7 @@ public class SchoolInstructorDTOMapper
                     EndTime = rec.EndTime,
                 })
                 .ToList(),
+            AssignedCourses = courseMapper.MapToShortDTO(source.AssignedCourses),
             MaximumConcurrentStudents = source.MaximumConcurrentStudents,
             AllowedCategories = source.AllowedCategories.Select(c => c.Id).ToList(),
         };
@@ -42,6 +43,8 @@ public class SchoolInstructorDTOMapper
                 User = source.Instructor.User.GetShortDTO(),
             },
             SchoolId = source.School.Id,
+            AssignedCoursesCount = source.AssignedCourses.Count,
+            ActiveCoursesCount = source.ActiveCourses.Count,
             MaximumConcurrentStudents = source.MaximumConcurrentStudents,
             AllowedCategories = source.AllowedCategories.Select(c => c.Id).ToList(),
         };

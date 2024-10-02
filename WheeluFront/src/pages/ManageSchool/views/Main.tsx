@@ -4,6 +4,7 @@ import {
 	CarRental,
 	Folder,
 	People,
+	ReceiptLong,
 	School,
 	Settings,
 } from "@mui/icons-material";
@@ -44,6 +45,13 @@ export default function MainSchoolView() {
 			type: "link",
 			icon: Folder,
 			link: location.pathname + "/offer",
+		});
+
+		uiTiles.push({
+			caption: "Transakcje",
+			type: "link",
+			icon: ReceiptLong,
+			link: location.pathname + "/transactions",
 		});
 
 		uiTiles.push({

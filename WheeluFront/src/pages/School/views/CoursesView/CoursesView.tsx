@@ -84,10 +84,9 @@ export default function CoursesView() {
 											{offer.vehicles.length + " "}
 											pojazd
 											{formatPolishWordSuffix(
-												offer.vehicles.length
+												offer.vehicles.length,
+												["", "y", "ów"]
 											)}{" "}
-											<InlineDot color="secondary" /> 23
-											kursantów (1 aktywny)
 										</>
 									}
 								/>

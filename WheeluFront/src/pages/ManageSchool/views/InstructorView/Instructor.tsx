@@ -220,6 +220,16 @@ export default function Instructor() {
 		}
 	}, []);
 
+	const activeCourses = useMemo(() => {
+		return data?.assignedCourses.filter((val) => !val.archived) ?? [];
+	}, [data]);
+
+	const instructorCoursesText = useMemo(() => {
+		if (!data) return "";
+
+		return `${data.assignedCourses.length} (${activeCourses.length})`;
+	}, [data]);
+
 	if (isLoading && failureCount < 3) return <LoadingScreen />;
 
 	if (error || !data)
@@ -277,11 +287,17 @@ export default function Instructor() {
 						<ListItem divider>
 							<ListItemText
 								primary="Kursy (aktywne)"
-								secondary="14 (4)"
+								secondary={instructorCoursesText}
 							/>
-							<Button variant="outlined" color="secondary">
-								Zobacz
-							</Button>
+							{data.assignedCourses.length > 0 && (
+								<Button
+									variant="outlined"
+									color="secondary"
+									onClick={() => navigate("courses")}
+								>
+									Zobacz
+								</Button>
+							)}
 						</ListItem>
 						<ListItem className={classes.RatingItem}>
 							<div>
@@ -376,10 +392,12 @@ export default function Instructor() {
 				</section>
 				<section className={classes.DetachSection}>
 					<Typography variant="h5">Odłącz instruktora</Typography>
-					<Alert severity="warning">
-						<AlertTitle>Akcja zablokowana</AlertTitle>
-						Instruktor nadal ma przypisane kursy.
-					</Alert>
+					{activeCourses.length > 0 && (
+						<Alert severity="warning">
+							<AlertTitle>Akcja zablokowana</AlertTitle>
+							Instruktor nadal ma przypisane kursy.
+						</Alert>
+					)}
 
 					<Typography>
 						Odłączony instruktor zostanie usunięty ze szkoły jazdy.
@@ -393,7 +411,11 @@ export default function Instructor() {
 							<Button
 								color="error"
 								variant="contained"
-								disabled={disabledActionsFlag || data.visible}
+								disabled={
+									disabledActionsFlag ||
+									data.visible ||
+									activeCourses.length > 0
+								}
 								onClick={() => detachMutation.mutate(null)}
 							>
 								Odłącz

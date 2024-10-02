@@ -15,6 +15,7 @@ import { initialsAvatarProps } from "../../../modules/features";
 import InlineDot from "../../../components/InlineDot/InlineDot";
 import { App } from "../../../types/app";
 import commonClasses from "../BuyCourseModal.module.css";
+import { formatPolishWordSuffix } from "../../../modules/utils";
 
 interface IProps {
 	course: App.Models.ICourseOffer;
@@ -51,7 +52,19 @@ export default function PersonalizeView({
 											primary={fullName}
 											secondary={
 												<>
-													23 kursantów (1 aktywny)
+													{
+														instructor.assignedCoursesCount
+													}{" "}
+													kursów (
+													{
+														instructor.activeCoursesCount
+													}{" "}
+													aktywn
+													{formatPolishWordSuffix(
+														instructor.activeCoursesCount,
+														["y", "e", "ych"]
+													)}
+													)
 													<InlineDot color="secondary" />
 													4.65
 												</>
@@ -72,6 +85,10 @@ export default function PersonalizeView({
 											updateSelectedInstructorId(
 												instructor.id
 											)
+										}
+										disabled={
+											instructor.activeCoursesCount >=
+											instructor.maximumConcurrentStudents
 										}
 									>
 										{selectedInstructorId == instructor.id

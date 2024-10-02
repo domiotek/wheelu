@@ -14,7 +14,12 @@ import {
 import commonClasses from "../Common.module.css";
 import classes from "./CourseView.module.css";
 import { Link as RouterLink, useLocation, useParams } from "react-router-dom";
-import { c, callAPI, popUrlSegment } from "../../../../modules/utils";
+import {
+	c,
+	callAPI,
+	formatPolishWordSuffix,
+	popUrlSegment,
+} from "../../../../modules/utils";
 import { Fragment, useCallback, useContext, useMemo } from "react";
 import { AppContext } from "../../../../App";
 import { PublicSchooPageContext } from "../../SchoolPage";
@@ -178,6 +183,7 @@ export default function CourseView() {
 					<List>
 						{data.instructors.map((instructor) => {
 							const fullName = `${instructor.instructor.user.name} ${instructor.instructor.user.surname}`;
+
 							return (
 								<Fragment key={instructor.id}>
 									<ListItem>
@@ -192,7 +198,19 @@ export default function CourseView() {
 											primary={fullName}
 											secondary={
 												<>
-													23 kursantów (1 aktywny)
+													{
+														instructor.assignedCoursesCount
+													}{" "}
+													kursów (
+													{
+														instructor.activeCoursesCount
+													}{" "}
+													aktywn
+													{formatPolishWordSuffix(
+														instructor.activeCoursesCount,
+														["y", "e", "ych"]
+													)}
+													)
 													<InlineDot color="secondary" />
 													4.65
 												</>
@@ -203,13 +221,20 @@ export default function CourseView() {
 											color="secondary"
 											disableRipple
 											size="small"
+											disabled={
+												instructor.activeCoursesCount >=
+												instructor.maximumConcurrentStudents
+											}
 										>
-											2/
+											{instructor.activeCoursesCount}/
 											{
 												instructor.maximumConcurrentStudents
 											}
 											<br />
-											Dostępny
+											{instructor.activeCoursesCount >=
+											instructor.maximumConcurrentStudents
+												? "Niedostępny"
+												: "Dostępny"}
 										</Button>
 									</ListItem>
 									<Divider variant="inset" component="li" />

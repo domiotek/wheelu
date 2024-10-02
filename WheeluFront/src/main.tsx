@@ -75,6 +75,10 @@ const SchoolManagementInstructorView = React.lazy(
 	() => import("./pages/ManageSchool/views/InstructorView/Instructor.tsx")
 );
 
+const SchoolManagementInstructorCoursesView = React.lazy(
+	() => import("./pages/ManageSchool/views/InstructorCoursesView/Courses.tsx")
+);
+
 const SchoolManagementInviteInstructorView = React.lazy(
 	() =>
 		import(
@@ -88,6 +92,10 @@ const SchoolManagementVehiclesView = React.lazy(
 
 const SchoolManagementCoursesView = React.lazy(
 	() => import("./pages/ManageSchool/views/CoursesView/Courses.tsx")
+);
+
+const SchoolManagementTransactionsView = React.lazy(
+	() => import("./pages/ManageSchool/views/TransactionsView/Transactions.tsx")
 );
 
 const PublicSchoolPage = React.lazy(
@@ -137,8 +145,16 @@ const schoolManagementViews = (
 			path="instructors/:instructorId"
 			element={<SchoolManagementInstructorView />}
 		/>
+		<Route
+			path="instructors/:instructorId/courses"
+			element={<SchoolManagementInstructorCoursesView />}
+		/>
 		<Route path="vehicles" element={<SchoolManagementVehiclesView />} />
 		<Route path="courses" element={<SchoolManagementCoursesView />} />
+		<Route
+			path="transactions"
+			element={<SchoolManagementTransactionsView />}
+		/>
 	</>
 );
 

@@ -57,4 +57,10 @@ public class School
     public virtual required List<Vehicle> Vehicles { get; set; }
 
     public virtual required List<Course> Courses { get; set; } = [];
+
+    [NotMapped]
+    public List<Course> ActiveCourses
+    {
+        get { return Courses.Where(c => !c.Archived && c.TransactionComplete).ToList(); }
+    }
 }

@@ -806,9 +806,32 @@ export namespace API {
 				"POST",
 				"/api/v1/offers/:offerID/purchase",
 				IResponse,
-				_.TCommonServerErrorCodes,
+				"InstructorUnavailable",
 				IRequest,
 				IParams
+			>;
+		}
+	}
+
+	namespace Transactions {
+		interface IBaseParams extends Record<string, number> {
+			schoolID: number;
+		}
+
+		namespace GetManyOfSchool {
+			type IResponse = _.IPaginatedResponse<App.Models.IShortTransaction>;
+
+			interface IRequestData extends Record<string, number | undefined> {
+				schoolID: number;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/transactions",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				Partial<_.IPagingRequest> & IRequestData,
+				IBaseParams
 			>;
 		}
 	}

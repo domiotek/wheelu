@@ -9,7 +9,7 @@
 	gap: 0.5em;
 }
 
-.DetailsSection > ul{
+.DetailsSection>ul {
 	max-width: 700px;
 }
 
@@ -21,4 +21,8 @@
 
 .InstructorSection ul {
 	margin-top: 2em;
+}
+
+.InstructorSection ul button {
+	pointer-events: none;
 }

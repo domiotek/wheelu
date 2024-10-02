@@ -8,27 +8,27 @@ import {
 	DEFAULT_TABLE_PAGE_SIZE,
 	TABLE_PAGE_SIZE_OPTIONS,
 } from "../../../../constants";
-import { CourseOffersContext } from "../Courses";
+import { TransactionsViewContext } from "../Transactions";
 import { CurrencyFormatter } from "../../../../../modules/formatters";
 import AuthService from "../../../../../services/Auth";
-import { renderCategoryChips } from "../../../../../modules/features";
+import TransactionService from "../../../../../services/Transaction";
 
 interface IProps {
 	schoolID: number;
 	supportFilter?: boolean;
 }
 
-export default function CourseTable({ schoolID, supportFilter }: IProps) {
+export default function TransactionsTable({ schoolID, supportFilter }: IProps) {
 	const [paginationModel, setPaginationModel] = useState({
 		pageSize: DEFAULT_TABLE_PAGE_SIZE,
 		page: 0,
 	});
 
-	const { queryKey } = useContext(CourseOffersContext);
+	const { queryKey } = useContext(TransactionsViewContext);
 
 	const { data, isFetching } = useQuery<
-		API.Courses.GetManyOfSchool.IResponse,
-		API.Courses.GetManyOfSchool.IEndpoint["error"]
+		API.Transactions.GetManyOfSchool.IResponse,
+		API.Transactions.GetManyOfSchool.IEndpoint["error"]
 	>({
 		queryKey: queryKey.concat(
 			supportFilter
@@ -39,9 +39,9 @@ export default function CourseTable({ schoolID, supportFilter }: IProps) {
 				  ]
 		),
 		queryFn: () =>
-			callAPI<API.Courses.GetManyOfSchool.IEndpoint>(
+			callAPI<API.Transactions.GetManyOfSchool.IEndpoint>(
 				"GET",
-				"/api/v1/schools/:schoolID/courses",
+				"/api/v1/transactions",
 				{
 					PageNumber: supportFilter
 						? undefined
@@ -49,81 +49,69 @@ export default function CourseTable({ schoolID, supportFilter }: IProps) {
 					PagingSize: supportFilter
 						? undefined
 						: paginationModel.pageSize,
-				},
-				{ schoolID }
+					schoolID,
+				}
 			),
 		retry: true,
 		staleTime: 60000,
 	});
 
 	const columns = useMemo(() => {
-		const result: GridColDef<App.Models.IShortCourse>[] = [
-			{ field: "id", headerName: "ID", width: 75, type: "number" },
+		const result: GridColDef<App.Models.IShortTransaction>[] = [
+			{ field: "id", headerName: "ID", width: 300, type: "number" },
 			{
 				field: "student",
 				headerName: "Kursant",
 				width: 150,
 				type: "string",
 				filterable: supportFilter,
-				valueGetter: (_v, row) =>
-					AuthService.getUserFullName(row.student),
+				valueGetter: (_v, row) => AuthService.getUserFullName(row.user),
 			},
 			{
-				field: "category",
-				headerName: "Kategoria",
-				width: 100,
-				type: "custom",
-				filterable: supportFilter,
-				renderCell: (params) =>
-					renderCategoryChips([params.row.category]),
-			},
-			{
-				field: "instructor",
-				headerName: "Instruktor",
-				width: 150,
+				field: "state",
+				headerName: "Status",
+				width: 125,
 				type: "string",
 				filterable: supportFilter,
-				valueGetter: (_v, row) =>
-					AuthService.getUserFullName(row.instructor),
+				valueGetter: (value) =>
+					TransactionService.translateTransactionStatus(value),
 			},
 			{
-				field: "hoursCount",
-				headerName: "Ilość godzin",
+				field: "itemCount",
+				headerName: "Ilość pozycji",
 				width: 100,
 				type: "number",
 				filterable: supportFilter,
 			},
 			{
-				field: "pricePerHour",
-				headerName: "Cena za godzinę",
-				width: 125,
+				field: "totalAmount",
+				headerName: "Wartość",
+				width: 100,
 				type: "number",
 				filterable: supportFilter,
-				valueFormatter: (value) =>
-					CurrencyFormatter.format(Number(value)),
+				valueFormatter: (val) => CurrencyFormatter.format(val),
 			},
 			{
-				field: "archived",
-				headerName: "Zarchiwizowany",
-				width: 125,
-				type: "boolean",
-			},
-			{
-				field: "createdAt",
-				headerName: "Zakupiono",
-				width: 250,
+				field: "registered",
+				headerName: "Utworzono",
+				width: 175,
 				type: "dateTime",
 				filterable: supportFilter,
 				valueGetter: (value) => new Date(value),
 			},
 			{
-				field: "actions",
-				headerName: "",
-				width: 75,
-				type: "actions",
-				getActions: () => {
-					return [];
-				},
+				field: "lastUpdate",
+				headerName: "Ostatnia zmiana",
+				width: 175,
+				type: "dateTime",
+				filterable: supportFilter,
+				valueGetter: (value) => new Date(value),
+			},
+			{
+				field: "tPayTransactionId",
+				headerName: "Numer transakcji",
+				width: 175,
+				type: "string",
 			},
 		];
 

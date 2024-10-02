@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using System.Transactions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WheeluAPI.DTO.Course;
@@ -62,12 +61,10 @@ public class CourseController(
             );
         }
 
-        return Ok(
-            Paginated(
-                mapper.MapToShortDTO(school.Courses),
-                school.Courses.Count,
-                school.Courses.Count
-            )
+        return Paginated(
+            mapper.MapToShortDTO(school.Courses),
+            school.Courses.Count,
+            school.Courses.Count
         );
     }
 
@@ -108,7 +105,7 @@ public class CourseController(
             var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await userService.GetUserByEmailAsync(userID ?? "");
 
-            var course = await courseService.CreateCourseAsync(
+            var courseResult = await courseService.CreateCourseAsync(
                 new CourseData
                 {
                     student = user!,
@@ -117,14 +114,20 @@ public class CourseController(
                 }
             );
 
-            if (course == null)
-                return BadRequest(new APIError { Code = APIErrorCode.DbError });
+            if (!courseResult.IsSuccess)
+                return BadRequest(
+                    new APIError<CourseCreationErrors>
+                    {
+                        Code = courseResult.ErrorCode,
+                        Details = courseResult.Details,
+                    }
+                );
 
             var transactionCreateRequest = new CreateTransactionRequest
             {
                 ClientTotalAmount = request.TotalAmount,
                 Payer = user!,
-                Course = course,
+                Course = courseResult.Data!,
                 Offer = offer,
             };
 

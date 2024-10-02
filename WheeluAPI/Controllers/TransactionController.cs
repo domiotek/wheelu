@@ -106,7 +106,7 @@ public class TransactionController(
                 new() { PageNumber = (int)pagingMeta.PageNumber, PageSize = pagingMeta.PageSize };
 
             if (schoolID != null)
-                query.Where(t => t.Course.School.Id == schoolID);
+                query.Where(t => t.School.Id == schoolID);
 
             if (userID != null)
                 query.Where(t => t.User.Id == userID);
@@ -143,7 +143,7 @@ public class TransactionController(
                     }
                 );
 
-            query = query.Where(t => t.Course.School.Id == schoolID);
+            query = query.Where(t => t.School.Id == schoolID);
         }
 
         if (userID != null)
@@ -185,7 +185,7 @@ public class TransactionController(
         if (
             transaction.User.Id != user!.Id
             && await schoolService.ValidateSchoolManagementAccess(
-                transaction.Course.School,
+                transaction.School,
                 userEmail!,
                 SchoolManagementAccessMode.AllPrivileged
             )

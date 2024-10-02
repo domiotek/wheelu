@@ -64,6 +64,8 @@ public class Schoolervice(
             Instructors = source.Instructors.Select(i => i.Instructor.Id).ToList(),
             OldestVehicleYear =
                 source.Vehicles.Count > 0 ? source.Vehicles.Min(v => v.ManufacturingYear) : null,
+            CoursesCount = source.Courses.Count,
+            ActiveCoursesCount = source.ActiveCourses.Count,
         };
     }
 

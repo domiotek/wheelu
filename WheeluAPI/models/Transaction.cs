@@ -18,7 +18,9 @@ public class Transaction
 
     public required TransactionState State { get; set; }
 
-    public virtual required Course Course { get; set; }
+    public virtual required School School { get; set; }
+
+    public virtual Course? Course { get; set; }
 
     public virtual required List<TransactionItem> Items { get; set; }
 

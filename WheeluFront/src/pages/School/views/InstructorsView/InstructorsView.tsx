@@ -13,7 +13,7 @@ import classes from "./InstructorsView.module.css";
 import commonClasses from "../Common.module.css";
 import { useQuery } from "@tanstack/react-query";
 import { API } from "../../../../types/api";
-import { callAPI } from "../../../../modules/utils";
+import { callAPI, formatPolishWordSuffix } from "../../../../modules/utils";
 import { useContext } from "react";
 import { PublicSchooPageContext } from "../../SchoolPage";
 import LoadingScreen from "../../../../components/LoadingScreen/LoadingScreen";
@@ -60,47 +60,70 @@ export default function InstructorsView() {
 				/>
 			) : (
 				<List>
-					{data?.map((instructor) => (
-						<Paper
-							key={instructor.id}
-							className={classes.InstructorPanel}
-							component={ListItem}
-						>
-							<div className={classes.Content}>
-								<ListItemAvatar>
-									<Avatar
-										{...initialsAvatarProps(
-											`${instructor.instructor.user.name} ${instructor.instructor.user.surname}`
-										)}
-									/>
-								</ListItemAvatar>
-								<ListItemText
-									className={classes.Text}
-									primary={
-										<>
-											{instructor.instructor.user.name}{" "}
-											{instructor.instructor.user.surname}
-											<br />
-											{renderCategoryChips(
-												instructor.allowedCategories
-											)}
-										</>
-									}
-									secondary={
-										<>
-											23 kursantów (1 aktywny)
-											<InlineDot color="secondary" />
-											4.65
-										</>
-									}
-								/>
-							</div>
+					{data?.map((instructor) => {
+						const activeCoursesCount =
+							instructor.assignedCourses.filter(
+								(c) => !c.archived
+							).length;
 
-							<Button variant="outlined" color="secondary">
-								Recenzje
-							</Button>
-						</Paper>
-					))}
+						return (
+							<Paper
+								key={instructor.id}
+								className={classes.InstructorPanel}
+								component={ListItem}
+							>
+								<div className={classes.Content}>
+									<ListItemAvatar>
+										<Avatar
+											{...initialsAvatarProps(
+												`${instructor.instructor.user.name} ${instructor.instructor.user.surname}`
+											)}
+										/>
+									</ListItemAvatar>
+									<ListItemText
+										className={classes.Text}
+										primary={
+											<>
+												{
+													instructor.instructor.user
+														.name
+												}{" "}
+												{
+													instructor.instructor.user
+														.surname
+												}
+												<br />
+												{renderCategoryChips(
+													instructor.allowedCategories
+												)}
+											</>
+										}
+										secondary={
+											<>
+												{
+													instructor.assignedCourses
+														.length
+												}{" "}
+												kursów ({activeCoursesCount}{" "}
+												aktywn
+												{formatPolishWordSuffix(
+													activeCoursesCount,
+													["y", "e", "ych"]
+												)}
+												)
+												<InlineDot color="secondary" />
+												4.65
+											</>
+										}
+									/>
+								</div>
+
+								<Button variant="outlined" color="secondary">
+									Recenzje
+								</Button>
+							</Paper>
+						);
+					})}
 				</List>
 			)}
 		</div>

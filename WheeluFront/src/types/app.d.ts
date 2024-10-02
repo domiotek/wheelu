@@ -108,6 +108,8 @@ export namespace App {
 			vehicleCount: number;
 			instructors: number[];
 			oldestVehicleYear?: number;
+			coursesCount: number;
+			activeCoursesCount: number;
 		}
 
 		interface ICityMatching {
@@ -138,7 +140,7 @@ export namespace App {
 			pricePerHour: number;
 			createdAt: string;
 			lastUpdatedAt: string;
-			instructors: IEmployedInstructor[];
+			instructors: IShortEmployedInstructor[];
 			vehicles: IShortVehicle[];
 		}
 
@@ -157,6 +159,16 @@ export namespace App {
 			endTime: string;
 		}
 
+		interface IShortEmployedInstructor {
+			id: number;
+			instructor: IShortInstructorProfile;
+			schoolId: number;
+			assignedCoursesCount: number;
+			activeCoursesCount: number;
+			maximumConcurrentStudents: number;
+			allowedCategories: CourseCategory[];
+		}
+
 		interface IEmployedInstructor {
 			id: number;
 			instructor: IShortInstructorProfile;
@@ -164,6 +176,7 @@ export namespace App {
 			detached: boolean;
 			employmentRecords: IEmploymentRecord[];
 			visible: boolean;
+			assignedCourses: IShortCourse[];
 			maximumConcurrentStudents: number;
 			allowedCategories: CourseCategory[];
 		}
@@ -232,6 +245,20 @@ export namespace App {
 			pricePerHour: number;
 			createdAt: string;
 			archived: boolean;
+		}
+
+		interface IShortTransaction {
+			id: string;
+			state: "Registered" | "Complete" | "Canceled" | "Refund";
+			itemCount: number;
+			course?: IShortCourse;
+			user: IShortUser;
+			schoolId: number;
+			totalAmount: number;
+			registered: string;
+			completed?: string;
+			lastUpdate: string;
+			tPayTransactionId: number;
 		}
 	}
 

@@ -12,12 +12,14 @@ public class TransactionMapper(CourseMapper courseMapper)
             Id = source.Id.ToString(),
             State = source.State.ToString(),
             ItemCount = source.Items.Count,
-            Course = courseMapper.GetShortDTO(source.Course),
+            Course = source.Course != null ? courseMapper.GetShortDTO(source.Course) : null,
+            SchoolId = source.School.Id,
+            User = source.User.GetShortDTO(),
             TotalAmount = source.TotalAmount,
             Registered = source.Registered,
             Completed = source.Completed,
             LastUpdate = source.LastUpdate,
-            TPayTransactionID = source.TPayTransactionID,
+            TPayTransactionId = source.TPayTransactionID,
         };
     }
 
@@ -33,12 +35,14 @@ public class TransactionMapper(CourseMapper courseMapper)
             Id = source.Id.ToString(),
             State = source.State.ToString(),
             ItemCount = source.Items.Count,
-            Course = courseMapper.GetShortDTO(source.Course),
+            Course = source.Course != null ? courseMapper.GetShortDTO(source.Course) : null,
             TotalAmount = source.TotalAmount,
+            SchoolId = source.School.Id,
+            User = source.User.GetShortDTO(),
             Registered = source.Registered,
             Completed = source.Completed,
             LastUpdate = source.LastUpdate,
-            TPayTransactionID = source.TPayTransactionID,
+            TPayTransactionId = source.TPayTransactionID,
             TPayPaymentUrl = source.TPayPaymentUrl,
             Items = source
                 .Items.Select(i => new TransactionItemDTO

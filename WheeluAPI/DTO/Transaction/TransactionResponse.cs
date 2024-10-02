@@ -1,4 +1,5 @@
 using WheeluAPI.DTO.Course;
+using WheeluAPI.DTO.User;
 
 namespace WheeluAPI.DTO.Transaction;
 
@@ -10,7 +11,11 @@ public class ShortTransactionDTO
 
     public required int ItemCount { get; set; }
 
-    public required ShortCourseResponse Course { get; set; }
+    public ShortCourseResponse? Course { get; set; }
+
+    public required int SchoolId { get; set; }
+
+    public required ShortUserResponse User { get; set; }
 
     public required decimal TotalAmount { get; set; }
 
@@ -20,7 +25,7 @@ public class ShortTransactionDTO
 
     public required DateTime LastUpdate { get; set; }
 
-    public required string TPayTransactionID { get; set; }
+    public required string TPayTransactionId { get; set; }
 }
 
 public class TransactionDTO : ShortTransactionDTO

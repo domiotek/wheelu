@@ -211,6 +211,8 @@ export function translateGenericErrorCodes(
 			return "Twoja sesja wygasła. Odśwież stronę i zaloguj się ponownie.";
 		case "AccessDenied":
 			return "Nie masz wystarczających uprawnień, aby wykonać tę akcję, lub wyświetlić te dane.";
+		case "EntityNotFound":
+			return "Nie znaleziono żądanego obiektu.";
 	}
 }
 
@@ -226,15 +228,27 @@ export function popUrlSegment(url: string): string {
 	return url.split("/").slice(0, -1).join("/");
 }
 
-export function formatPolishWordSuffix(count: number) {
+/**
+ * Returns suffix based on provided item count based on following rules:
+ * * if count = 1, then suffix0
+ * * if count = 2 || 3 || 4, then suffix1
+ * * suffix2 for other cases.
+ * @param count
+ * @param suffixTable
+ * @returns
+ */
+export function formatPolishWordSuffix(
+	count: number,
+	[suffix0, suffix1, suffix2]: string[]
+) {
 	const lastDigit = Math.abs(count) % 10;
 
 	switch (true) {
 		case count === 1:
-			return "";
+			return suffix0;
 		case lastDigit == 2 || lastDigit == 3 || lastDigit == 4:
-			return "y";
+			return suffix1;
 		default:
-			"ów";
+			return suffix2;
 	}
 }

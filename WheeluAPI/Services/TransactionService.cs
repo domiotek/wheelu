@@ -127,8 +127,8 @@ public class TransactionService(
         {
             FirstName = transaction.User.Name,
             TransactionId = transaction.TPayTransactionTitle,
-            SchoolName = transaction.Course.School.Name,
-            CategoryName = transaction.Course.Category.ToString(),
+            SchoolName = transaction.School.Name,
+            CategoryName = transaction.Course?.Category.ToString() ?? "",
         };
 
         if (
@@ -226,6 +226,7 @@ public class TransactionService(
         var transaction = new Transaction
         {
             State = TransactionState.Registered,
+            School = requestData.Course.School,
             Course = requestData.Course,
             Items = transactionItems,
             User = requestData.Payer,
@@ -248,7 +249,7 @@ public class TransactionService(
 
         backgroundJobs.Schedule(
             () => CancelTransactionTask(transaction.Id),
-            TimeSpan.FromSeconds(15)
+            TimeSpan.FromMinutes(7)
         );
 
         result.IsSuccess = true;
@@ -261,10 +262,16 @@ public class TransactionService(
         return result;
     }
 
+    /// <summary>
+    /// Also removes related Course identity!!
+    /// </summary>
     public async Task<bool> CancelTransaction(Transaction transaction)
     {
         transaction.State = TransactionState.Canceled;
         transaction.LastUpdate = DateTime.UtcNow;
+
+        dbContext.Courses.Remove(transaction.Course!);
+        transaction.Course = null;
 
         dbContext.Transactions.Update(transaction);
 
@@ -279,7 +286,7 @@ public class TransactionService(
 
         if (transaction.Items.Find(i => i.Type == TransactionItemType.Course) != null)
         {
-            transaction.Course.TransactionComplete = true;
+            transaction.Course!.TransactionComplete = true;
         }
 
         dbContext.Transactions.Update(transaction);

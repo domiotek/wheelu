@@ -1,3 +1,7 @@
 namespace WheeluAPI.DTO.Errors;
 
-public enum CourseCreationErrors { }
+public enum CourseCreationErrors
+{
+    DbError,
+    InstructorUnavailable,
+}

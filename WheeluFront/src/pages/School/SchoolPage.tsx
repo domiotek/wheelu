@@ -148,7 +148,8 @@ export default function SchoolPage() {
 									Kursanci (aktywni)
 								</Typography>
 								<Typography variant="body2">
-									150 (11)
+									{schoolData?.coursesCount} (
+									{schoolData?.activeCoursesCount})
 								</Typography>
 							</div>
 							<div className={classes.DetailCell}>

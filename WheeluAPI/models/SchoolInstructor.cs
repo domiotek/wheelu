@@ -17,6 +17,18 @@ public class SchoolInstructor
 
     public required bool Visible { get; set; }
 
+    [NotMapped]
+    public List<Course> AssignedCourses
+    {
+        get { return Courses.Where(c => c.Instructor.Id == Id).ToList(); }
+    }
+
+    [NotMapped]
+    public List<Course> ActiveCourses
+    {
+        get { return AssignedCourses.Where(c => !c.Archived).ToList(); }
+    }
+
     public required int MaximumConcurrentStudents { get; set; }
 
     public virtual required List<CourseCategory> AllowedCategories { get; set; } = [];
