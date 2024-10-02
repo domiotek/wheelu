@@ -32,6 +32,7 @@ import {
 import { AppContext } from "../../App";
 import { AccessLevel } from "../../modules/enums";
 import { App } from "../../types/app";
+import LazyBackendImage from "../../components/LazyBackendImage/LazyBackendImage";
 
 interface IProps {
 	viewPoint: "admin" | "others";
@@ -186,11 +187,19 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 						<Typography variant="body2">4.0 (12 ocen)</Typography>
 					</ListItem>
 				</List>
-				<img
-					className={classes.Image}
-					src={coverPhotoPreview ?? schoolData?.coverImage.url}
-					alt="School cover image"
-				/>
+				{coverPhotoPreview ? (
+					<img
+						className={classes.Image}
+						src={coverPhotoPreview}
+						alt="School cover image"
+					/>
+				) : (
+					<LazyBackendImage
+						className={classes.Image}
+						url={schoolData?.coverImage.url ?? ""}
+						alt="School cover image"
+					/>
+				)}
 			</div>
 			<SchoolPageContext.Provider
 				value={{

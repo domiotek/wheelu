@@ -8,6 +8,7 @@ import { useContext, useMemo } from "react";
 import VehicleService from "../../../services/Vehicle.tsx";
 import { c } from "../../../modules/utils.tsx";
 import { AppContext } from "../../../App.tsx";
+import LazyBackendImage from "../../../components/LazyBackendImage/LazyBackendImage.tsx";
 
 interface IProps {
 	data: App.Models.IVehicle;
@@ -58,10 +59,10 @@ export default function PresentationView({
 	return (
 		<>
 			<div className={classes.Overview}>
-				<img
-					src={data.coverImage.url}
-					alt="Vehicle image"
+				<LazyBackendImage
 					className={classes.CoverImage}
+					url={data.coverImage.url}
+					alt="Vehicle image"
 				/>
 				<div className={classes.VehicleParts}>
 					{partComponets.map((comp) => comp)}

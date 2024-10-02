@@ -24,6 +24,8 @@ import LoadingScreen from "../../components/LoadingScreen/LoadingScreen";
 import EntityNotFound from "../AdminPanel/components/EntityNotFound/EntityNotFound";
 import { DateTime } from "luxon";
 import { AppContext } from "../../App";
+import { getBackendImageSrc } from "../../modules/features";
+import LazyBackendImage from "../../components/LazyBackendImage/LazyBackendImage";
 
 interface IContext {
 	schoolID: number;
@@ -122,8 +124,9 @@ export default function SchoolPage() {
 		<div>
 			<div className={classes.Header}>
 				<div className={classes.TopSection}>
-					<img
-						src={schoolData?.coverImage.url}
+					<LazyBackendImage
+						className={classes.Image}
+						url={schoolData?.coverImage.url ?? ""}
 						alt="Driving school picture"
 					/>
 					<div className={classes.DetailsSection}>

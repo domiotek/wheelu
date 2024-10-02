@@ -106,3 +106,22 @@ export function renderCategoryChips(enabledCategories: CourseCategory[]) {
 		);
 	});
 }
+
+export async function getBackendImageSrc(url: string): Promise<string> {
+	if (process.env.NODE_ENV == "production") return url;
+
+	try {
+		const source = await new Promise<string>((resolve) => {
+			fetch(url, {
+				headers: {
+					"ngrok-skip-browser-warning": "true",
+				},
+			})
+				.then((response) => response.blob())
+				.then((blob) => resolve(URL.createObjectURL(blob)));
+		});
+		return source;
+	} catch (error) {
+		return "";
+	}
+}

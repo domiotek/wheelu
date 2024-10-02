@@ -30,6 +30,7 @@ import { API } from "../../../types/api";
 import { useMutation } from "@tanstack/react-query";
 import VehicleService from "../../../services/Vehicle.tsx";
 import { AppContext } from "../../../App.tsx";
+import LazyBackendImage from "../../../components/LazyBackendImage/LazyBackendImage.tsx";
 
 interface IProps {
 	schoolID: number;
@@ -194,15 +195,22 @@ export default function EditView({
 						classes.ImageEditContainer,
 					])}
 				>
-					<img
-						className={classes.CoverImage}
-						src={
-							coverPhotoPreview ??
-							data?.coverImage.url ??
-							"https://localhost:9090/static/placeholder.png"
-						}
-						alt="Vehicle image"
-					/>
+					{coverPhotoPreview ? (
+						<img
+							className={classes.CoverImage}
+							src={coverPhotoPreview}
+							alt="Vehicle image"
+						/>
+					) : (
+						<LazyBackendImage
+							className={classes.CoverImage}
+							url={
+								data?.coverImage.url ??
+								"https://localhost:9090/static/placeholder.png"
+							}
+							alt="Vehicle image"
+						/>
+					)}
 					<div className={classes.Cover}></div>
 					<div className={classes.ButtonsBar}>
 						<Button

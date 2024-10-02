@@ -1,19 +1,21 @@
+using DotNetEnv;
+
 namespace WheeluAPI.Helpers;
 
 public class UrlResolver(IConfiguration configuration)
 {
     public string? GetClientUrl()
     {
-        return configuration["Urls:Client"];
+        return Env.GetString("Urls.Client") ?? configuration["Urls:Client"];
     }
 
     public string? GetAPIUrl()
     {
-        return configuration["Urls:API"];
+        return Env.GetString("Urls.API") ?? configuration["Urls:API"];
     }
 
     public string? GetTPayAPIUrl()
     {
-        return configuration["Urls:TPay"];
+        return Env.GetString("Urls.TPay") ?? configuration["Urls:TPay"];
     }
 }

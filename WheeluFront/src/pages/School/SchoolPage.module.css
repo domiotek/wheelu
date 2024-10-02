@@ -9,7 +9,7 @@
 	margin: auto;
 }
 
-.TopSection img {
+.TopSection .Image {
 	margin: auto;
 	width: 100%;
 	aspect-ratio: 16 / 9;
@@ -45,8 +45,8 @@
 	.Header {
 		max-width: 600px;
 	}
-	
-	.TopSection img {
+
+	.TopSection .Image {
 		max-width: 450px;
 	}
 
@@ -69,7 +69,7 @@
 		max-width: 800px;
 	}
 
-	.TopSection img {
+	.TopSection .Image {
 		max-width: 500px;
 	}
 }
