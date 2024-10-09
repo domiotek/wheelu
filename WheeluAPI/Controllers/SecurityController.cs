@@ -178,7 +178,7 @@ public class SecurityController(
     }
 
     [HttpGet("users")]
-    [Authorize("Administrator")]
+    [Authorize(Roles = "Administrator")]
     [ProducesResponseType(typeof(PagingResponse<UserResponseWithRole>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetUsers([FromQuery] OptionalPagingMetadata pagingMeta)
