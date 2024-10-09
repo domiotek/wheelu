@@ -7,37 +7,58 @@ import MainLayout from "./layouts/MainLayout.tsx";
 import PortalLayout from "./layouts/PortalLayout.tsx";
 import AnonymousLayout from "./layouts/AnonymousLayout.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import ResendActivationPortal from "./portals/ResendActivationPortal.tsx";
-import ActivateAccountPortal from "./portals/ActivateAccountPortal.tsx";
-import ResolveApplication from "./pages/AdminPanel/views/ResolveApplication.tsx";
-import ResetPasswordPortal from "./portals/ResetPasswordPortal.tsx";
-import RegisterInstructorPortal from "./portals/RegisterPortal/RegisterInstructorPortal.tsx";
-import JoinSchoolPortal from "./portals/JoinSchoolPortal.tsx";
 
-const LandingPage = React.lazy(() => import("./pages/LandingPage.tsx"));
-const RegisterSchoolPage = React.lazy(
-	() => import("./pages/RegisterSchoolPage.tsx")
-);
+/** Portals */
 
 const LoginPortal = React.lazy(() => import("./portals/LoginPortal.tsx"));
 const RegisterPortal = React.lazy(
 	() => import("./portals/RegisterPortal/RegisterPortal.tsx")
 );
 const LogoutPortal = React.lazy(() => import("./portals/LogoutPortal.tsx"));
-
+const ResendActivationPortal = React.lazy(
+	() => import("./portals/ResendActivationPortal.tsx")
+);
+const ActivateAccountPortal = React.lazy(
+	() => import("./portals/ActivateAccountPortal.tsx")
+);
+const ResetPasswordPortal = React.lazy(
+	() => import("./portals/ResetPasswordPortal.tsx")
+);
+const RegisterInstructorPortal = React.lazy(
+	() => import("./portals/RegisterPortal/RegisterInstructorPortal.tsx")
+);
+const JoinSchoolPortal = React.lazy(
+	() => import("./portals/JoinSchoolPortal.tsx")
+);
 const PaymentSuccessPortal = React.lazy(
 	() => import("./portals/PaymentSuccessPortal.tsx")
 );
-
 const PaymentFailurePortal = React.lazy(
 	() => import("./portals/PaymentFailurePortal.tsx")
 );
 
-const DashboardPage = React.lazy(() => import("./pages/Dashboard.tsx"));
+/** Pages */
 
+const LandingPage = React.lazy(() => import("./pages/LandingPage.tsx"));
+const RegisterSchoolPage = React.lazy(
+	() => import("./pages/RegisterSchoolPage.tsx")
+);
+const DashboardPage = React.lazy(() => import("./pages/Dashboard.tsx"));
 const AdminPanelPage = React.lazy(
 	() => import("./pages/AdminPanel/AdminPanel.tsx")
 );
+const ManageSchoolPage = React.lazy(
+	() => import("./pages/ManageSchool/ManageSchoolPage.tsx")
+);
+const SchoolPageWrapper = React.lazy(
+	() => import("./pages/ManageSchool/SchoolPageWrapper.tsx")
+);
+const PublicSchoolPage = React.lazy(
+	() => import("./pages/School/SchoolPage.tsx")
+);
+
+/** Admin panel subviews */
+
 const MainAPView = React.lazy(
 	() => import("./pages/AdminPanel/views/Main.tsx")
 );
@@ -50,13 +71,13 @@ const AllSchoolsView = React.lazy(
 const AllUsersView = React.lazy(
 	() => import("./pages/AdminPanel/views/AllUsers.tsx")
 );
+const ResolveApplicationView = React.lazy(
+	() => import("./pages/AdminPanel/views/ResolveApplication.tsx")
+);
 
-const ManageSchoolPage = React.lazy(
-	() => import("./pages/ManageSchool/ManageSchoolPage.tsx")
-);
-const SchoolPageWrapper = React.lazy(
-	() => import("./pages/ManageSchool/SchoolPageWrapper.tsx")
-);
+/**
+ * ManageSchoolPage subviews
+ */
 const SchoolManagementMainView = React.lazy(
 	() => import("./pages/ManageSchool/views/Main.tsx")
 );
@@ -66,58 +87,45 @@ const SchoolManagementManageView = React.lazy(
 const SchoolManagementOfferView = React.lazy(
 	() => import("./pages/ManageSchool/views/OfferView/Offer.tsx")
 );
-
 const SchoolManagementInstructorsView = React.lazy(
 	() => import("./pages/ManageSchool/views/InstructorsView/Instructors.tsx")
 );
-
 const SchoolManagementInstructorView = React.lazy(
 	() => import("./pages/ManageSchool/views/InstructorView/Instructor.tsx")
 );
-
 const SchoolManagementInstructorCoursesView = React.lazy(
 	() => import("./pages/ManageSchool/views/InstructorCoursesView/Courses.tsx")
 );
-
 const SchoolManagementInviteInstructorView = React.lazy(
 	() =>
 		import(
 			"./pages/ManageSchool/views/InviteInstructorView/InviteInstructorView.tsx"
 		)
 );
-
 const SchoolManagementVehiclesView = React.lazy(
 	() => import("./pages/ManageSchool/views/VehiclesView/Vehicles.tsx")
 );
-
 const SchoolManagementCoursesView = React.lazy(
 	() => import("./pages/ManageSchool/views/CoursesView/Courses.tsx")
 );
-
 const SchoolManagementTransactionsView = React.lazy(
 	() => import("./pages/ManageSchool/views/TransactionsView/Transactions.tsx")
 );
 
-const PublicSchoolPage = React.lazy(
-	() => import("./pages/School/SchoolPage.tsx")
-);
+/** Public School sub-views */
 
 const PublicSchoolCoursesView = React.lazy(
 	() => import("./pages/School/views/CoursesView/CoursesView.tsx")
 );
-
 const PublicSchoolCourseView = React.lazy(
 	() => import("./pages/School/views/CourseView/CourseView.tsx")
 );
-
 const PublicSchoolInstructorsView = React.lazy(
 	() => import("./pages/School/views/InstructorsView/InstructorsView.tsx")
 );
-
 const PublicSchoolVehiclesView = React.lazy(
 	() => import("./pages/School/views/VehiclesView/VehiclesView.tsx")
 );
-
 const PublicSchoolContactView = React.lazy(
 	() => import("./pages/School/views/ContactView/ContactView.tsx")
 );
@@ -183,7 +191,7 @@ root.render(
 								/>
 								<Route
 									path="applications/:id"
-									element={<ResolveApplication />}
+									element={<ResolveApplicationView />}
 								/>
 								<Route
 									path="schools"
