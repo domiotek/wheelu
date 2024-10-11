@@ -1,6 +1,7 @@
 import {
 	Avatar,
 	Button,
+	Divider,
 	List,
 	ListItem,
 	ListItemText,
@@ -20,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthorizabledAccountActions } from "../../modules/enums";
 import EditAccountPropertyModal from "../../modals/EditAccountPropertyModal/EditAccountPropertyModal";
 import { App } from "../../types/app";
+import TransactionsTable from "../../components/TransactionsTable/TransactionsTable";
 
 export default function ProfilePage() {
 	const { userDetails, snackBarProps, setModalContent } =
@@ -239,7 +241,20 @@ export default function ProfilePage() {
 					</ListItem>
 				)}
 			</List>
-			<section></section>
+			<section className={classes.AdditionalData}>
+				{userDetails?.role == "Student" && (
+					<div>
+						<Typography variant="h6" gutterBottom>
+							Moje transakcje
+						</Typography>
+						<Divider className={classes.Divider} />
+						<TransactionsTable
+							userID={userDetails.userId}
+							supportFilter={false}
+						/>
+					</div>
+				)}
+			</section>
 		</div>
 	);
 }

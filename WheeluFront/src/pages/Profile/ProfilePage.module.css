@@ -26,6 +26,16 @@
 	max-width: 800px;
 }
 
+.AdditionalData>div {
+	display: flex;
+	flex-direction: column;
+	margin-top: 2em;
+}
+
+.Divider {
+	margin-bottom: 2em !important;
+}
+
 @media (min-width: 600px) {
 	.Wrapper {
 		padding: 2em 3em;

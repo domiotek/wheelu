@@ -917,11 +917,13 @@ export namespace API {
 			schoolID: number;
 		}
 
-		namespace GetManyOfSchool {
+		namespace GetManyOfTarget {
 			type IResponse = _.IPaginatedResponse<App.Models.IShortTransaction>;
 
-			interface IRequestData extends Record<string, number | undefined> {
-				schoolID: number;
+			interface IRequestData
+				extends Record<string, number | string | undefined> {
+				schoolID?: number;
+				userID?: string;
 			}
 
 			type IEndpoint = _.IBuildAPIEndpoint<

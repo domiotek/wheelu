@@ -1,24 +1,29 @@
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import { useContext, useMemo, useState } from "react";
-import { API } from "../../../../../types/api";
-import { callAPI } from "../../../../../modules/utils";
-import { App } from "../../../../../types/app";
+import { API } from "../../types/api";
+import { callAPI } from "../../modules/utils";
+import { App } from "../../types/app";
 import {
 	DEFAULT_TABLE_PAGE_SIZE,
 	TABLE_PAGE_SIZE_OPTIONS,
-} from "../../../../constants";
-import { TransactionsViewContext } from "../Transactions";
-import { CurrencyFormatter } from "../../../../../modules/formatters";
-import AuthService from "../../../../../services/Auth";
-import TransactionService from "../../../../../services/Transaction";
+} from "../../pages/constants";
+import { TransactionsViewContext } from "../../pages/ManageSchool/views/TransactionsView/Transactions";
+import { CurrencyFormatter } from "../../modules/formatters";
+import AuthService from "../../services/Auth";
+import TransactionService from "../../services/Transaction";
 
 interface IProps {
-	schoolID: number;
+	schoolID?: number;
+	userID?: string;
 	supportFilter?: boolean;
 }
 
-export default function TransactionsTable({ schoolID, supportFilter }: IProps) {
+export default function TransactionsTable({
+	schoolID,
+	userID,
+	supportFilter,
+}: IProps) {
 	const [paginationModel, setPaginationModel] = useState({
 		pageSize: DEFAULT_TABLE_PAGE_SIZE,
 		page: 0,
@@ -27,8 +32,8 @@ export default function TransactionsTable({ schoolID, supportFilter }: IProps) {
 	const { queryKey } = useContext(TransactionsViewContext);
 
 	const { data, isFetching } = useQuery<
-		API.Transactions.GetManyOfSchool.IResponse,
-		API.Transactions.GetManyOfSchool.IEndpoint["error"]
+		API.Transactions.GetManyOfTarget.IResponse,
+		API.Transactions.GetManyOfTarget.IEndpoint["error"]
 	>({
 		queryKey: queryKey.concat(
 			supportFilter
@@ -39,7 +44,7 @@ export default function TransactionsTable({ schoolID, supportFilter }: IProps) {
 				  ]
 		),
 		queryFn: () =>
-			callAPI<API.Transactions.GetManyOfSchool.IEndpoint>(
+			callAPI<API.Transactions.GetManyOfTarget.IEndpoint>(
 				"GET",
 				"/api/v1/transactions",
 				{
@@ -50,6 +55,7 @@ export default function TransactionsTable({ schoolID, supportFilter }: IProps) {
 						? undefined
 						: paginationModel.pageSize,
 					schoolID,
+					userID,
 				}
 			),
 		retry: true,
@@ -58,7 +64,14 @@ export default function TransactionsTable({ schoolID, supportFilter }: IProps) {
 
 	const columns = useMemo(() => {
 		const result: GridColDef<App.Models.IShortTransaction>[] = [
-			{ field: "id", headerName: "ID", width: 300, type: "number" },
+			{
+				field: "id",
+				headerName: "ID",
+				width: schoolID ? 300 : 180,
+				type: "number",
+				valueGetter: (_v, row) =>
+					schoolID ? row.id : row.tPayTransactionId,
+			},
 			{
 				field: "student",
 				headerName: "Kursant",
@@ -79,14 +92,14 @@ export default function TransactionsTable({ schoolID, supportFilter }: IProps) {
 			{
 				field: "itemCount",
 				headerName: "Ilość pozycji",
-				width: 100,
+				width: 150,
 				type: "number",
 				filterable: supportFilter,
 			},
 			{
 				field: "totalAmount",
 				headerName: "Wartość",
-				width: 100,
+				width: 175,
 				type: "number",
 				filterable: supportFilter,
 				valueFormatter: (val) => CurrencyFormatter.format(val),
@@ -107,13 +120,15 @@ export default function TransactionsTable({ schoolID, supportFilter }: IProps) {
 				filterable: supportFilter,
 				valueGetter: (value) => new Date(value),
 			},
-			{
+		];
+
+		if (schoolID)
+			result.push({
 				field: "tPayTransactionId",
 				headerName: "Numer transakcji",
 				width: 175,
 				type: "string",
-			},
-		];
+			});
 
 		return result;
 	}, [supportFilter]);
