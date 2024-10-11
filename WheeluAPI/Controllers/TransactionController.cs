@@ -9,6 +9,7 @@ using WheeluAPI.DTO.Transaction;
 using WheeluAPI.helpers;
 using WheeluAPI.Helpers;
 using WheeluAPI.Mappers;
+using WheeluAPI.models;
 using WheeluAPI.Models;
 using WheeluAPI.Services;
 
@@ -98,6 +99,54 @@ public class TransactionController(
     {
         var query = service.PrepareQuery();
 
+        var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var requestor = await userService.GetUserByEmailAsync(userEmail ?? "");
+
+        bool isAdmin = await userService.HasRole(requestor!, UserRole.Administrator);
+
+        School? school = null;
+
+        if (schoolID != null)
+        {
+            school = await schoolService.GetSchoolByID((int)schoolID);
+            if (school == null)
+                return NotFound(
+                    new APIError
+                    {
+                        Code = APIErrorCode.EntityNotFound,
+                        Details = ["School not found"],
+                    }
+                );
+            if (
+                !await schoolService.ValidateSchoolManagementAccess(
+                    school,
+                    userEmail!,
+                    SchoolManagementAccessMode.AllPrivileged
+                )
+            )
+                return BadRequest(new APIError { Code = APIErrorCode.AccessDenied });
+        }
+
+        if (userID != null)
+        {
+            var user = await userService.GetUserByIDAsync(userID);
+
+            if (user == null)
+                return NotFound(
+                    new APIError
+                    {
+                        Code = APIErrorCode.EntityNotFound,
+                        Details = ["User not found"],
+                    }
+                );
+
+            if (user.Id != requestor!.Id && !isAdmin)
+                return BadRequest(new APIError { Code = APIErrorCode.AccessDenied });
+        }
+
+        if (schoolID == null && userID == null && !isAdmin)
+            return BadRequest(new APIError { Code = APIErrorCode.AccessDenied });
+
         if (pagingMeta.PageNumber != null)
         {
             int appliedPageSize;
@@ -131,37 +180,12 @@ public class TransactionController(
         }
 
         if (schoolID != null)
-        {
-            var school = await schoolService.GetSchoolByID((int)schoolID);
-
-            if (school == null)
-                return NotFound(
-                    new APIError
-                    {
-                        Code = APIErrorCode.EntityNotFound,
-                        Details = ["School not found"],
-                    }
-                );
-
             query = query.Where(t => t.School.Id == schoolID);
-        }
 
         if (userID != null)
-        {
-            var user = await userService.GetUserByIDAsync(userID);
-
-            if (user == null)
-                return NotFound(
-                    new APIError
-                    {
-                        Code = APIErrorCode.EntityNotFound,
-                        Details = ["User not found"],
-                    }
-                );
-        }
+            query = query.Where(t => t.User.Id == userID);
 
         var transactions = await query.ToListAsync();
-
         return Paginated(
             mapper.MapToShortDTO(transactions),
             transactions.Count,
