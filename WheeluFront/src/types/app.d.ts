@@ -6,6 +6,7 @@ import {
 } from "../modules/enums";
 import AdminPanel from "../pages/AdminPanel/AdminPanel";
 import { DateTime } from "luxon";
+import { HTMLInputTypeAttribute } from "react";
 
 export namespace App {
 	namespace Models {
@@ -20,8 +21,17 @@ export namespace App {
 			name: string;
 			surname: string;
 			role: UserRole;
-			ownedSchoolId?: number;
-			instructorProfileId?: number;
+			ownedSchool?: {
+				id: number;
+				name: string;
+			};
+			instructorProfile?: {
+				id: number;
+				activeEmployment?: {
+					schoolId: number;
+					schoolName: string;
+				};
+			};
 		}
 
 		interface IShortUser {
@@ -314,6 +324,19 @@ export namespace App {
 				icon: string;
 				name: string;
 			};
+		}
+
+		namespace AccountProfile {
+			type TAccountPropertyKey = "name" | "surname" | "birthday";
+
+			interface IPropertyEditContext {
+				propKey: TAccountPropertyKey;
+				label: string;
+				type: HTMLInputTypeAttribute;
+				value: string;
+				minLength?: number;
+				maxLength?: number;
+			}
 		}
 	}
 

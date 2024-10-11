@@ -53,7 +53,12 @@ export default function AccountPanel({ open, setOpen }: IProps) {
 
 	return (
 		<Card sx={{ m: 1, p: 1 }}>
-			<Stack ref={anchorRef} direction="row" onClick={menuOpenHandler}>
+			<Stack
+				ref={anchorRef}
+				direction="row"
+				onClick={menuOpenHandler}
+				sx={{ cursor: "pointer" }}
+			>
 				<Avatar />
 				<Stack sx={{ ml: 2 }}>
 					<Typography variant="body1">
@@ -67,9 +72,9 @@ export default function AccountPanel({ open, setOpen }: IProps) {
 			<Collapse in={menuOpen}>
 				<Paper>
 					<List>
-						<ListItemButton>
+						<ListItemButton onClick={() => navigate("/profile")}>
 							<ListItemIcon />
-							<ListItemText>Profile</ListItemText>
+							<ListItemText>Mój profil</ListItemText>
 						</ListItemButton>
 
 						<Divider />
@@ -78,7 +83,7 @@ export default function AccountPanel({ open, setOpen }: IProps) {
 							<ListItemIcon>
 								<ExitToApp />
 							</ListItemIcon>
-							<ListItemText>Log out</ListItemText>
+							<ListItemText>Wyloguj się</ListItemText>
 						</ListItemButton>
 					</List>
 				</Paper>

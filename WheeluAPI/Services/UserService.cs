@@ -103,6 +103,22 @@ public class UserService(
         return await users.IsInRoleAsync(user, roleName.ToString());
     }
 
+    public async Task<bool> UpdateUser(User user, UpdateUserRequest data)
+    {
+        if (data.Name != null)
+            user.Name = data.Name;
+
+        if (data.Surname != null)
+            user.Surname = data.Surname;
+
+        if (data.Birthday != null)
+            user.Birthday = (DateOnly)data.Birthday;
+
+        dbContext.Users.Update(user);
+
+        return await dbContext.SaveChangesAsync() > 0;
+    }
+
     public List<UserResponse> MapToDTO(List<User> source)
     {
         return source.Select(u => u.GetDTO()).ToList();
@@ -392,6 +408,8 @@ public interface IUserService
     Task<int> Count();
 
     Task<bool> HasRole(User user, UserRole roleName);
+
+    Task<bool> UpdateUser(User user, UpdateUserRequest data);
 
     List<UserResponse> MapToDTO(List<User> source);
 

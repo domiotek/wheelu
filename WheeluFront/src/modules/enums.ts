@@ -49,3 +49,7 @@ export enum SortingType {
 	Asc,
 	Desc,
 }
+
+export enum AuthorizabledAccountActions {
+	ChangePassword,
+}

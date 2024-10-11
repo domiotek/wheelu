@@ -105,7 +105,7 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 				schoolData.owner.id == userDetails?.userId) ||
 			(accessLevel == AccessLevel.Instructor &&
 				schoolData.instructors.includes(
-					userDetails?.instructorProfileId ?? -1
+					userDetails?.instructorProfile?.id ?? -1
 				)) ||
 			accessLevel == AccessLevel.Administrator
 		) {

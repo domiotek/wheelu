@@ -123,13 +123,13 @@ export default function App({ useSplash }: IProps) {
 				"/register-school",
 				"/logout",
 				"/join",
+				"/reset-password",
 			];
 			const unauthenticatedRoutes = [
 				"/login",
 				"/register",
 				"/resend-activation-link",
 				"/activate-account",
-				"/reset-password",
 				"/create-instructor",
 			];
 			const isAuthenticated = error == null;

@@ -1,4 +1,8 @@
-import { CourseCategory, SortingType } from "../modules/enums";
+import {
+	AuthorizabledAccountActions,
+	CourseCategory,
+	SortingType,
+} from "../modules/enums";
 import { App } from "./app";
 
 export namespace API {
@@ -192,6 +196,60 @@ export namespace API {
 				IResponse,
 				_.TCommonServerErrorCodes,
 				Partial<_.IPagingRequest>
+			>;
+		}
+
+		namespace Get {
+			type IResponse = App.Models.IUser;
+
+			interface IParams extends Record<string, string> {
+				userID: string;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/auth/users/:userID",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				null,
+				IParams
+			>;
+		}
+
+		namespace AuthAction {
+			interface IResponse {
+				token: string;
+			}
+
+			interface IRequest extends Record<string, number> {
+				action: AuthorizabledAccountActions;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"POST",
+				"/api/v1/auth/auth-user-action",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				IRequest
+			>;
+		}
+
+		namespace Update {
+			type IRequest = Partial<
+				Record<App.UI.AccountProfile.TAccountPropertyKey, string>
+			>;
+
+			interface IParams extends Record<string, string> {
+				userID: string;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"PUT",
+				"/api/v1/auth/users/:userID",
+				null,
+				_.TCommonServerErrorCodes,
+				IRequest,
+				IParams
 			>;
 		}
 	}

@@ -6,6 +6,7 @@ using WheeluAPI.DTO;
 using WheeluAPI.DTO.Errors;
 using WheeluAPI.DTO.User;
 using WheeluAPI.helpers;
+using WheeluAPI.models;
 using WheeluAPI.Services;
 
 namespace WheeluAPI.Controllers;
@@ -97,6 +98,8 @@ public class SecurityController(
 
         var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
+        var instructorProfile = await instructorService.GetFromUserAsync(user);
+
         return Ok(
             new UserIdentifyResponse
             {
@@ -104,8 +107,29 @@ public class SecurityController(
                 Name = user.Name,
                 Surname = user.Surname,
                 Role = roles[0],
-                OwnedSchoolId = user.OwnedSchool?.Id,
-                InstructorProfileId = (await instructorService.GetFromUserAsync(user))?.Id,
+                OwnedSchool =
+                    user.OwnedSchool != null
+                        ? new OwnedSchoolResponse
+                        {
+                            Id = user.OwnedSchool.Id,
+                            Name = user.OwnedSchool.Name,
+                        }
+                        : null,
+                InstructorProfile =
+                    instructorProfile != null
+                        ? new InstructorProfileResponse
+                        {
+                            Id = instructorProfile.Id,
+                            ActiveEmployment =
+                                instructorProfile.ActiveEmployment != null
+                                    ? new ActiveInstructorEmploymentResponse
+                                    {
+                                        SchoolId = instructorProfile.ActiveEmployment.School.Id,
+                                        SchoolName = instructorProfile.ActiveEmployment.School.Name,
+                                    }
+                                    : null,
+                        }
+                        : null,
             }
         );
     }
@@ -199,7 +223,90 @@ public class SecurityController(
             );
         }
 
-        var schools = await service.GetAllUsersAsync();
-        return Paginated(await service.MapToDTOWithRole(schools), schools.Count, schools.Count);
+        var users = await service.GetAllUsersAsync();
+        return Paginated(await service.MapToDTOWithRole(users), users.Count, users.Count);
+    }
+
+    [HttpGet("users/{userId}")]
+    [Authorize]
+    [ProducesResponseType(typeof(PagingResponse<UserResponseWithRole>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetUser(string userId)
+    {
+        var requestorEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var requestor = await service.GetUserByEmailAsync(requestorEmail ?? "");
+
+        if (requestor!.Id != userId && !await service.HasRole(requestor, UserRole.Administrator))
+            return BadRequest(new APIError { Code = APIErrorCode.AccessDenied });
+
+        var requestedUser = await service.GetUserByIDAsync(userId);
+
+        if (requestedUser == null)
+            return NotFound();
+
+        return Ok(requestedUser.GetDTO());
+    }
+
+    [HttpPost("auth-user-action")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> AuthorizeUserAction([FromBody] AuthorizeUserActionRequest data)
+    {
+        var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var user = await service.GetUserByEmailAsync(userEmail ?? "");
+
+        AccountTokenType tokenType;
+        switch (data.Action)
+        {
+            case AuthorizableAccountActions.ChangePassword:
+                tokenType = AccountTokenType.PasswordResetToken;
+                break;
+            default:
+                return BadRequest(
+                    new APIError
+                    {
+                        Code = APIErrorCode.EntityNotFound,
+                        Details = ["Action not found"],
+                    }
+                );
+        }
+
+        var token = await service.GetAccountTokenAsync(user!, tokenType);
+
+        if (token == null)
+            return BadRequest(new APIError { Code = APIErrorCode.DbError });
+
+        return Ok(new AuthorizeUserActionResponse { Token = token.Token.ToString() });
+    }
+
+    [HttpPut("users/{userId}")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdateUser(string userId, [FromBody] UpdateUserRequest data)
+    {
+        var requestorEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var requestor = await service.GetUserByEmailAsync(requestorEmail ?? "");
+
+        if (requestor!.Id != userId && !await service.HasRole(requestor, UserRole.Administrator))
+            return BadRequest(new APIError { Code = APIErrorCode.AccessDenied });
+
+        var requestedUser = await service.GetUserByIDAsync(userId);
+
+        if (requestedUser == null)
+            return BadRequest(
+                new APIError { Code = APIErrorCode.EntityNotFound, Details = ["User not found."] }
+            );
+
+        var result = await service.UpdateUser(requestedUser, data);
+
+        if (!result)
+            return BadRequest(new APIError { Code = APIErrorCode.DbError });
+
+        return Ok();
     }
 }

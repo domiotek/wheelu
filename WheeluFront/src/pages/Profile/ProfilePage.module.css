@@ -1,0 +1,33 @@
+.Wrapper {
+	max-width: 1200px;
+	display: flex;
+	flex-direction: column;
+}
+
+.Headline {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 1em;
+	max-width: 800px;
+}
+
+.Headline :global(.MuiAvatar-root) {
+	width: 5em;
+	height: 5em;
+}
+
+.Headline>span {
+	margin-top: -1.5em;
+}
+
+.Properties {
+	max-width: 800px;
+}
+
+@media (min-width: 600px) {
+	.Wrapper {
+		padding: 2em 3em;
+	}
+}

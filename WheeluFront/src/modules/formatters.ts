@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { App } from "../types/app";
 
 export const CurrencyFormatter = new Intl.NumberFormat("pl-PL", {
@@ -19,5 +20,17 @@ export const RoleFormatter = {
 			default:
 				return "";
 		}
+	},
+};
+
+export const DateTimeFormatter = {
+	format: (isoDate?: string, format: string = "dd/LL/yyyy H:mm") => {
+		if (!isoDate) return "";
+
+		const dateTime = DateTime.fromISO(isoDate);
+
+		if (!dateTime.isValid) return "(nieznana data)";
+
+		return dateTime.toFormat(format);
 	},
 };
