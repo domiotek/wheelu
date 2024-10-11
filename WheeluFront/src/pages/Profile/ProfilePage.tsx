@@ -22,6 +22,7 @@ import { AuthorizabledAccountActions } from "../../modules/enums";
 import EditAccountPropertyModal from "../../modals/EditAccountPropertyModal/EditAccountPropertyModal";
 import { App } from "../../types/app";
 import TransactionsTable from "../../components/TransactionsTable/TransactionsTable";
+import EmploymentHistoryTable from "./components/EmploymentHistoryTable";
 
 export default function ProfilePage() {
 	const { userDetails, snackBarProps, setModalContent } =
@@ -251,6 +252,24 @@ export default function ProfilePage() {
 						<TransactionsTable
 							userID={userDetails.userId}
 							supportFilter={false}
+						/>
+					</div>
+				)}
+
+				{userDetails?.role == "Instructor" && (
+					<div>
+						<Typography variant="h6" gutterBottom>
+							Historia zatrudnienia
+						</Typography>
+						<Divider className={classes.Divider} />
+						<EmploymentHistoryTable
+							queryKey={[
+								"Instructors",
+								userDetails.instructorProfile?.id,
+							]}
+							instructorProfileID={
+								userDetails.instructorProfile?.id!
+							}
 						/>
 					</div>
 				)}

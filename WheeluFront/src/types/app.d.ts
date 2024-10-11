@@ -179,7 +179,7 @@ export namespace App {
 		interface IEmploymentRecord {
 			id: number;
 			startTime: string;
-			endTime: string;
+			endTime?: string;
 		}
 
 		interface IShortEmployedInstructor {
@@ -195,7 +195,7 @@ export namespace App {
 		interface IEmployedInstructor {
 			id: number;
 			instructor: IShortInstructorProfile;
-			schoolId: number;
+			school: IShortSchool;
 			detached: boolean;
 			employmentRecords: IEmploymentRecord[];
 			visible: boolean;
@@ -336,6 +336,13 @@ export namespace App {
 				value: string;
 				minLength?: number;
 				maxLength?: number;
+			}
+
+			interface IInstructorEmploymentRecord {
+				id: number;
+				schoolName: string;
+				startTime: Date;
+				endTime?: Date;
 			}
 		}
 	}

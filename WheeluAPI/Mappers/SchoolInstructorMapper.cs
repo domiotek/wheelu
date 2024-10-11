@@ -3,7 +3,7 @@ using WheeluAPI.Models;
 
 namespace WheeluAPI.Mappers;
 
-public class SchoolInstructorDTOMapper(CourseMapper courseMapper)
+public class SchoolInstructorDTOMapper(CourseMapper courseMapper, SchoolMapper schoolMapper)
 {
     public SchoolInstructorResponse GetDTO(SchoolInstructor source)
     {
@@ -15,7 +15,7 @@ public class SchoolInstructorDTOMapper(CourseMapper courseMapper)
                 Id = source.Instructor.Id,
                 User = source.Instructor.User.GetShortDTO(),
             },
-            SchoolId = source.School.Id,
+            School = schoolMapper.GetShortDTO(source.School),
             Detached = source.Detached,
             Visible = source.Visible,
             EmploymentRecords = source

@@ -804,6 +804,23 @@ export namespace API {
 				IActionParams
 			>;
 		}
+
+		namespace GetProfile {
+			type IResponse = App.Models.IInstructorProfile;
+
+			interface IParams extends Record<string, number> {
+				instructorID: number;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/instructors/:instructorID",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				null,
+				IParams
+			>;
+		}
 	}
 
 	namespace Vehicles {

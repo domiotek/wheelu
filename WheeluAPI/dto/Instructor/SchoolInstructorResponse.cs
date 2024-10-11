@@ -1,4 +1,5 @@
 using WheeluAPI.DTO.Course;
+using WheeluAPI.DTO.School;
 using WheeluAPI.Models;
 
 namespace WheeluAPI.DTO.Instructor;
@@ -25,7 +26,7 @@ public class SchoolInstructorResponse
 
     public required ShortInstructorResponse Instructor { get; set; }
 
-    public required int SchoolId { get; set; }
+    public required ShortSchoolResponse School { get; set; }
 
     public required bool Detached { get; set; }
 

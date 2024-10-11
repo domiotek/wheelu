@@ -20,6 +20,11 @@ public class InstructorService(ApplicationDbContext dbContext) : BaseService, II
     {
         return dbContext.Instructors.Where(i => i.User == user).SingleOrDefaultAsync();
     }
+
+    public ValueTask<Instructor?> GetByIDAsync(int id)
+    {
+        return dbContext.Instructors.FindAsync(id);
+    }
 }
 
 public interface IInstructorService
@@ -27,4 +32,6 @@ public interface IInstructorService
     Task<Instructor?> CreateProfileAsync(User user);
 
     Task<Instructor?> GetFromUserAsync(User user);
+
+    ValueTask<Instructor?> GetByIDAsync(int id);
 }

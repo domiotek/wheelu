@@ -44,7 +44,14 @@ export default function ManageCourseOfferModal({
 	const { snackBarProps } = useContext(AppContext);
 	const { setHostClassName, closeModal } = useContext(ModalContext);
 	const formContext = useForm<API.Offers.Courses.Create.IRequestData>({
-		defaultValues: { ...data, category: data?.category.id },
+		defaultValues: {
+			category: data?.category.id,
+			schoolID: data?.schoolId,
+			enabled: data?.enabled,
+			hoursCount: data?.hoursCount,
+			price: data?.price,
+			pricePerHour: data?.pricePerHour,
+		},
 	});
 	const snackBar = useSnackbar();
 

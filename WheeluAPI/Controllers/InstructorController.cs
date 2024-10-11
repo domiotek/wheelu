@@ -1,9 +1,12 @@
+using System.Security.Claims;
 using System.Transactions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WheeluAPI.DTO;
 using WheeluAPI.DTO.Errors;
 using WheeluAPI.DTO.Instructor;
 using WheeluAPI.helpers;
+using WheeluAPI.Mappers;
 using WheeluAPI.Services;
 
 namespace WheeluAPI.Controllers;
@@ -14,7 +17,8 @@ public class InstructorController(
     IUserService userService,
     IInstructorService service,
     ISchoolInstructorService instructorService,
-    IInstructorInviteService inviteService
+    IInstructorInviteService inviteService,
+    InstructorDTOMapper mapper
 ) : BaseAPIController
 {
     [HttpPost]
@@ -128,5 +132,26 @@ public class InstructorController(
         }
 
         return Ok();
+    }
+
+    [HttpGet("{instructorId}")]
+    [Authorize]
+    public async Task<IActionResult> GetInstructorProfile(int instructorId)
+    {
+        var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var requestor = await userService.GetUserByEmailAsync(userEmail ?? "");
+
+        var profile = await service.GetByIDAsync(instructorId);
+
+        if (profile == null)
+            return NotFound(new APIError { Code = APIErrorCode.EntityNotFound });
+
+        if (
+            profile.User.Id != requestor!.Id
+            && !await userService.HasRole(requestor!, UserRole.Administrator)
+        )
+            return BadRequest(new APIError { Code = APIErrorCode.AccessDenied });
+
+        return Ok(mapper.GetDTO(profile));
     }
 }
