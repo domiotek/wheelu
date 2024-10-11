@@ -91,6 +91,7 @@ builder.Services.AddScoped<CourseService>();
 builder.Services.AddScoped<TransactionService>();
 builder.Services.AddScoped<TPayService>();
 
+builder.Services.AddScoped<SchoolMapper>();
 builder.Services.AddScoped<CourseOfferDTOMapper>();
 builder.Services.AddScoped<CourseCategoryDTOMapper>();
 builder.Services.AddScoped<InstructorDTOMapper>();

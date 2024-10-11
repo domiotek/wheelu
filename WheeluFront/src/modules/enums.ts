@@ -44,3 +44,8 @@ export enum TransmissionType {
 	Manual,
 	Automatic,
 }
+
+export enum SortingType {
+	Asc,
+	Desc,
+}

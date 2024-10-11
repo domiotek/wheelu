@@ -1,12 +1,15 @@
 namespace WheeluAPI.Controllers;
 
+using System.Linq.Expressions;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WheeluAPI.DTO;
 using WheeluAPI.DTO.Errors;
 using WheeluAPI.DTO.School;
 using WheeluAPI.helpers;
+using WheeluAPI.Mappers;
 using WheeluAPI.models;
 using WheeluAPI.Services;
 
@@ -14,6 +17,7 @@ using WheeluAPI.Services;
 [Route("/api/v1/schools")]
 public class SchoolController(
     ISchoolService service,
+    SchoolMapper mapper,
     IUserService userService,
     ISchoolService schoolService
 ) : BaseAPIController
@@ -28,7 +32,7 @@ public class SchoolController(
 
         if (school == null)
             return NotFound();
-        return Ok(service.GetDTO(school));
+        return Ok(mapper.GetDTO(school));
     }
 
     [HttpGet]
@@ -46,11 +50,52 @@ public class SchoolController(
 
             var results = await service.GetSchools(metadata, out appliedPageSize).ToListAsync();
 
-            return Paginated(service.MapToDTO(results), await service.Count(), appliedPageSize);
+            return Paginated(mapper.MapToDTO(results), await service.Count(), appliedPageSize);
         }
 
         var schools = await service.GetAllSchools();
-        return Paginated(service.MapToDTO(schools), schools.Count, schools.Count);
+        return Paginated(mapper.MapToDTO(schools), schools.Count, schools.Count);
+    }
+
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchSchoolsAsync(
+        [FromQuery] PagingMetadata pagingMetadata,
+        [FromQuery] SchoolSearchRequest requestData
+    )
+    {
+        var query = service.PrepareQuery();
+
+        query.Where(s => !s.Hidden);
+
+        if (requestData.Query != null)
+            query = query.Where(x => x.Name.Contains(requestData.Query));
+
+        var sortExpressions = new Dictionary<SortingOptions, Expression<Func<School, object>>>
+        {
+            { SortingOptions.Name, x => x.Name },
+        };
+
+        var sortExpression = sortExpressions.TryGetValue(
+            requestData.SortingTarget,
+            out Expression<Func<School, object>>? value
+        )
+            ? value
+            : x => x.Id;
+
+        query =
+            requestData.SortingType == SortingType.Asc
+                ? query.OrderBy(sortExpression)
+                : query.OrderByDescending(sortExpression);
+
+        var totalItems = await query.CountAsync();
+
+        int appliedPageSize;
+
+        var results = await service
+            .GetPageAsync(pagingMetadata, out appliedPageSize, query)
+            .ToListAsync();
+
+        return Paginated(mapper.MapToDTO(results), totalItems, appliedPageSize);
     }
 
     [HttpPut("{schoolID}")]

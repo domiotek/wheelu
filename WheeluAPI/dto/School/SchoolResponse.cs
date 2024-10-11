@@ -4,6 +4,21 @@ using WheeluAPI.Models;
 
 namespace WheeluAPI.DTO.School;
 
+public class ShortSchoolResponse
+{
+    public int Id { get; set; }
+
+    public required string Name { get; set; }
+
+    public string? Description { get; set; }
+
+    public required bool Hidden { get; set; }
+
+    public required bool Blocked { get; set; }
+
+    public required ImageResponse CoverImage { get; set; }
+}
+
 public class SchoolResponse
 {
     public int Id { get; set; }

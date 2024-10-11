@@ -1,4 +1,4 @@
-import { CourseCategory } from "./enums";
+import { CourseCategory, SortingType } from "./enums";
 
 export const CourseCategoriesMapping: { id: CourseCategory; name: string }[] = [
 	{ id: CourseCategory.AM, name: "AM" },
@@ -13,3 +13,10 @@ export const CourseCategoriesMapping: { id: CourseCategory; name: string }[] = [
 	{ id: CourseCategory.D1, name: "D1" },
 	{ id: CourseCategory.T, name: "T" },
 ];
+
+export const SortingTypesMapping: { id: SortingType; name: string }[] = [
+	{ id: SortingType.Asc, name: "Rosnąco" },
+	{ id: SortingType.Desc, name: "Malejąco" },
+];
+
+export const DEFAULT_SEARCH_PAGE_SIZE = 6;

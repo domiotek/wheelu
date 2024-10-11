@@ -38,10 +38,14 @@ public class CourseOfferService(ApplicationDbContext dbContext) : BaseService, I
         return query.Where(o => o.School == school).ToListAsync();
     }
 
-    public IQueryable<CourseOffer> GetOffersPageAsync(PagingMetadata meta, out int appliedPageSize)
+    public IQueryable<CourseOffer> GetOffersPageAsync(
+        PagingMetadata meta,
+        out int appliedPageSize,
+        IQueryable<CourseOffer>? queryable = null
+    )
     {
         var results = ApplyPaging(
-            dbContext.CourseOffers.AsQueryable(),
+            queryable ?? dbContext.CourseOffers.AsQueryable(),
             meta,
             out int actualPageSize
         );
@@ -49,6 +53,11 @@ public class CourseOfferService(ApplicationDbContext dbContext) : BaseService, I
         appliedPageSize = actualPageSize;
 
         return results;
+    }
+
+    public IQueryable<CourseOffer> PrepareQuery()
+    {
+        return dbContext.CourseOffers.AsQueryable();
     }
 
     public Task<int> CountAsync()
@@ -136,7 +145,12 @@ public interface ICourseOfferService
 
     Task<List<CourseOffer>> GetOffersAsync(School school, CourseCategoryType? type = null);
 
-    IQueryable<CourseOffer> GetOffersPageAsync(PagingMetadata meta, out int appliedPageSize);
+    IQueryable<CourseOffer> PrepareQuery();
+    IQueryable<CourseOffer> GetOffersPageAsync(
+        PagingMetadata meta,
+        out int appliedPageSize,
+        IQueryable<CourseOffer>? queryable = null
+    );
 
     Task<int> CountAsync();
 

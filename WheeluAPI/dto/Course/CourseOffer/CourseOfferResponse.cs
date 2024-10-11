@@ -9,6 +9,8 @@ public class CourseOfferResponse
 
     public required CourseCategoryResponse Category { get; set; }
 
+    public required int SchoolId { get; set; }
+
     public required bool Enabled { get; set; }
 
     public required int HoursCount { get; set; }

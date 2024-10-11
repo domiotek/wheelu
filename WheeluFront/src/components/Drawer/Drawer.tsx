@@ -176,13 +176,19 @@ export default function Drawer({ open, setOpen }: IProps) {
 						unmountOnExit
 					>
 						<List component="div" disablePadding>
-							<ListItemButton sx={{ pl: 4 }}>
+							<ListItemButton
+								sx={{ pl: 4 }}
+								onClick={() => navigate("/courses")}
+							>
 								<ListItemIcon>
 									<ClassIcon />
 								</ListItemIcon>
 								<ListItemText>Kursy</ListItemText>
 							</ListItemButton>
-							<ListItemButton sx={{ pl: 4 }}>
+							<ListItemButton
+								sx={{ pl: 4 }}
+								onClick={() => navigate("/schools")}
+							>
 								<ListItemIcon>
 									<SchoolIcon />
 								</ListItemIcon>

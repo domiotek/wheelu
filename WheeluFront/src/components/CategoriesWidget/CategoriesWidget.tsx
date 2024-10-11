@@ -8,12 +8,14 @@ interface IProps {
 	className?: string;
 	enabledList?: Set<CourseCategory>;
 	onChipClick?: (category: CourseCategory) => void;
+	onlyActive?: boolean;
 }
 
 export default function CategoriesWidget({
 	className,
 	enabledList,
 	onChipClick,
+	onlyActive,
 }: IProps) {
 	return (
 		<div
@@ -22,12 +24,16 @@ export default function CategoriesWidget({
 				[className!, className != undefined],
 			])}
 		>
-			{CourseCategoriesMapping.map((category) => (
+			{CourseCategoriesMapping.filter((elem) =>
+				onlyActive ? enabledList?.has(elem.id) : true
+			).map((category) => (
 				<Chip
 					key={category.id}
 					label={category.name}
 					variant={
-						enabledList?.has(category.id) ? "filled" : "outlined"
+						enabledList?.has(category.id) && !onlyActive
+							? "filled"
+							: "outlined"
 					}
 					clickable={onChipClick != undefined}
 					color="secondary"

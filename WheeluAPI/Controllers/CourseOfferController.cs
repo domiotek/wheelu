@@ -1,11 +1,14 @@
+using System.Linq.Expressions;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WheeluAPI.DTO;
 using WheeluAPI.DTO.Course.CourseOffer;
 using WheeluAPI.DTO.Errors;
 using WheeluAPI.helpers;
 using WheeluAPI.Mappers;
+using WheeluAPI.Models;
 using WheeluAPI.Services;
 
 namespace WheeluAPI.Controllers;
@@ -76,6 +79,47 @@ public class CourseOfferController(
         var schoolOffers = await service.GetOffersAsync(school);
 
         return Paginated(mapper.MapToDTO(schoolOffers), schoolOffers.Count, schoolOffers.Count);
+    }
+
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchOffersAsync(
+        [FromQuery] PagingMetadata pagingMetadata,
+        [FromQuery] CourseSearchRequest requestData
+    )
+    {
+        var query = service.PrepareQuery();
+
+        query = query.Where(o => o.Enabled && !o.School.Hidden);
+
+        if (requestData.CategoryType != null)
+            query = query.Where(x => x.Category.Id == requestData.CategoryType);
+
+        var sortExpressions = new Dictionary<SortingOptions, Expression<Func<CourseOffer, object>>>
+        {
+            { SortingOptions.Price, x => x.Price },
+        };
+
+        var sortExpression = sortExpressions.TryGetValue(
+            requestData.SortingTarget,
+            out Expression<Func<CourseOffer, object>>? value
+        )
+            ? value
+            : x => x.Id;
+
+        query =
+            requestData.SortingType == SortingType.Asc
+                ? query.OrderBy(sortExpression)
+                : query.OrderByDescending(sortExpression);
+
+        var totalItems = await query.CountAsync();
+
+        int appliedPageSize;
+
+        var results = await service
+            .GetOffersPageAsync(pagingMetadata, out appliedPageSize, query)
+            .ToListAsync();
+
+        return Paginated(mapper.MapToSearchDTO(results), totalItems, appliedPageSize);
     }
 
     [HttpPost]

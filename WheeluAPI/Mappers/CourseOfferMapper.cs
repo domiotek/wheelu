@@ -6,7 +6,8 @@ namespace WheeluAPI.Mappers;
 public class CourseOfferDTOMapper(
     CourseCategoryDTOMapper categoryMapper,
     SchoolInstructorDTOMapper instructorMapper,
-    VehicleMapper vehicleMapper
+    VehicleMapper vehicleMapper,
+    SchoolMapper schoolMapper
 )
 {
     public CourseOfferResponse GetDTO(CourseOffer source)
@@ -22,6 +23,7 @@ public class CourseOfferDTOMapper(
         return new CourseOfferResponse
         {
             Id = source.Id,
+            SchoolId = source.School.Id,
             Enabled = source.Enabled,
             Category = categoryMapper.GetDTO(source.Category),
             HoursCount = source.HoursCount,
@@ -34,8 +36,26 @@ public class CourseOfferDTOMapper(
         };
     }
 
+    public CourseOfferSearchResponse GetSearchDTO(CourseOffer source)
+    {
+        return new CourseOfferSearchResponse
+        {
+            Id = source.Id,
+            School = schoolMapper.GetShortDTO(source.School),
+            Enabled = source.Enabled,
+            Category = categoryMapper.GetDTO(source.Category),
+            HoursCount = source.HoursCount,
+            Price = source.Price,
+        };
+    }
+
     public List<CourseOfferResponse> MapToDTO(List<CourseOffer> source)
     {
         return source.Select(o => GetDTO(o)).ToList();
+    }
+
+    public List<CourseOfferSearchResponse> MapToSearchDTO(List<CourseOffer> source)
+    {
+        return source.Select(GetSearchDTO).ToList();
     }
 }

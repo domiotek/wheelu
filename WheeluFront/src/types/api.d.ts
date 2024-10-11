@@ -1,4 +1,4 @@
-import { CourseCategory } from "../modules/enums";
+import { CourseCategory, SortingType } from "../modules/enums";
 import { App } from "./app";
 
 export namespace API {
@@ -60,7 +60,7 @@ export namespace API {
 			details: string[];
 		}
 
-		interface IPagingRequest extends Record<string, number> {
+		interface IPagingRequest extends Record<string, any> {
 			PageNumber: number;
 			PagingSize?: number;
 		}
@@ -380,6 +380,26 @@ export namespace API {
 			>;
 		}
 
+		namespace Search {
+			type IResponse = _.IPaginatedResponse<App.Models.ISchool>;
+
+			interface IRequest
+				extends _.IPagingRequest,
+					Record<string, string | number> {
+				query?: string;
+				SortingTarget: number;
+				SortingType: SortingType;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/schools/search",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				IRequest
+			>;
+		}
+
 		namespace Update {
 			interface IRequestData
 				extends Record<string, string>,
@@ -459,6 +479,27 @@ export namespace API {
 					_.IPaginatedResponse<App.Models.ICourseOffer>,
 					_.TCommonServerErrorCodes,
 					IRequestData
+				>;
+			}
+
+			namespace Search {
+				type IResponse =
+					_.IPaginatedResponse<App.Models.ISearchCourseOffer>;
+
+				interface IRequest
+					extends _.IPagingRequest,
+						Record<string, string | number> {
+					CategoryType?: CourseCategory;
+					SortingTarget: number;
+					SortingType: SortingType;
+				}
+
+				type IEndpoint = _.IBuildAPIEndpoint<
+					"GET",
+					"/api/v1/offers/search",
+					IResponse,
+					_.TCommonServerErrorCodes,
+					IRequest
 				>;
 			}
 

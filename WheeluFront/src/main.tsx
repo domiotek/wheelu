@@ -56,6 +56,12 @@ const SchoolPageWrapper = React.lazy(
 const PublicSchoolPage = React.lazy(
 	() => import("./pages/School/SchoolPage.tsx")
 );
+const SearchCoursePage = React.lazy(
+	() => import("./pages/Search/SearchCourse.tsx")
+);
+const SearchSchoolPage = React.lazy(
+	() => import("./pages/Search/SearchSchool.tsx")
+);
 
 /** Admin panel subviews */
 
@@ -210,6 +216,14 @@ root.render(
 									element={<AllUsersView />}
 								/>
 							</Route>
+							<Route
+								path="courses"
+								element={<SearchCoursePage />}
+							/>
+							<Route
+								path="schools"
+								element={<SearchSchoolPage />}
+							/>
 							<Route path="schools/:id">
 								<Route path="*" element={<PublicSchoolPage />}>
 									<Route

@@ -89,20 +89,23 @@ export namespace App {
 			uploadDate: string;
 		}
 
-		interface ISchool {
+		interface IShortSchool {
 			id: number;
 			name: string;
 			description?: string;
-			nip: string;
 			hidden: boolean;
 			blocked: boolean;
+			coverImage: IImage;
+		}
+
+		interface ISchool extends IShortSchool {
+			nip: string;
 			owner: IShortUser;
 			address: IAddress;
 			established: string;
 			joined: string;
 			phoneNumber: string;
 			email: string;
-			coverImage: IImage;
 			nearbyCities: ICity[];
 			courseOffers: CourseCategory[];
 			vehicleCount: number;
@@ -133,6 +136,7 @@ export namespace App {
 
 		interface ICourseOffer {
 			id: number;
+			schoolId: number;
 			category: ICourseCategory;
 			enabled: boolean;
 			hoursCount: number;
@@ -142,6 +146,15 @@ export namespace App {
 			lastUpdatedAt: string;
 			instructors: IShortEmployedInstructor[];
 			vehicles: IShortVehicle[];
+		}
+
+		interface ISearchCourseOffer {
+			id: number;
+			school: IShortSchool;
+			category: ICourseCategory;
+			enabled: boolean;
+			hoursCount: number;
+			price: number;
 		}
 
 		interface IShortInstructorProfile {
