@@ -39,7 +39,7 @@ export default function CourseView() {
 	const params = useParams();
 	const { activeTheme, userDetails, setModalContent } =
 		useContext(AppContext);
-	const { schoolID } = useContext(PublicSchooPageContext);
+	const { schoolID, schoolData } = useContext(PublicSchooPageContext);
 
 	const { data, isFetching, error } = useQuery<
 		API.Offers.Courses.GetAllOfSchool.IResponse,
@@ -68,8 +68,8 @@ export default function CourseView() {
 	}, [data]);
 
 	const canBuy = useMemo(() => {
-		return userDetails?.role == "Student";
-	}, [userDetails]);
+		return userDetails?.role == "Student" && !schoolData?.blocked;
+	}, [userDetails, schoolData]);
 
 	if (isFetching) return <LoadingScreen />;
 
@@ -102,7 +102,11 @@ export default function CourseView() {
 				</Typography>
 
 				<Tooltip
-					title="Twoje konto musi być typu 'Kursant'."
+					title={
+						schoolData?.blocked
+							? "Szkoła jest zablokowana."
+							: "Twoje konto musi być typu 'Kursant'."
+					}
 					disableHoverListener={canBuy}
 					disableFocusListener={canBuy}
 				>
@@ -223,16 +227,28 @@ export default function CourseView() {
 											size="small"
 											disabled={
 												instructor.activeCoursesCount >=
-												instructor.maximumConcurrentStudents
+													instructor.maximumConcurrentStudents ||
+												!instructor.visible
 											}
 										>
-											{instructor.activeCoursesCount}/
-											{
-												instructor.maximumConcurrentStudents
-											}
-											<br />
+											{instructor.visible ? (
+												<>
+													{
+														instructor.activeCoursesCount
+													}
+													/
+													{
+														instructor.maximumConcurrentStudents
+													}
+													<br />
+												</>
+											) : (
+												""
+											)}
+
 											{instructor.activeCoursesCount >=
-											instructor.maximumConcurrentStudents
+												instructor.maximumConcurrentStudents ||
+											!instructor.visible
 												? "Niedostępny"
 												: "Dostępny"}
 										</Button>

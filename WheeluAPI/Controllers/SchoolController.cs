@@ -65,7 +65,7 @@ public class SchoolController(
     {
         var query = service.PrepareQuery();
 
-        query.Where(s => !s.Hidden);
+        query = query.Where(s => s.Hidden == false);
 
         if (requestData.Query != null)
             query = query.Where(x => x.Name.Contains(requestData.Query));

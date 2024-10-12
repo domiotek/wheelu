@@ -184,6 +184,7 @@ export namespace App {
 
 		interface IShortEmployedInstructor {
 			id: number;
+			visible: boolean;
 			instructor: IShortInstructorProfile;
 			schoolId: number;
 			assignedCoursesCount: number;

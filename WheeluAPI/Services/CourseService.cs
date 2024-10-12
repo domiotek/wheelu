@@ -54,6 +54,18 @@ public class CourseService(ApplicationDbContext dbContext) : BaseService
     {
         var result = new ServiceActionWithDataResult<CourseCreationErrors, Course>();
 
+        if (courseData.offer.School.Blocked)
+        {
+            result.ErrorCode = CourseCreationErrors.SchoolBlocked;
+            return result;
+        }
+
+        if (!courseData.instructor.Visible)
+        {
+            result.ErrorCode = CourseCreationErrors.InstructorUnavailable;
+            return result;
+        }
+
         if (
             courseData.instructor.ActiveCourses.Count
             >= courseData.instructor.MaximumConcurrentStudents

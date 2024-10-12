@@ -88,7 +88,8 @@ export default function PersonalizeView({
 										}
 										disabled={
 											instructor.activeCoursesCount >=
-											instructor.maximumConcurrentStudents
+												instructor.maximumConcurrentStudents ||
+											!instructor.visible
 										}
 									>
 										{selectedInstructorId == instructor.id

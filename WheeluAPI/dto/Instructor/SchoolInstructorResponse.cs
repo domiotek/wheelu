@@ -8,6 +8,8 @@ public class ShortSchoolInstructorResponse
 {
     public int Id { get; set; }
 
+    public required bool Visible { get; set; }
+
     public required ShortInstructorResponse Instructor { get; set; }
 
     public required int SchoolId { get; set; }

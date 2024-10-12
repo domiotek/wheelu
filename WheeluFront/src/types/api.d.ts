@@ -922,7 +922,7 @@ export namespace API {
 				"POST",
 				"/api/v1/offers/:offerID/purchase",
 				IResponse,
-				"InstructorUnavailable",
+				"InstructorUnavailable" | "SchoolBlocked",
 				IRequest,
 				IParams
 			>;

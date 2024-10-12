@@ -1,4 +1,6 @@
 import {
+	Alert,
+	AlertTitle,
 	Button,
 	Rating,
 	Tab,
@@ -24,7 +26,6 @@ import LoadingScreen from "../../components/LoadingScreen/LoadingScreen";
 import EntityNotFound from "../AdminPanel/components/EntityNotFound/EntityNotFound";
 import { DateTime } from "luxon";
 import { AppContext } from "../../App";
-import { getBackendImageSrc } from "../../modules/features";
 import LazyBackendImage from "../../components/LazyBackendImage/LazyBackendImage";
 
 interface IContext {
@@ -122,6 +123,13 @@ export default function SchoolPage() {
 
 	return (
 		<div>
+			{schoolData?.blocked && (
+				<Alert className={classes.BlockadeAlert} severity="error">
+					<AlertTitle>Ta szkoła jest zablokowana</AlertTitle>
+					Administrator zablokował tę szkołę ze względu na naruszenie
+					polityki platformy. Zakup nowych kursów nie będzie możliwy.
+				</Alert>
+			)}
 			<div className={classes.Header}>
 				<div className={classes.TopSection}>
 					<LazyBackendImage

@@ -37,6 +37,7 @@ public class SchoolInstructorDTOMapper(CourseMapper courseMapper, SchoolMapper s
         return new ShortSchoolInstructorResponse
         {
             Id = source.Id,
+            Visible = source.Visible,
             Instructor = new ShortInstructorResponse
             {
                 Id = source.Instructor.Id,

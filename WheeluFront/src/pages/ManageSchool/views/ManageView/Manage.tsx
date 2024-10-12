@@ -64,7 +64,7 @@ export default function ManageSchoolView() {
 			),
 		onSuccess: async () => {
 			qClient.invalidateQueries({
-				queryKey: ["Schools", "#", params["id"]],
+				queryKey: ["Schools", "#", parseInt(params["id"]!)],
 			});
 			snack.enqueueSnackbar({
 				...snackBarProps,
@@ -97,7 +97,7 @@ export default function ManageSchoolView() {
 			),
 		onSuccess: async () => {
 			qClient.invalidateQueries({
-				queryKey: ["Schools", "#", params["id"]],
+				queryKey: ["Schools", "#", parseInt(params["id"]!)],
 			});
 			snack.enqueueSnackbar({
 				...snackBarProps,

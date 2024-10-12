@@ -1,3 +1,7 @@
+.BlockadeAlert {
+	margin-bottom: 2em;
+}
+
 .Header, .TopSection, .DetailsSection {
 	display: flex;
 	flex-direction: column;
