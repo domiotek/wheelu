@@ -19,7 +19,21 @@ public class Course
 
     public virtual required SchoolInstructor Instructor { get; set; }
 
-    public required int HoursCount { get; set; }
+    public virtual required List<Ride> Rides { get; set; }
+
+    public virtual required List<CanceledRide> CanceledRides { get; set; }
+
+    [NotMapped]
+    public double UsedHours
+    {
+        get
+        {
+
+            return Rides.Where(x => x.Status == RideStatus.Finished).Sum(x => x.HoursCount);
+        }
+    }
+
+    public required int BaseHoursCount { get; set; }
 
     public required decimal PricePerHour { get; set; }
 
@@ -31,5 +45,17 @@ public class Course
     public bool Archived
     {
         get { return false; }
+    }
+
+    [NotMapped]
+    public Ride? NextRide
+    {
+        get
+        {
+            return Rides
+                .Where(r => r.Status == RideStatus.Planned)
+                .OrderBy(r => r.StartTime)
+                .First();
+        }
     }
 }

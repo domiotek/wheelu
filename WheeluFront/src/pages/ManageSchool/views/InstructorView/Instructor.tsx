@@ -41,6 +41,7 @@ import { AppContext } from "../../../../App";
 import { DateTime } from "luxon";
 import { CourseCategory } from "../../../../modules/enums";
 import InstructorService from "../../../../services/Instructor";
+import ScheduleModal from "../../../../modals/ScheduleModal/ScheduleModal";
 
 export default function Instructor() {
 	const [visibilityState, setVisibilityState] = useState<boolean>(false);
@@ -50,8 +51,9 @@ export default function Instructor() {
 	const [editingAllowedCategories, setEditingAllowedCategories] =
 		useState<boolean>(false);
 
-	const { schoolData, access } = useContext(SchoolPageContext);
-	const { snackBarProps } = useContext(AppContext);
+	const { schoolData, access, accessorUserID } =
+		useContext(SchoolPageContext);
+	const { snackBarProps, setModalContent } = useContext(AppContext);
 
 	const params = useParams();
 	const qClient = useQueryClient();
@@ -197,6 +199,18 @@ export default function Instructor() {
 		[]
 	);
 
+	const showScheduleModal = useCallback(() => {
+		setModalContent(
+			<ScheduleModal
+				instructorID={data?.instructor.id!}
+				allowAlter={
+					access == "instructor" &&
+					accessorUserID == data?.instructor.user.id
+				}
+			/>
+		);
+	}, [data]);
+
 	const disabledActionsFlag = useMemo(
 		() =>
 			isFetching || updateMutation.isPending || detachMutation.isPending,
@@ -255,7 +269,10 @@ export default function Instructor() {
 								primary="Imię i nazwisko"
 								secondary={`${data.instructor.user.name} ${data.instructor.user.surname}`}
 							/>
-							<IconButton color="secondary">
+							<IconButton
+								color="secondary"
+								onClick={showScheduleModal}
+							>
 								<CalendarMonth />
 							</IconButton>
 							<IconButton color="secondary">

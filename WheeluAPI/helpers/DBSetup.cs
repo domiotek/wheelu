@@ -54,6 +54,7 @@ public class DBSetup
                     LastPasswordChange = DateTime.UtcNow,
                     Birthday = DateOnly.MinValue,
                     EmailConfirmed = true,
+                    Rides = [],
                 };
 
                 string password =

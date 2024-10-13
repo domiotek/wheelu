@@ -1,6 +1,7 @@
 import { Email } from "@mui/icons-material";
 import {
 	CourseCategory,
+	RideStatus,
 	TransmissionType,
 	VehiclePartType,
 } from "../modules/enums";
@@ -271,6 +272,10 @@ export namespace App {
 			archived: boolean;
 		}
 
+		interface ICourse extends Omit<IShortCourse, "schoolId"> {
+			school: IShortSchool;
+		}
+
 		interface IShortTransaction {
 			id: string;
 			state: "Registered" | "Complete" | "Canceled" | "Refund";
@@ -284,6 +289,31 @@ export namespace App {
 			lastUpdate: string;
 			tPayTransactionId: number;
 		}
+
+		interface IShortScheduleSlot {
+			id: number;
+			instructor: IShortEmployedInstructor;
+			startTime: string;
+			endTime: string;
+		}
+
+		interface IScheduleSlot extends IShortScheduleSlot {
+			ride?: IShortRide;
+		}
+
+		interface IShortRide {
+			id: number;
+			status: RideStatus;
+			course: IShortCourse;
+			startTime?: string;
+			endTime?: string;
+			hoursCount: number;
+		}
+
+		interface IRide extends IShortRide {
+			slot?: IShortScheduleSlot;
+			vehicle: IShortVehicle;
+		}
 	}
 
 	namespace UI {
@@ -291,7 +321,8 @@ export namespace App {
 			interface INavOptionDef {
 				icon: JSX.Element;
 				name: string;
-				link: string;
+				link?: string;
+				action?: () => void;
 			}
 		}
 

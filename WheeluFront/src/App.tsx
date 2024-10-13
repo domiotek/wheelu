@@ -26,6 +26,8 @@ import { App as AppNm } from "./types/app";
 import { AccessLevel } from "./modules/enums.ts";
 import { OptionsObject, SnackbarProvider } from "notistack";
 import ModalContainer from "./components/ModalContainer/ModalContainer.tsx";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 
 interface IProps {
 	useSplash: boolean;
@@ -169,56 +171,58 @@ export default function App({ useSplash }: IProps) {
 				setModalContent: modalContentSetter,
 			}}
 		>
-			<ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
-				<CssBaseline>
-					<SnackbarProvider>
-						<Outlet />
-					</SnackbarProvider>
+			<LocalizationProvider dateAdapter={AdapterLuxon}>
+				<ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+					<CssBaseline>
+						<SnackbarProvider>
+							<Outlet />
+						</SnackbarProvider>
 
-					<Grid
-						container
-						className={c([
-							classes.SplashScreen,
-							[classes.AlwaysHidden, !useSplash],
-							[classes.Intermediate, data != undefined],
-							[classes.Hide, splashHidden],
-						])}
-						sx={{
-							background: (darkMode ? darkTheme : lightTheme)
-								.palette.background.default,
-						}}
-					>
-						<img
-							className={classes.SplashScreenLogo}
-							src={Logo}
-							alt="App logo"
-						/>
-						{error && error.code != "Unauthorized" ? (
-							<>
+						<Grid
+							container
+							className={c([
+								classes.SplashScreen,
+								[classes.AlwaysHidden, !useSplash],
+								[classes.Intermediate, data != undefined],
+								[classes.Hide, splashHidden],
+							])}
+							sx={{
+								background: (darkMode ? darkTheme : lightTheme)
+									.palette.background.default,
+							}}
+						>
+							<img
+								className={classes.SplashScreenLogo}
+								src={Logo}
+								alt="App logo"
+							/>
+							{error && error.code != "Unauthorized" ? (
+								<>
+									<Typography variant="h6">
+										Coś poszło nie tak
+									</Typography>
+									<Typography variant="body2">
+										Spróbuj przeładować aplikację
+									</Typography>
+								</>
+							) : (
 								<Typography variant="h6">
-									Coś poszło nie tak
+									Jeszcze chwila...
 								</Typography>
-								<Typography variant="body2">
-									Spróbuj przeładować aplikację
-								</Typography>
-							</>
-						) : (
-							<Typography variant="h6">
-								Jeszcze chwila...
-							</Typography>
-						)}
-					</Grid>
-					<ModalContainer
-						show={showModal}
-						onClose={() => {
-							setShowModal(false);
-							setModalContent(null);
-						}}
-					>
-						{modalContent}
-					</ModalContainer>
-				</CssBaseline>
-			</ThemeProvider>
+							)}
+						</Grid>
+						<ModalContainer
+							show={showModal}
+							onClose={() => {
+								setShowModal(false);
+								setModalContent(null);
+							}}
+						>
+							{modalContent}
+						</ModalContainer>
+					</CssBaseline>
+				</ThemeProvider>
+			</LocalizationProvider>
 			<ReactQueryDevtools initialIsOpen={false} />
 		</AppContext.Provider>
 	);

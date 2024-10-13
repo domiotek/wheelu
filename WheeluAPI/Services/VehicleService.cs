@@ -80,6 +80,7 @@ public class VehicleService(ApplicationDbContext dbContext, IImageService imageS
             TransmissionType = requestData.TransmissionType,
             Parts = parts,
             AllowedIn = requestData.AllowedIn ?? [],
+            Rides = [],
         };
 
         dbContext.Add(vehicle);

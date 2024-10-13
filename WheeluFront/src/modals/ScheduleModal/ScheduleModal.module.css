@@ -1,0 +1,10 @@
+.Modal {
+	min-width: 320px;
+	width: 60%;
+	max-width: 790px;
+	height: 600px;
+}
+
+.ModalContent {
+	padding: 0em 0;
+}

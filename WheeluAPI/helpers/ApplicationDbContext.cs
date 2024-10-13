@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WheeluAPI.models;
 using WheeluAPI.Models;
 using WheeluAPI.Models.Vehicle;
@@ -44,6 +43,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Course> Courses { get; set; }
 
     public DbSet<Transaction> Transactions { get; set; }
+
+    public DbSet<RideSlot> RideSlots { get; set; }
+
+    public DbSet<Ride> Rides { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -168,16 +171,5 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                     new VehiclePartType { Id = VehiclePartTypeId.Ligths, LifespanInDays = 1095 },
                 ]
             );
-    }
-
-    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
-    {
-        configurationBuilder.Properties<DateTime>().HaveConversion(typeof(UtcValueConverter));
-    }
-
-    class UtcValueConverter : ValueConverter<DateTime, DateTime>
-    {
-        public UtcValueConverter()
-            : base(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc)) { }
     }
 }

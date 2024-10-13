@@ -1,0 +1,39 @@
+.Modal {
+	min-width: 320px;
+	width: 90%;
+	max-width: 490px;
+	height: 350px;
+}
+
+.Form {
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+	height: 100%;
+
+}
+
+.InputGroup {
+	padding: 0 2em;
+	display: flex;
+	flex-direction: column;
+	gap: 1.5em;
+	padding-top: 0.5em;
+}
+
+.TimeDiffCaption {
+	text-align: center;
+	font-size: 0.95em;
+}
+
+
+
+@media (max-width: 769px) {
+	.Alert :global(.MuiAlert-message) {
+		display: none;
+	}
+
+	.Alert :global(.MuiAlert-icon) {
+		margin: 0;
+	}
+}

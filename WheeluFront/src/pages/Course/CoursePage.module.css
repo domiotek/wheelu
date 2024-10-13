@@ -1,0 +1,78 @@
+.Wrapper {
+	max-width: 1200px;
+}
+
+.HeaderSection {
+	margin-top: 2em;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1em;
+}
+
+.HeaderSection .HoursIndicator {
+	font-size: 9em;
+}
+
+.PropList {
+	width: 100%;
+}
+
+.HeaderSection .ProgressListItem {
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+.HeaderSection .ProgressListItem .BreakContainer {
+	display: flex;
+	align-self: flex-end;
+	gap: 1em;
+	align-items: center;
+	margin-top: 1em;
+}
+
+.HeaderSection .ProgressListItem .BreakContainer p {
+	font-size: 0.25em;
+}
+
+.Alert {
+	flex-direction: column;
+	margin-top: 2em;
+}
+
+.Tabs {
+	margin-top: 2em;
+}
+
+@media (min-width: 600px) {
+	.HeaderSection .ProgressListItem {
+		flex-direction: row;
+		align-items: center;
+	}
+
+	.HeaderSection .ProgressListItem .BreakContainer {
+		align-self: unset;
+		margin-top: unset;
+	}
+
+	.Alert {
+		flex-direction: row;
+	}
+}
+
+@media (min-width: 769px) {
+	.HeaderSection {
+		flex-direction: row;
+		justify-content: space-around;
+	}
+
+	.HeaderSection .PropList {
+		flex-basis: 70%;
+	}
+}
+
+@media (min-width: 1025px) {
+	.Wrapper {
+		padding: 0 3em;
+	}
+}

@@ -891,6 +891,23 @@ export namespace API {
 			schoolID: number;
 		}
 
+		namespace Get {
+			type IResponse = App.Models.ICourse;
+
+			interface IParams extends Record<string, number> {
+				courseID: number;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/courses/:courseID",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				null,
+				IParams
+			>;
+		}
+
 		namespace GetManyOfSchool {
 			type IResponse = _.IPaginatedResponse<App.Models.IShortCourse>;
 
@@ -950,6 +967,87 @@ export namespace API {
 				_.TCommonServerErrorCodes,
 				Partial<_.IPagingRequest> & IRequestData,
 				IBaseParams
+			>;
+		}
+	}
+
+	namespace Schedule {
+		interface IBaseParams extends Record<string, number> {
+			instructorID: number;
+		}
+
+		namespace GetSlotsOfInstructor {
+			type IResponse = App.Models.IScheduleSlot[];
+
+			interface IRequestData
+				extends Record<string, number | string | undefined> {
+				before?: string;
+				after?: string;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/instructors/:instructorID/schedule",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				IRequestData,
+				IBaseParams
+			>;
+		}
+
+		interface IManageSlotRequest extends Record<string, string> {
+			startTime: string;
+			endTime: string;
+		}
+
+		interface IManageParams extends IBaseParams {
+			slotID: number;
+		}
+
+		type Errors =
+			| "InstructorNotEmployed"
+			| "SlotOverlap"
+			| "InvalidDuration"
+			| "InvalidSlotPlacement"
+			| "RideAssigned";
+
+		namespace CreateSlot {
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"POST",
+				"/api/v1/instructors/:instructorID/schedule",
+				IResponse,
+				| "InstructorNotEmployed"
+				| "SlotOverlap"
+				| "InvalidDuration"
+				| "InvalidSlotPlacement",
+				IManageSlotRequest,
+				IBaseParams
+			>;
+		}
+
+		namespace EditSlot {
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"PUT",
+				"/api/v1/instructors/:instructorID/schedule/:slotID",
+				IResponse,
+				| "InstructorNotEmployed"
+				| "SlotOverlap"
+				| "RideAssigned"
+				| "InvalidDuration"
+				| "InvalidSlotPlacement",
+				IManageSlotRequest,
+				IManageParams
+			>;
+		}
+
+		namespace DeleteSlot {
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"DELETE",
+				"/api/v1/instructors/:instructorID/schedule/:slotID",
+				IResponse,
+				"InstructorNotEmployed" | "RideAssigned",
+				IRequestData,
+				IManageParams
 			>;
 		}
 	}

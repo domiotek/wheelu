@@ -53,3 +53,16 @@ export enum SortingType {
 export enum AuthorizabledAccountActions {
 	ChangePassword,
 }
+
+export enum CoursePageTab {
+	Rides,
+	Exams,
+	Manage,
+}
+
+export enum RideStatus {
+	Planned,
+	Ongoing,
+	Finished,
+	Canceled,
+}

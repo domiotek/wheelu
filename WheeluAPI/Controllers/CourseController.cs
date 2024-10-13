@@ -1,12 +1,14 @@
 using System.Security.Claims;
 using System.Transactions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WheeluAPI.DTO.Course;
 using WheeluAPI.DTO.Errors;
 using WheeluAPI.DTO.Transaction;
 using WheeluAPI.helpers;
+using WheeluAPI.Helpers;
 using WheeluAPI.Mappers;
 using WheeluAPI.Services;
 
@@ -66,6 +68,35 @@ public class CourseController(
             school.Courses.Count,
             school.Courses.Count
         );
+    }
+
+    [HttpGet("/api/v1/courses/{courseID}")]
+    [Authorize]
+    [ProducesResponseType(typeof(List<CourseResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetCourseAsync(int courseID)
+    {
+        var requestorEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var requestor = await userService.GetUserByEmailAsync(requestorEmail ?? "");
+
+        var course = await courseService.GetCourseByIDAsync(courseID);
+
+        if (course == null)
+            return NotFound(new APIError { Code = APIErrorCode.EntityNotFound });
+
+        var hasSchoolAccess = await schoolService.ValidateSchoolManagementAccess(
+            course.School,
+            requestorEmail!,
+            SchoolManagementAccessMode.All
+        );
+
+        var isTargetStudent = course.Student.Id == requestor!.Id;
+
+        if (!isTargetStudent && !hasSchoolAccess)
+            return BadRequest(new APIError { Code = APIErrorCode.AccessDenied });
+
+        return Ok(mapper.GetDTO(course));
     }
 
     [HttpPost("/api/v1/offers/{offerID}/purchase")]

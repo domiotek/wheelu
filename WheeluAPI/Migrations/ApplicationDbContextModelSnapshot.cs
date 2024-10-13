@@ -173,6 +173,53 @@ namespace WheeluAPI.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("WheeluAPI.Models.CanceledRide", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CanceledAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CanceledById")
+                        .HasColumnType("text");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("InstructorId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("StudentId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CanceledById");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("InstructorId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("CanceledRide");
+                });
+
             modelBuilder.Entity("WheeluAPI.Models.Course", b =>
                 {
                     b.Property<int>("Id")
@@ -181,14 +228,14 @@ namespace WheeluAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("BaseHoursCount")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Category")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("HoursCount")
-                        .HasColumnType("integer");
 
                     b.Property<int>("InstructorId")
                         .HasColumnType("integer");
@@ -431,6 +478,78 @@ namespace WheeluAPI.Migrations
                     b.HasIndex("TargetSchoolId");
 
                     b.ToTable("InstructorInviteTokens");
+                });
+
+            modelBuilder.Entity("WheeluAPI.Models.Ride", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("EndTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("InstructorId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("StartTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("StudentId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("InstructorId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("Rides");
+                });
+
+            modelBuilder.Entity("WheeluAPI.Models.RideSlot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("InstructorId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RideId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InstructorId");
+
+                    b.HasIndex("RideId")
+                        .IsUnique();
+
+                    b.ToTable("RideSlots");
                 });
 
             modelBuilder.Entity("WheeluAPI.Models.SchoolInstructor", b =>
@@ -796,7 +915,7 @@ namespace WheeluAPI.Migrations
                         {
                             Id = 1,
                             FileName = "placeholder.png",
-                            UploadDate = new DateTime(2024, 10, 2, 10, 2, 51, 66, DateTimeKind.Utc).AddTicks(1945)
+                            UploadDate = new DateTime(2024, 10, 12, 21, 46, 48, 964, DateTimeKind.Utc).AddTicks(2214)
                         });
                 });
 
@@ -1131,6 +1250,45 @@ namespace WheeluAPI.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("WheeluAPI.Models.CanceledRide", b =>
+                {
+                    b.HasOne("WheeluAPI.models.User", "CanceledBy")
+                        .WithMany()
+                        .HasForeignKey("CanceledById");
+
+                    b.HasOne("WheeluAPI.Models.Course", "Course")
+                        .WithMany("CanceledRides")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WheeluAPI.Models.SchoolInstructor", "Instructor")
+                        .WithMany()
+                        .HasForeignKey("InstructorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WheeluAPI.models.User", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId");
+
+                    b.HasOne("WheeluAPI.Models.Vehicle.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CanceledBy");
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Instructor");
+
+                    b.Navigation("Student");
+
+                    b.Navigation("Vehicle");
+                });
+
             modelBuilder.Entity("WheeluAPI.Models.Course", b =>
                 {
                     b.HasOne("WheeluAPI.Models.SchoolInstructor", "Instructor")
@@ -1217,6 +1375,56 @@ namespace WheeluAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("TargetSchool");
+                });
+
+            modelBuilder.Entity("WheeluAPI.Models.Ride", b =>
+                {
+                    b.HasOne("WheeluAPI.Models.Course", "Course")
+                        .WithMany("Rides")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WheeluAPI.Models.SchoolInstructor", "Instructor")
+                        .WithMany("Rides")
+                        .HasForeignKey("InstructorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WheeluAPI.models.User", "Student")
+                        .WithMany("Rides")
+                        .HasForeignKey("StudentId");
+
+                    b.HasOne("WheeluAPI.Models.Vehicle.Vehicle", "Vehicle")
+                        .WithMany("Rides")
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Instructor");
+
+                    b.Navigation("Student");
+
+                    b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("WheeluAPI.Models.RideSlot", b =>
+                {
+                    b.HasOne("WheeluAPI.Models.SchoolInstructor", "Instructor")
+                        .WithMany()
+                        .HasForeignKey("InstructorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WheeluAPI.Models.Ride", "Ride")
+                        .WithOne("Slot")
+                        .HasForeignKey("WheeluAPI.Models.RideSlot", "RideId");
+
+                    b.Navigation("Instructor");
+
+                    b.Navigation("Ride");
                 });
 
             modelBuilder.Entity("WheeluAPI.Models.SchoolInstructor", b =>
@@ -1373,6 +1581,10 @@ namespace WheeluAPI.Migrations
 
             modelBuilder.Entity("WheeluAPI.Models.Course", b =>
                 {
+                    b.Navigation("CanceledRides");
+
+                    b.Navigation("Rides");
+
                     b.Navigation("Transactions");
                 });
 
@@ -1386,6 +1598,12 @@ namespace WheeluAPI.Migrations
                     b.Navigation("EmploymentHistory");
                 });
 
+            modelBuilder.Entity("WheeluAPI.Models.Ride", b =>
+                {
+                    b.Navigation("Slot")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("WheeluAPI.Models.SchoolInstructor", b =>
                 {
                     b.Navigation("AllowedCategories");
@@ -1393,6 +1611,8 @@ namespace WheeluAPI.Migrations
                     b.Navigation("Courses");
 
                     b.Navigation("EmploymentRecords");
+
+                    b.Navigation("Rides");
                 });
 
             modelBuilder.Entity("WheeluAPI.Models.Transaction", b =>
@@ -1403,6 +1623,8 @@ namespace WheeluAPI.Migrations
             modelBuilder.Entity("WheeluAPI.Models.Vehicle.Vehicle", b =>
                 {
                     b.Navigation("Parts");
+
+                    b.Navigation("Rides");
                 });
 
             modelBuilder.Entity("WheeluAPI.models.City", b =>
@@ -1429,6 +1651,8 @@ namespace WheeluAPI.Migrations
             modelBuilder.Entity("WheeluAPI.models.User", b =>
                 {
                     b.Navigation("OwnedSchool");
+
+                    b.Navigation("Rides");
                 });
 #pragma warning restore 612, 618
         }

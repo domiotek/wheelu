@@ -1,0 +1,23 @@
+.Wrapper {
+	position: relative;
+	font-size: 2em;
+	aspect-ratio: 1 / 1;
+	display: flex;
+	width: 1em;
+	height: 1em;
+}
+
+.Wrapper>span {
+	width: 100% !important;
+	height: 100% !important;
+}
+
+.Wrapper p {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	margin: 0;
+	text-align: center;
+	font-size: 0.15em;
+}

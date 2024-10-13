@@ -2,6 +2,7 @@ import axios, { AxiosError } from "axios";
 import { API } from "../types/api";
 import { FieldError } from "react-hook-form";
 import { App } from "../types/app";
+import { DateTime } from "luxon";
 
 const API_SERVER_HOST = "localhost:9090";
 
@@ -251,4 +252,14 @@ export function formatPolishWordSuffix(
 		default:
 			return suffix2;
 	}
+}
+
+export function roundMinutesToQuarters(date: DateTime) {
+	const quarter = Math.round(date.minute / 60 / 0.25) * 0.25;
+
+	return date.set({
+		hour: date.hour,
+		minute: 60 * quarter,
+		second: date.second,
+	});
 }

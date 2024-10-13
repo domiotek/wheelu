@@ -1,0 +1,27 @@
+.Modal {
+	min-width: 320px;
+	width: 60%;
+	max-width: 790px;
+	height: 670px;
+}
+
+.Content {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	gap: 0.5em;
+}
+
+.Form {
+	padding: 1em;
+}
+
+.InputGroup {
+	display: flex;
+	gap: 1em;
+	align-items: center;
+}
+
+.NoRideMessage img {
+	max-width: 150px;
+}

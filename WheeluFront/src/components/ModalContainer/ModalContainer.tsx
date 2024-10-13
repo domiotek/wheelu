@@ -28,6 +28,8 @@ export const ModalContext = createContext<App.IModalContext>({
 	hostRef: null,
 });
 
+let ModalsOpened = 0;
+
 export default function ModalContainer({ show, onClose, children }: IProps) {
 	const [allowCoverExit, setAllowCoverExit] = useState<boolean>(true);
 	const [closingNotifier, setClosingNotifier] =
@@ -41,13 +43,14 @@ export default function ModalContainer({ show, onClose, children }: IProps) {
 	const [block, unblock] = useBodyScrollBlocker();
 
 	if (show) block();
-	else unblock();
+	else if (ModalsOpened == 0) unblock();
 
 	const handleClosing = useCallback(() => {
 		setClosingSoon(true);
 		setTimeout(() => {
 			setClosingSoon(false);
 			onClose();
+			ModalsOpened--;
 		}, 400);
 	}, [onClose]);
 
@@ -58,6 +61,7 @@ export default function ModalContainer({ show, onClose, children }: IProps) {
 				(e.target as HTMLElement).classList.contains(classes.Container)
 			) {
 				if (allowCoverExit) {
+					e.stopPropagation();
 					if (!closingNotifier || closingNotifier()) handleClosing();
 				}
 			}
@@ -73,12 +77,15 @@ export default function ModalContainer({ show, onClose, children }: IProps) {
 			setClosingNotifier(null);
 		}
 
-		if (show)
+		if (show) {
+			ModalsOpened++;
+
 			(
 				hostRef.current?.querySelector(
 					".simplebar-content-wrapper"
 				) as HTMLElement | null
 			)?.focus();
+		}
 	}, [show, children]);
 
 	return (

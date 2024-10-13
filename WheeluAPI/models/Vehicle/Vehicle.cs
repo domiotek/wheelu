@@ -35,6 +35,8 @@ public class Vehicle
 
     public required List<CourseCategoryType> AllowedIn { get; set; } = [];
 
+    public virtual required List<Ride> Rides { get; set; } = [];
+
     [MaxLength(255)]
     public string? Note { get; set; }
 }

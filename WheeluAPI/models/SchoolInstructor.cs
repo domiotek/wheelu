@@ -34,4 +34,7 @@ public class SchoolInstructor
     public virtual required List<CourseCategory> AllowedCategories { get; set; } = [];
 
     public virtual required List<Course> Courses { get; set; } = [];
+
+    [InverseProperty(nameof(Ride.Instructor))]
+    public virtual required List<Ride> Rides { get; set; } = [];
 }

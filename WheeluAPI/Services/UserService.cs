@@ -38,6 +38,7 @@ public class UserService(
             CreatedAt = DateTime.UtcNow,
             EmailConfirmed = createActivated,
             LastPasswordChange = DateTime.UtcNow,
+            Rides = [],
         };
 
         var result = await users.CreateAsync(newUser, requestData.Password);

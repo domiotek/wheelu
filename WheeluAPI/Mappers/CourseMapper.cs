@@ -3,7 +3,7 @@ using WheeluAPI.Models;
 
 namespace WheeluAPI.Mappers;
 
-public class CourseMapper
+public class CourseMapper(SchoolMapper schoolMapper)
 {
     public ShortCourseResponse GetShortDTO(Course source)
     {
@@ -14,7 +14,23 @@ public class CourseMapper
             SchoolId = source.School.Id,
             Student = source.Student.GetShortDTO(),
             Instructor = source.Instructor.Instructor.User.GetShortDTO(),
-            HoursCount = source.HoursCount,
+            HoursCount = source.BaseHoursCount,
+            PricePerHour = source.PricePerHour,
+            CreatedAt = source.CreatedAt,
+            Archived = source.Archived,
+        };
+    }
+
+    public CourseResponse GetDTO(Course source)
+    {
+        return new CourseResponse
+        {
+            Id = source.Id,
+            Category = source.Category,
+            School = schoolMapper.GetShortDTO(source.School),
+            Student = source.Student.GetShortDTO(),
+            Instructor = source.Instructor.Instructor.User.GetShortDTO(),
+            HoursCount = source.BaseHoursCount,
             PricePerHour = source.PricePerHour,
             CreatedAt = source.CreatedAt,
             Archived = source.Archived,
@@ -24,5 +40,10 @@ public class CourseMapper
     public List<ShortCourseResponse> MapToShortDTO(List<Course> courses)
     {
         return courses.Select(GetShortDTO).ToList();
+    }
+
+    public List<CourseResponse> MapToDTO(List<Course> courses)
+    {
+        return courses.Select(GetDTO).ToList();
     }
 }

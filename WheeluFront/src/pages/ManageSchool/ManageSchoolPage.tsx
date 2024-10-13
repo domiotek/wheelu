@@ -40,6 +40,7 @@ interface IProps {
 
 interface IManageSchoolPageContext {
 	access: "admin" | "owner" | "instructor";
+	accessorUserID: string;
 	setCoverPhotoPreview: (preview: any) => void;
 	schoolData: App.Models.ISchool | null;
 	queryKey: QueryKey;
@@ -47,6 +48,7 @@ interface IManageSchoolPageContext {
 
 export const SchoolPageContext = createContext<IManageSchoolPageContext>({
 	access: null as any,
+	accessorUserID: null as any,
 	setCoverPhotoPreview: OutsideContextNotifier,
 	schoolData: null,
 	queryKey: [],
@@ -204,6 +206,7 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 			<SchoolPageContext.Provider
 				value={{
 					access,
+					accessorUserID: userDetails?.userId!,
 					setCoverPhotoPreview,
 					schoolData: schoolData ?? null,
 					queryKey,

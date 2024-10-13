@@ -3,6 +3,8 @@
 @import '@fontsource/roboto/500.css';
 @import '@fontsource/roboto/700.css';
 
+@import 'react-big-calendar/lib/css/react-big-calendar.css';
+
 body {
 	margin: 0;
 	-webkit-font-smoothing: antialiased;
@@ -10,12 +12,12 @@ body {
 	position: relative;
 	line-height: 1.5;
 }
-  
+
 :root, body {
 	width: 100%;
 	height: 100%;
 }
-  
+
 #root {
 	height: 100%;
 	display: flex;
@@ -45,29 +47,274 @@ p, h1, h2, h3, h4, h5, h6 {
 
 
 
-[data-simplebar] {position:relative;flex-direction:column;flex-wrap:wrap;justify-content:flex-start;align-content:flex-start;align-items:flex-start; display: flex;}
-.simplebar-wrapper {overflow:hidden;width:inherit;height:inherit;max-width:inherit;max-height:inherit}
-.simplebar-mask {direction:inherit;position:absolute;overflow:hidden;padding:0;margin:0;left:0;top:0;bottom:0;right:0;width:auto!important;height:auto!important;z-index:0}
-.simplebar-offset {direction:inherit!important;box-sizing:inherit!important;resize:none!important;position:absolute;top:0;left:0;bottom:0;right:0;padding:0;margin:0;-webkit-overflow-scrolling:touch}
-.simplebar-content {width: 100%; height: 100%;}
-.simplebar-content-wrapper {direction:inherit;box-sizing:border-box!important;position:relative;display:block;height:100%!important;width:auto;max-width:100%;max-height:100%;overflow:auto;scrollbar-width:none;-ms-overflow-style:none}
-.simplebar-content-wrapper::-webkit-scrollbar,.simplebar-hide-scrollbar::-webkit-scrollbar {display:none;width:0;height:0}
-.simplebar-content:after,.simplebar-content:before {content:' ';display:table}
-.simplebar-placeholder {max-height:100%;max-width:100%;width:100%;pointer-events:none}
-.simplebar-height-auto-observer-wrapper {box-sizing:inherit!important;height:100%;width:100%;max-width:1px;position:relative;float:left;max-height:1px;overflow:hidden;z-index:-1;padding:0;margin:0;pointer-events:none;flex-grow:inherit;flex-shrink:0;flex-basis:0}
-.simplebar-height-auto-observer {box-sizing:inherit;display:block;opacity:0;position:absolute;top:0;left:0;height:1000%;width:1000%;min-height:1px;min-width:1px;overflow:hidden;pointer-events:none;z-index:-1}
-.simplebar-track {z-index:1;position:absolute;right:0;bottom:0;pointer-events:none;overflow:hidden}
-[data-simplebar].simplebar-dragging {pointer-events:none;-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
-[data-simplebar].simplebar-dragging .simplebar-content {pointer-events:none;-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
-[data-simplebar].simplebar-dragging .simplebar-track {pointer-events:all}
-.simplebar-scrollbar {position:absolute;left:0;right:0;min-height:10px}
-.simplebar-scrollbar:before {position:absolute;content:'';background:var(--scrollbar-color,#6f6f6f);border-radius:7px;left:2px;right:2px;opacity:0;transition:opacity .2s .5s linear}
-.simplebar-scrollbar.simplebar-visible:before {opacity:.5;transition-delay:0s;transition-duration:0s}
-.simplebar-track.simplebar-vertical {top:0;width:11px}
-.simplebar-scrollbar:before {top:2px;bottom:2px;left:2px;right:2px}
-.simplebar-track.simplebar-horizontal {left:0;height:11px}
-.simplebar-track.simplebar-horizontal .simplebar-scrollbar {right:auto;left:0;top:0;bottom:0;min-height:0;min-width:10px;width:auto}
-[data-simplebar-direction=rtl] .simplebar-track.simplebar-vertical {right:auto;left:0}
-.simplebar-dummy-scrollbar-size {direction:rtl;position:fixed;opacity:0;visibility:hidden;height:500px;width:500px;overflow-y:hidden;overflow-x:scroll;-ms-overflow-style:scrollbar!important}
-.simplebar-dummy-scrollbar-size>div {width:200%;height:200%;margin:10px 0}
-.simplebar-hide-scrollbar {position:fixed;left:0;visibility:hidden;overflow-y:scroll;scrollbar-width:none;-ms-overflow-style:none}
+[data-simplebar] {
+	position: relative;
+	flex-direction: column;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	align-content: flex-start;
+	align-items: flex-start;
+	display: flex;
+}
+
+.simplebar-wrapper {
+	overflow: hidden;
+	width: inherit;
+	height: inherit;
+	max-width: inherit;
+	max-height: inherit
+}
+
+.simplebar-mask {
+	direction: inherit;
+	position: absolute;
+	overflow: hidden;
+	padding: 0;
+	margin: 0;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	width: auto !important;
+	height: auto !important;
+	z-index: 0
+}
+
+.simplebar-offset {
+	direction: inherit !important;
+	box-sizing: inherit !important;
+	resize: none !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	padding: 0;
+	margin: 0;
+	-webkit-overflow-scrolling: touch
+}
+
+.simplebar-content {
+	width: 100%;
+	height: 100%;
+}
+
+.simplebar-content-wrapper {
+	direction: inherit;
+	box-sizing: border-box !important;
+	position: relative;
+	display: block;
+	height: 100% !important;
+	width: auto;
+	max-width: 100%;
+	max-height: 100%;
+	overflow: auto;
+	scrollbar-width: none;
+	-ms-overflow-style: none
+}
+
+.simplebar-content-wrapper::-webkit-scrollbar, .simplebar-hide-scrollbar::-webkit-scrollbar {
+	display: none;
+	width: 0;
+	height: 0
+}
+
+.simplebar-content:after, .simplebar-content:before {
+	content: ' ';
+	display: table
+}
+
+.simplebar-placeholder {
+	max-height: 100%;
+	max-width: 100%;
+	width: 100%;
+	pointer-events: none
+}
+
+.simplebar-height-auto-observer-wrapper {
+	box-sizing: inherit !important;
+	height: 100%;
+	width: 100%;
+	max-width: 1px;
+	position: relative;
+	float: left;
+	max-height: 1px;
+	overflow: hidden;
+	z-index: -1;
+	padding: 0;
+	margin: 0;
+	pointer-events: none;
+	flex-grow: inherit;
+	flex-shrink: 0;
+	flex-basis: 0
+}
+
+.simplebar-height-auto-observer {
+	box-sizing: inherit;
+	display: block;
+	opacity: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 1000%;
+	width: 1000%;
+	min-height: 1px;
+	min-width: 1px;
+	overflow: hidden;
+	pointer-events: none;
+	z-index: -1
+}
+
+.simplebar-track {
+	z-index: 1;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	pointer-events: none;
+	overflow: hidden
+}
+
+[data-simplebar].simplebar-dragging {
+	pointer-events: none;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none
+}
+
+[data-simplebar].simplebar-dragging .simplebar-content {
+	pointer-events: none;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none
+}
+
+[data-simplebar].simplebar-dragging .simplebar-track {
+	pointer-events: all
+}
+
+.simplebar-scrollbar {
+	position: absolute;
+	left: 0;
+	right: 0;
+	min-height: 10px
+}
+
+.simplebar-scrollbar:before {
+	position: absolute;
+	content: '';
+	background: var(--scrollbar-color, #6f6f6f);
+	border-radius: 7px;
+	left: 2px;
+	right: 2px;
+	opacity: 0;
+	transition: opacity .2s .5s linear
+}
+
+.simplebar-scrollbar.simplebar-visible:before {
+	opacity: .5;
+	transition-delay: 0s;
+	transition-duration: 0s
+}
+
+.simplebar-track.simplebar-vertical {
+	top: 0;
+	width: 11px
+}
+
+.simplebar-scrollbar:before {
+	top: 2px;
+	bottom: 2px;
+	left: 2px;
+	right: 2px
+}
+
+.simplebar-track.simplebar-horizontal {
+	left: 0;
+	height: 11px
+}
+
+.simplebar-track.simplebar-horizontal .simplebar-scrollbar {
+	right: auto;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	min-height: 0;
+	min-width: 10px;
+	width: auto
+}
+
+[data-simplebar-direction=rtl] .simplebar-track.simplebar-vertical {
+	right: auto;
+	left: 0
+}
+
+.simplebar-dummy-scrollbar-size {
+	direction: rtl;
+	position: fixed;
+	opacity: 0;
+	visibility: hidden;
+	height: 500px;
+	width: 500px;
+	overflow-y: hidden;
+	overflow-x: scroll;
+	-ms-overflow-style: scrollbar !important
+}
+
+.simplebar-dummy-scrollbar-size>div {
+	width: 200%;
+	height: 200%;
+	margin: 10px 0
+}
+
+.simplebar-hide-scrollbar {
+	position: fixed;
+	left: 0;
+	visibility: hidden;
+	overflow-y: scroll;
+	scrollbar-width: none;
+	-ms-overflow-style: none
+}
+
+.rbc-time-view {
+	border: none;
+}
+
+.rbc-time-header-content, .rbc-header+.rbc-header, .rbc-day-bg+.rbc-day-bg, .rbc-time-content>*+*>* {
+	border-left: 1px solid var(--rbc-border-color);
+}
+
+.rbc-header, .rbc-timeslot-group {
+	border-bottom: 1px solid var(--rbc-border-color);
+}
+
+.rbc-time-content {
+	border-top: 2px solid var(--rbc-border-color);
+}
+
+.rbc-day-slot .rbc-time-slot {
+	border-top: 1px solid var(--rbc-border-light-color);
+}
+
+.rbc-event {
+	background-color: var(--rbc-event-bg-color);
+	flex-wrap: nowrap !important;
+}
+
+.rbc-today {
+	background-color: var(--rbc-today-bg-color);
+}
+
+.rbc-event-label {
+	white-space: break-spaces;
+	line-height: 14px;
+}
+
+.rbc-event-content {
+	margin-top: 0.5em;
+}

@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 using WheeluAPI.DTO.User;
+using WheeluAPI.Models;
 
 namespace WheeluAPI.models;
 
@@ -18,6 +19,9 @@ public class User : IdentityUser
 
     [InverseProperty(nameof(School.Owner))]
     public virtual School? OwnedSchool { get; set; }
+
+    [InverseProperty(nameof(Ride.Student))]
+    public virtual required List<Ride> Rides { get; set; }
 
     public ShortUserResponse GetShortDTO()
     {

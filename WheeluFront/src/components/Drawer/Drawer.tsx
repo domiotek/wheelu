@@ -25,8 +25,9 @@ import ClassIcon from "@mui/icons-material/Class";
 
 import classes from "./Drawer.module.css";
 import { App } from "../../types/app";
-import { Business, Security } from "@mui/icons-material";
+import { Business, CalendarMonth, Security } from "@mui/icons-material";
 import { AccessLevel } from "../../modules/enums";
+import ScheduleModal from "../../modals/ScheduleModal/ScheduleModal";
 
 interface IProps {
 	open: boolean;
@@ -80,7 +81,8 @@ export default function Drawer({ open, setOpen }: IProps) {
 	const [accountSectionOpen, setAccountSectionOpen] =
 		useState<boolean>(false);
 
-	const { darkTheme, accessLevel, userDetails } = useContext(AppContext);
+	const { darkTheme, accessLevel, userDetails, setModalContent } =
+		useContext(AppContext);
 
 	const isDesktop = useMediaQuery(darkTheme.breakpoints.up("sm"));
 
@@ -126,6 +128,23 @@ export default function Drawer({ open, setOpen }: IProps) {
 					icon: <Business />,
 					name: "Moja szkoła",
 					link: `/schools/${userDetails?.ownedSchool?.id}/manage`,
+				});
+				break;
+
+			case AccessLevel.Instructor:
+				result.push({
+					icon: <CalendarMonth />,
+					name: "Mój grafik",
+					link: ``,
+					action: () =>
+						setModalContent(
+							<ScheduleModal
+								instructorID={
+									userDetails?.instructorProfile?.id!
+								}
+								allowAlter={true}
+							/>
+						),
 				});
 				break;
 		}
@@ -200,7 +219,10 @@ export default function Drawer({ open, setOpen }: IProps) {
 						<ListItemButton
 							key={opt.name}
 							sx={{ pl: 3 }}
-							onClick={() => navigate(opt.link)}
+							onClick={() => {
+								opt.action && opt.action();
+								opt.link && navigate(opt.link);
+							}}
 						>
 							<ListItemIcon>{opt.icon}</ListItemIcon>
 							<ListItemText>{opt.name}</ListItemText>

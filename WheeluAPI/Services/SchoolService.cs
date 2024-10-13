@@ -14,7 +14,8 @@ public class Schoolervice(
     ApplicationDbContext dbContext,
     IImageService imageService,
     ILocationService locationService,
-    IUserService userService
+    IUserService userService,
+    IInstructorService instructorService
 ) : BaseService, ISchoolService
 {
     public ValueTask<School?> GetSchoolByID(int id)
@@ -264,6 +265,19 @@ public class Schoolervice(
         var isAdmin = await userService.HasRole(user!, UserRole.Administrator);
 
         if (isAdmin)
+            return true;
+
+        if (mode == SchoolManagementAccessMode.AllPrivileged)
+            return false;
+
+        var instructorProfile = await instructorService.GetFromUserAsync(user!);
+
+        if (instructorProfile == null)
+            return false;
+
+        var isEmployedInstructor = instructorProfile.ActiveEmployment?.School.Id == school.Id;
+
+        if (isEmployedInstructor)
             return true;
 
         return false;

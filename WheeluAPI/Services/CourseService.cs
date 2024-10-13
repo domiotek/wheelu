@@ -83,10 +83,12 @@ public class CourseService(ApplicationDbContext dbContext) : BaseService
             School = courseData.offer.School,
             Student = courseData.student,
             Instructor = courseData.instructor,
-            HoursCount = courseData.offer.HoursCount,
+            BaseHoursCount = courseData.offer.HoursCount,
             PricePerHour = courseData.offer.PricePerHour,
             CreatedAt = DateTime.UtcNow,
             Transactions = [],
+            Rides = [],
+            CanceledRides = [],
         };
 
         dbContext.Courses.Add(course);

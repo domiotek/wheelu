@@ -71,7 +71,6 @@ export default function SchoolPage() {
 			default:
 			case SchoolPageTab.Courses:
 				navigate("courses");
-				tabID = SchoolPageTab.Courses;
 				break;
 			case SchoolPageTab.Services:
 				navigate("services");

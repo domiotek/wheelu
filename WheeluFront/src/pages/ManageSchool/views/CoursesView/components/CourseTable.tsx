@@ -12,6 +12,7 @@ import { CourseOffersContext } from "../Courses";
 import { CurrencyFormatter } from "../../../../../modules/formatters";
 import AuthService from "../../../../../services/Auth";
 import { renderCategoryChips } from "../../../../../modules/features";
+import { useNavigate } from "react-router-dom";
 
 interface IProps {
 	schoolID: number;
@@ -25,6 +26,7 @@ export default function CourseTable({ schoolID, supportFilter }: IProps) {
 	});
 
 	const { queryKey } = useContext(CourseOffersContext);
+	const navigate = useNavigate();
 
 	const { data, isFetching } = useQuery<
 		API.Courses.GetManyOfSchool.IResponse,
@@ -157,6 +159,7 @@ export default function CourseTable({ schoolID, supportFilter }: IProps) {
 						},
 					},
 				}}
+				onRowDoubleClick={(row) => navigate(`/courses/${row.id}`)}
 			/>
 		</>
 	);

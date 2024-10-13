@@ -7,7 +7,6 @@ import MainLayout from "./layouts/MainLayout.tsx";
 import PortalLayout from "./layouts/PortalLayout.tsx";
 import AnonymousLayout from "./layouts/AnonymousLayout.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import ProfilePage from "./pages/Profile/ProfilePage.tsx";
 
 /** Portals */
 
@@ -63,6 +62,8 @@ const SearchCoursePage = React.lazy(
 const SearchSchoolPage = React.lazy(
 	() => import("./pages/Search/SearchSchool.tsx")
 );
+const ProfilePage = React.lazy(() => import("./pages/Profile/ProfilePage.tsx"));
+const CoursePage = React.lazy(() => import("./pages/Course/CoursePage.tsx"));
 
 /** Admin panel subviews */
 
@@ -258,6 +259,10 @@ root.render(
 								</Route>
 							</Route>
 							<Route path="profile" element={<ProfilePage />} />
+							<Route
+								path="courses/:courseID"
+								element={<CoursePage />}
+							/>
 						</Route>
 
 						<Route path="*" element={<PortalLayout />}>
