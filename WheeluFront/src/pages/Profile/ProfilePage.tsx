@@ -16,19 +16,17 @@ import { AppContext } from "../../App";
 import { DateTimeFormatter, RoleFormatter } from "../../modules/formatters";
 import LoadingScreen from "../../components/LoadingScreen/LoadingScreen";
 import MessagePanel from "../../components/MessagePanel/MessagePanel";
-import { useSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
 import { AuthorizabledAccountActions } from "../../modules/enums";
 import EditAccountPropertyModal from "../../modals/EditAccountPropertyModal/EditAccountPropertyModal";
 import { App } from "../../types/app";
 import TransactionsTable from "../../components/TransactionsTable/TransactionsTable";
 import EmploymentHistoryTable from "./components/EmploymentHistoryTable";
+import { toast } from "react-toastify";
 
 export default function ProfilePage() {
-	const { userDetails, snackBarProps, setModalContent } =
-		useContext(AppContext);
+	const { userDetails, setModalContent } = useContext(AppContext);
 
-	const snackBar = useSnackbar();
 	const navigate = useNavigate();
 	const qClient = useQueryClient();
 
@@ -67,12 +65,7 @@ export default function ProfilePage() {
 			});
 			navigate(`/reset-password?token=${tokenData.token}`);
 		},
-		onError: () =>
-			snackBar.enqueueSnackbar({
-				...snackBarProps,
-				message: "Nie udało się uwierzytelnić tej akcji.",
-				variant: "error",
-			}),
+		onError: () => toast.error("Nie udało się uwierzytelnić tej akcji."),
 	});
 
 	const openPropertyEditModal = useCallback(function (

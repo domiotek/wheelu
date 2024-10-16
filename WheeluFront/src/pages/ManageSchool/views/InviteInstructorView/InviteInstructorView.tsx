@@ -9,18 +9,15 @@ import {
 	prepareFieldErrorMessage,
 } from "../../../../modules/utils";
 import { API } from "../../../../types/api";
-import { useSnackbar } from "notistack";
 import { useCallback, useContext } from "react";
-import { AppContext } from "../../../../App";
 import { SchoolPageContext } from "../../ManageSchoolPage";
 import InstructorService from "../../../../services/Instructor";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function InviteInstructorView() {
-	const { snackBarProps } = useContext(AppContext);
 	const { schoolData, queryKey } = useContext(SchoolPageContext);
 
-	const snackBar = useSnackbar();
 	const navigate = useNavigate();
 	const location = useLocation();
 	const qClient = useQueryClient();
@@ -38,22 +35,13 @@ export default function InviteInstructorView() {
 				{ schoolID: schoolData!.id }
 			),
 		onSuccess: () => {
-			snackBar.enqueueSnackbar({
-				...snackBarProps,
-				message: "Zaproszenie zostało wysłane.",
-				variant: "success",
-			});
+			toast.success("Zaproszenie zostało wysłane.");
 			navigate(popUrlSegment(location.pathname));
 			qClient.invalidateQueries({
 				queryKey: queryKey.concat(["Instructors", "Invites"]),
 			});
 		},
-		onError: () =>
-			snackBar.enqueueSnackbar({
-				...snackBarProps,
-				message: "Nie udało się wysłać zaproszenia.",
-				variant: "error",
-			}),
+		onError: () => toast.error("Nie udało się wysłać zaproszenia."),
 	});
 
 	const submitCallback = useCallback(

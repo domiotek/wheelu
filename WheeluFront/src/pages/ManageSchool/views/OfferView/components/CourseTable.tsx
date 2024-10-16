@@ -10,9 +10,9 @@ import {
 } from "../../../../constants";
 import { AppContext } from "../../../../../App";
 import ManageCourseOfferModal from "../../../../../modals/ManageCourseOfferModal/ManageCourseOfferModal";
-import { useSnackbar } from "notistack";
 import { CourseOffersContext } from "../Offer";
 import { CurrencyFormatter } from "../../../../../modules/formatters";
+import { toast } from "react-toastify";
 
 interface IProps {
 	schoolID: number;
@@ -25,9 +25,8 @@ export default function CourseTable({ schoolID, showActions }: IProps) {
 		page: 0,
 	});
 
-	const { setModalContent, snackBarProps } = useContext(AppContext);
+	const { setModalContent } = useContext(AppContext);
 	const { queryKey, invalidateQuery } = useContext(CourseOffersContext);
-	const snackBar = useSnackbar();
 
 	const { data, isFetching } = useQuery<
 		API.Offers.Courses.GetAllOfSchool.IResponse,
@@ -57,12 +56,7 @@ export default function CourseTable({ schoolID, showActions }: IProps) {
 				{ id: data.id }
 			),
 		onSuccess: invalidateQuery,
-		onError: () =>
-			snackBar.enqueueSnackbar({
-				...snackBarProps,
-				message: "Nie udało się usunąć kursu",
-				variant: "error",
-			}),
+		onError: () => toast.error("Nie udało się usunąć kursu"),
 	});
 
 	const editCourseCallback = useCallback((data: App.Models.ICourseOffer) => {

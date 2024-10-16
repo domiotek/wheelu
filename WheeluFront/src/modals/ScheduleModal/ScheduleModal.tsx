@@ -6,10 +6,13 @@ import Calendar from "./components/Calendar/Calendar";
 import { QueryKey, useQuery } from "@tanstack/react-query";
 import { API } from "../../types/api";
 import { callAPI } from "../../modules/utils";
+import { App } from "../../types/app";
 
 interface IProps {
 	instructorID: number;
 	allowAlter: boolean;
+	mode?: "view" | "pick";
+	onPick?: (slot: App.Models.IScheduleSlot) => void;
 }
 
 interface IContext {
@@ -22,8 +25,13 @@ export const ScheduleContext = React.createContext<IContext>({
 	baseQuery: null as any,
 });
 
-export default function ScheduleModal({ instructorID, allowAlter }: IProps) {
-	const { setHostClassName } = useContext(ModalContext);
+export default function ScheduleModal({
+	instructorID,
+	allowAlter,
+	mode = "view",
+	onPick,
+}: IProps) {
+	const { setHostClassName, closeModal } = useContext(ModalContext);
 
 	useLayoutEffect(() => {
 		setHostClassName(classes.Modal);
@@ -60,7 +68,15 @@ export default function ScheduleModal({ instructorID, allowAlter }: IProps) {
 					baseQuery: queryKey,
 				}}
 			>
-				<Calendar slots={data ?? null} allowAlter={allowAlter} />
+				<Calendar
+					slots={data ?? null}
+					allowAlter={allowAlter}
+					isPickMode={mode == "pick"}
+					onSlotPick={(slot) => {
+						onPick && onPick(slot);
+						closeModal();
+					}}
+				/>
 			</ScheduleContext.Provider>
 		</div>
 	);

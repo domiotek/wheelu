@@ -56,7 +56,11 @@ public class VehicleController(
     [ProducesResponseType(typeof(List<ShortVehicleResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetSchoolVehicles(int schoolID)
+    public async Task<IActionResult> GetSchoolVehicles(
+        int schoolID,
+        [FromQuery] DateTime? after,
+        [FromQuery] DateTime? before
+    )
     {
         var school = await schoolService.GetSchoolByID(schoolID);
 
@@ -66,6 +70,15 @@ public class VehicleController(
                 new APIError { Code = APIErrorCode.EntityNotFound, Details = ["School not found."] }
             );
         }
+
+        if (after != null && before != null)
+            return Ok(
+                mapper.MapToShortDTO(
+                    schoolService
+                        .GetVehiclesAvailbleAt(school, (DateTime)after, (DateTime)before)
+                        .ToList()
+                )
+            );
 
         return Ok(mapper.MapToShortDTO(school.Vehicles));
     }

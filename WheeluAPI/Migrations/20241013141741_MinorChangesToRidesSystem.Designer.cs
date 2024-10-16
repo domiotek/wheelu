@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WheeluAPI.helpers;
@@ -12,9 +13,11 @@ using WheeluAPI.helpers;
 namespace WheeluAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241013141741_MinorChangesToRidesSystem")]
+    partial class MinorChangesToRidesSystem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -217,7 +220,7 @@ namespace WheeluAPI.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("CanceledRides");
+                    b.ToTable("CanceledRide");
                 });
 
             modelBuilder.Entity("WheeluAPI.Models.Course", b =>
@@ -915,7 +918,7 @@ namespace WheeluAPI.Migrations
                         {
                             Id = 1,
                             FileName = "placeholder.png",
-                            UploadDate = new DateTime(2024, 10, 13, 19, 51, 50, 188, DateTimeKind.Utc).AddTicks(14)
+                            UploadDate = new DateTime(2024, 10, 13, 14, 17, 39, 736, DateTimeKind.Utc).AddTicks(3412)
                         });
                 });
 

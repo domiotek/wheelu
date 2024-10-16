@@ -21,8 +21,8 @@ import UploadImageModal, {
 import { SchoolPageContext } from "../../../ManageSchoolPage";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { useSnackbar } from "notistack";
 import SchoolService from "../../../../../services/School";
+import { toast } from "react-toastify";
 
 interface IProps {
 	cities: App.Models.ICity[];
@@ -51,11 +51,10 @@ export default function DataSection({
 	const [preSubmitting, setPreSubmitting] = useState(false);
 
 	const params = useParams();
-	const { setModalContent, snackBarProps } = useContext(AppContext);
+	const { setModalContent } = useContext(AppContext);
 	const { setCoverPhotoPreview, schoolData } = useContext(SchoolPageContext);
 	const formContext = useForm<API.School.Update.IRequestData>();
 	const qClient = useQueryClient();
-	const snack = useSnackbar();
 
 	const saveChanges = useMutation<
 		null,
@@ -73,21 +72,16 @@ export default function DataSection({
 			qClient.invalidateQueries({
 				queryKey: ["Schools", "#", params["id"]],
 			});
-			snack.enqueueSnackbar({
-				...snackBarProps,
-				message: "Pomyślnie zapisano zmiany.",
-				variant: "success",
-			});
+
+			toast.success("Pomyślnie zapisano zmiany.");
 			onSavingChanges(false);
 		},
 		onError: (err) => {
-			snack.enqueueSnackbar({
-				...snackBarProps,
-				message: `Wystąpił problem podczas zapisywania zmian profilu. ${SchoolService.translateSchoolUpdateErrorCode(
+			toast.error(
+				`Wystąpił problem podczas zapisywania zmian profilu. ${SchoolService.translateSchoolUpdateErrorCode(
 					err.code
-				)}`,
-				variant: "error",
-			});
+				)}`
+			);
 			onSavingChanges(false);
 		},
 	});

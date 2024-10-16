@@ -138,6 +138,11 @@ const PublicSchoolContactView = React.lazy(
 	() => import("./pages/School/views/ContactView/ContactView.tsx")
 );
 
+/** Course sub-views */
+const CourseRidesView = React.lazy(
+	() => import("./pages/Course/views/RidesView/RidesView.tsx")
+);
+
 const qClient = new QueryClient();
 
 const root = ReactDOM.createRoot(
@@ -262,7 +267,9 @@ root.render(
 							<Route
 								path="courses/:courseID"
 								element={<CoursePage />}
-							/>
+							>
+								<Route path="*" element={<CourseRidesView />} />
+							</Route>
 						</Route>
 
 						<Route path="*" element={<PortalLayout />}>

@@ -15,7 +15,7 @@ import classes from "./SearchSchool.module.css";
 import { useQuery } from "@tanstack/react-query";
 import { API } from "../../types/api";
 import { callAPI, formatPolishWordSuffix } from "../../modules/utils";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import CategoriesWidget from "../../components/CategoriesWidget/CategoriesWidget";
 import { SortingType } from "../../modules/enums";
 import {
@@ -24,8 +24,7 @@ import {
 } from "../../modules/constants";
 import { useLocation, useNavigate } from "react-router-dom";
 import MessagePanel from "../../components/MessagePanel/MessagePanel";
-import { useSnackbar } from "notistack";
-import { AppContext } from "../../App";
+import { toast } from "react-toastify";
 
 export default function SearchSchool() {
 	const [page, setPage] = useState<number>(1);
@@ -38,10 +37,8 @@ export default function SearchSchool() {
 		undefined
 	);
 
-	const { snackBarProps } = useContext(AppContext);
 	const navigate = useNavigate();
 	const location = useLocation();
-	const snack = useSnackbar();
 
 	const { data, isFetching, failureCount } = useQuery<
 		API.School.Search.IResponse,
@@ -120,12 +117,7 @@ export default function SearchSchool() {
 	}, []);
 
 	useEffect(() => {
-		if (failureCount == 1)
-			snack.enqueueSnackbar({
-				...snackBarProps,
-				message: "Coś poszło nie tak",
-				variant: "error",
-			});
+		if (failureCount == 1) toast.error("Coś poszło nie tak");
 	}, [failureCount]);
 
 	return (

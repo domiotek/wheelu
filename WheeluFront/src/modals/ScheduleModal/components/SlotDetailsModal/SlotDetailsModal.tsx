@@ -191,17 +191,19 @@ export default function SlotDetailsModal({ slot, allowEdit }: IProps) {
 								: "Usuń ten termin"
 						}
 					>
-						<IconButton
-							onClick={() => {
-								editMutation.reset();
-								deleteMutation.mutate();
-							}}
-							disabled={
-								slot.ride != undefined || actionInProgress
-							}
-						>
-							<Delete />
-						</IconButton>
+						<span>
+							<IconButton
+								onClick={() => {
+									editMutation.reset();
+									deleteMutation.mutate();
+								}}
+								disabled={
+									slot.ride != undefined || actionInProgress
+								}
+							>
+								<Delete />
+							</IconButton>
+						</span>
 					</Tooltip>
 				)}
 			</Typography>
@@ -303,9 +305,6 @@ export default function SlotDetailsModal({ slot, allowEdit }: IProps) {
 							primary="Kurs"
 							secondary={`Kategoria ${categoryName}`}
 						/>
-						<Button variant="outlined" disabled={actionInProgress}>
-							Zobacz
-						</Button>
 					</ListItem>
 					<ListItem divider>
 						<ListItemText primary="Typ" secondary="Jazda" />

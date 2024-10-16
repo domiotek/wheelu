@@ -1,0 +1,46 @@
+.Modal {
+	min-width: 320px;
+	width: 60%;
+	max-width: 790px;
+	height: 600px;
+}
+
+
+.Content {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.ButtonsBar {
+	margin-top: auto;
+}
+
+.ToolBar {
+	flex-wrap: wrap;
+}
+
+.ChangingVehicleForm {
+	display: flex;
+	width: 100%;
+	flex-wrap: wrap;
+	gap: 1em;
+}
+
+.ChangingVehicleForm>*:nth-child(1) {
+	width: 270px;
+}
+
+.ChangingVehicleForm>*:nth-child(2) {
+	margin-left: auto;
+}
+
+@media (min-width: 769px) {
+	.Content {
+		padding: 0 2em;
+	}
+
+	.Content>h5 {
+		margin-left: -1em;
+	}
+}

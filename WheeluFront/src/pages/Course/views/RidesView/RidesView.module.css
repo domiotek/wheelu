@@ -1,0 +1,16 @@
+.Wrapper {
+	margin-top: 2em;
+	max-width: 900px;
+}
+
+.RideList {
+	margin-top: 2em;
+	display: flex;
+	flex-direction: column;
+	gap: 1.5em;
+}
+
+.RideList li>* {
+	width: 100%;
+	padding: 1em;
+}

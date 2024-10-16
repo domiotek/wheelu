@@ -32,25 +32,12 @@ public class ScheduleMapper(
         };
     }
 
-    public ShortRideResponse GetShortRideDTO(Ride source)
+    public ShortRideResponse GetShortRideDTO(IRide source)
     {
         return new ShortRideResponse
         {
             Id = source.Id,
             Status = source.Status,
-            StartTime = source.StartTime,
-            EndTime = source.EndTime,
-            Course = courseMapper.GetShortDTO(source.Course),
-            HoursCount = source.HoursCount,
-        };
-    }
-
-    public ShortRideResponse GetShortRideDTO(CanceledRide source)
-    {
-        return new ShortRideResponse
-        {
-            Id = source.Id,
-            Status = RideStatus.Canceled,
             StartTime = source.StartTime,
             EndTime = source.EndTime,
             Course = courseMapper.GetShortDTO(source.Course),
@@ -88,28 +75,28 @@ public class ScheduleMapper(
         };
     }
 
-    public List<ShortRideSlotResponse> MapToShortSlotDTO(List<RideSlot> source)
+    public IEnumerable<ShortRideSlotResponse> MapToShortSlotDTO(IEnumerable<RideSlot> source)
     {
-        return source.Select(GetShortSlotDTO).ToList();
+        return source.Select(GetShortSlotDTO);
     }
 
-    public List<RideSlotResponse> MapToSlotDTO(List<RideSlot> source)
+    public IEnumerable<RideSlotResponse> MapToSlotDTO(IEnumerable<RideSlot> source)
     {
-        return source.Select(GetSlotDTO).ToList();
+        return source.Select(GetSlotDTO);
     }
 
-    public List<ShortRideResponse> MapToShortRideDTO(List<Ride> source)
+    public IEnumerable<ShortRideResponse> MapToShortRideDTO(IEnumerable<IRide> source)
     {
-        return source.Select(GetShortRideDTO).ToList();
+        return source.Select(GetShortRideDTO);
     }
 
-    public List<RideResponse> MapToRideDTO(List<Ride> source)
+    public IEnumerable<RideResponse> MapToRideDTO(IEnumerable<Ride> source)
     {
-        return source.Select(GetRideDTO).ToList();
+        return source.Select(GetRideDTO);
     }
 
-    public List<ShortRideResponse> MapToShortRideDTO(List<CanceledRide> source)
+    public IEnumerable<RideResponse> MapToRideDTO(IEnumerable<CanceledRide> source)
     {
-        return source.Select(GetShortRideDTO).ToList();
+        return source.Select(GetRideDTO);
     }
 }

@@ -1,0 +1,14 @@
+.Modal {
+	min-width: 320px;
+	width: 80%;
+	max-width: 550px;
+	height: clamp(200px, 250px, 500px)
+}
+
+.Content {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	gap: 1.5em;
+	margin: 0.5em;
+}

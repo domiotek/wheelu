@@ -13,9 +13,8 @@ import { callAPI, prepareFieldErrorMessage } from "../../modules/utils";
 import { App } from "../../types/app";
 import { useMutation } from "@tanstack/react-query";
 import { API } from "../../types/api";
-import { useSnackbar } from "notistack";
-import { AppContext } from "../../App";
 import { CourseCategoriesMapping } from "../../modules/constants";
+import { toast } from "react-toastify";
 
 interface ICommonProps {
 	onSuccess?: () => void;
@@ -41,7 +40,6 @@ export default function ManageCourseOfferModal({
 	schoolID,
 	onSuccess,
 }: IProps) {
-	const { snackBarProps } = useContext(AppContext);
 	const { setHostClassName, closeModal } = useContext(ModalContext);
 	const formContext = useForm<API.Offers.Courses.Create.IRequestData>({
 		defaultValues: {
@@ -53,7 +51,6 @@ export default function ManageCourseOfferModal({
 			pricePerHour: data?.pricePerHour,
 		},
 	});
-	const snackBar = useSnackbar();
 
 	const successCalback = useCallback(() => {
 		onSuccess && onSuccess();
@@ -72,12 +69,7 @@ export default function ManageCourseOfferModal({
 				data
 			),
 		onSuccess: successCalback,
-		onError: () =>
-			snackBar.enqueueSnackbar({
-				...snackBarProps,
-				message: "Nie udało się utworzyć kursu",
-				variant: "error",
-			}),
+		onError: () => toast.error("Nie udało się utworzyć kursu"),
 	});
 
 	const updateMutation = useMutation<
@@ -93,12 +85,7 @@ export default function ManageCourseOfferModal({
 				{ id: data!.id }
 			),
 		onSuccess: successCalback,
-		onError: () =>
-			snackBar.enqueueSnackbar({
-				...snackBarProps,
-				message: "Nie udało się edytować kursu",
-				variant: "error",
-			}),
+		onError: () => toast.error("Nie udało się edytować kursu"),
 	});
 
 	const submitCallback = useCallback(

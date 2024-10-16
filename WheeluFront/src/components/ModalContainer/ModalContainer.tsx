@@ -2,7 +2,9 @@ import {
 	MouseEvent,
 	createContext,
 	useCallback,
+	useContext,
 	useEffect,
+	useLayoutEffect,
 	useRef,
 	useState,
 } from "react";
@@ -20,6 +22,8 @@ interface IProps {
 }
 
 export const ModalContext = createContext<App.IModalContext>({
+	__root: true,
+	__registerChildModal: () => false,
 	closeModal: ctxNotify,
 	setAllowCoverClosing: ctxNotify,
 	setOnCoverCloseAttemptListener: ctxNotify,
@@ -27,8 +31,6 @@ export const ModalContext = createContext<App.IModalContext>({
 	setRenderHost: ctxNotify,
 	hostRef: null,
 });
-
-let ModalsOpened = 0;
 
 export default function ModalContainer({ show, onClose, children }: IProps) {
 	const [allowCoverExit, setAllowCoverExit] = useState<boolean>(true);
@@ -38,21 +40,36 @@ export default function ModalContainer({ show, onClose, children }: IProps) {
 	const [hostClassName, setHostClassName] = useState<string | null>(null);
 	const [renderHost, setRenderHost] = useState<boolean>(true);
 
+	const { __root, __registerChildModal } = useContext(ModalContext);
+
 	const hostRef = useRef<HTMLDivElement>(null);
+	const childModalCallbackRef = useRef<() => void>();
+	let childModalStateRef = useRef<boolean>(false);
+	const myModalStateRef = useRef<boolean>(false);
 
 	const [block, unblock] = useBodyScrollBlocker();
 
-	if (show) block();
-	else if (ModalsOpened == 0) unblock();
-
 	const handleClosing = useCallback(() => {
 		setClosingSoon(true);
+
 		setTimeout(() => {
 			setClosingSoon(false);
 			onClose();
-			ModalsOpened--;
+
+			myModalStateRef.current = false;
+
+			if (__root) unblock();
 		}, 400);
 	}, [onClose]);
+
+	const handleCoverClosing = useCallback(() => {
+		if (childModalCallbackRef.current && childModalStateRef.current) {
+			childModalCallbackRef.current();
+			return;
+		}
+
+		if (!closingNotifier || closingNotifier()) handleClosing();
+	}, [closingNotifier, handleClosing]);
 
 	const coverClickCallback = useCallback(
 		(e: MouseEvent) => {
@@ -60,13 +77,13 @@ export default function ModalContainer({ show, onClose, children }: IProps) {
 			if (
 				(e.target as HTMLElement).classList.contains(classes.Container)
 			) {
-				if (allowCoverExit) {
-					e.stopPropagation();
-					if (!closingNotifier || closingNotifier()) handleClosing();
-				}
+				if (!allowCoverExit) return;
+
+				e.stopPropagation();
+				handleCoverClosing();
 			}
 		},
-		[allowCoverExit, closingNotifier]
+		[allowCoverExit, handleCoverClosing]
 	);
 
 	useEffect(() => {
@@ -78,7 +95,8 @@ export default function ModalContainer({ show, onClose, children }: IProps) {
 		}
 
 		if (show) {
-			ModalsOpened++;
+			block();
+			myModalStateRef.current = true;
 
 			(
 				hostRef.current?.querySelector(
@@ -87,6 +105,14 @@ export default function ModalContainer({ show, onClose, children }: IProps) {
 			)?.focus();
 		}
 	}, [show, children]);
+
+	useLayoutEffect(() => {
+		if (!__root)
+			__registerChildModal({
+				shown: myModalStateRef,
+				closeMe: () => allowCoverExit && handleCoverClosing(),
+			});
+	}, [allowCoverExit, handleCoverClosing]);
 
 	return (
 		<div
@@ -109,6 +135,11 @@ export default function ModalContainer({ show, onClose, children }: IProps) {
 				>
 					<ModalContext.Provider
 						value={{
+							__root: false,
+							__registerChildModal: (modal) => {
+								childModalCallbackRef.current = modal.closeMe;
+								childModalStateRef = modal.shown;
+							},
 							closeModal: handleClosing,
 							setOnCoverCloseAttemptListener: (l) =>
 								setClosingNotifier(() => l),

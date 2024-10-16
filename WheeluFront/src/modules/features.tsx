@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { CourseCategory } from "./enums";
 import { CourseCategoriesMapping } from "./constants";
+import ConfirmModal from "../modals/ConfirmModal/ConfirmModal";
 
 interface IProps {
 	rootLink: string;
@@ -124,4 +125,28 @@ export async function getBackendImageSrc(url: string): Promise<string> {
 	} catch (error) {
 		return "";
 	}
+}
+
+interface IConfirmationOptios {
+	header: string;
+	message: string;
+	cancelCaption?: string;
+	confirmCaption?: string;
+}
+
+export async function GetUserConfirmation(
+	modalSetter: (content: JSX.Element) => void,
+	options: IConfirmationOptios
+) {
+	return new Promise<boolean>((res) => {
+		modalSetter(
+			<ConfirmModal
+				header={options.header}
+				message={options.message}
+				cancelButtonCaption={options.cancelCaption}
+				confirmButtonCaption={options.confirmCaption}
+				onDecision={(decision: boolean) => res(decision)}
+			/>
+		);
+	});
 }

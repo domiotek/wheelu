@@ -213,11 +213,18 @@ public class ScheduleService(ApplicationDbContext dbContext) : BaseService
             return result;
         }
 
+        if (!vehicle.AllowedIn.Contains(course.Category))
+        {
+            result.ErrorCode = CreateRideErrors.VehicleUnavailable;
+            result.Details = ["Vehicle is not meant for that course category."];
+        }
+
         using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
         {
             if (!CheckVehicleAvailability(vehicle, slot.StartTime, slot.EndTime))
             {
                 result.ErrorCode = CreateRideErrors.VehicleUnavailable;
+                result.Details = ["Vehicle is busy at that time."];
                 return result;
             }
 
@@ -243,6 +250,46 @@ public class ScheduleService(ApplicationDbContext dbContext) : BaseService
 
             result.IsSuccess = true;
             result.Data = ride;
+        }
+
+        return result;
+    }
+
+    public async Task<ServiceActionResult<ChangeRideVehicleErrors>> ChangeRideVehicle(
+        Ride ride,
+        Vehicle vehicle
+    )
+    {
+        var result = new ServiceActionResult<ChangeRideVehicleErrors>();
+
+        if (!vehicle.AllowedIn.Contains(ride.Course.Category))
+        {
+            result.ErrorCode = ChangeRideVehicleErrors.VehicleUnavailable;
+            result.Details = ["Vehicle is not meant for that course category."];
+        }
+
+        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            if (!CheckVehicleAvailability(vehicle, ride.Slot.StartTime, ride.Slot.EndTime))
+            {
+                result.ErrorCode = ChangeRideVehicleErrors.VehicleUnavailable;
+                result.Details = ["Vehicle is busy at that time."];
+                return result;
+            }
+
+            ride.Vehicle = vehicle;
+
+            dbContext.Rides.Update(ride);
+
+            if (await dbContext.SaveChangesAsync() == 0)
+            {
+                result.ErrorCode = ChangeRideVehicleErrors.DBError;
+                return result;
+            }
+
+            scope.Complete();
+
+            result.IsSuccess = true;
         }
 
         return result;
@@ -316,6 +363,7 @@ public class ScheduleService(ApplicationDbContext dbContext) : BaseService
         var canceledRide = new CanceledRide
         {
             Id = ride.Id,
+            Status = RideStatus.Canceled,
             Course = ride.Course,
             Student = ride.Student,
             Instructor = ride.Instructor,
@@ -327,7 +375,7 @@ public class ScheduleService(ApplicationDbContext dbContext) : BaseService
         };
 
         dbContext.Rides.Remove(ride);
-        ride.Course.CanceledRides.Add(canceledRide);
+        dbContext.CanceledRides.Add(canceledRide);
 
         if (await dbContext.SaveChangesAsync() == 0)
         {

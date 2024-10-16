@@ -91,7 +91,7 @@ public class ScheduleController(
             );
 
         return Ok(
-            mapper.MapToShortSlotDTO(
+            mapper.MapToSlotDTO(
                 await service.GetInstructorSlotsAsync(instructor.ActiveEmployment, request)
             )
         );

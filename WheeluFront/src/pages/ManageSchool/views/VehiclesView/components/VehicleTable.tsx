@@ -6,11 +6,11 @@ import { callAPI } from "../../../../../modules/utils";
 import { App } from "../../../../../types/app";
 import { TABLE_PAGE_SIZE_OPTIONS } from "../../../../constants";
 import { AppContext } from "../../../../../App";
-import { useSnackbar } from "notistack";
 import { VehicleContext } from "../Vehicles";
 import VehicleModal from "../../../../../modals/VehicleModal/VehicleModal";
 import VehicleService from "../../../../../services/Vehicle.tsx";
 import { renderCategoryChips } from "../../../../../modules/features";
+import { toast } from "react-toastify";
 
 interface IProps {
 	schoolID: number;
@@ -18,9 +18,8 @@ interface IProps {
 }
 
 export default function VehicleTable({ schoolID, limitActions }: IProps) {
-	const { setModalContent, snackBarProps } = useContext(AppContext);
+	const { setModalContent } = useContext(AppContext);
 	const { queryKey, invalidateQuery } = useContext(VehicleContext);
-	const snackBar = useSnackbar();
 
 	const { data, isFetching } = useQuery<
 		API.Vehicles.GetAllOfSchool.IResponse,
@@ -31,7 +30,7 @@ export default function VehicleTable({ schoolID, limitActions }: IProps) {
 			callAPI<API.Vehicles.GetAllOfSchool.IEndpoint>(
 				"GET",
 				"/api/v1/schools/:schoolID/vehicles",
-				null,
+				{},
 				{ schoolID }
 			),
 		retry: true,
@@ -51,12 +50,7 @@ export default function VehicleTable({ schoolID, limitActions }: IProps) {
 				{ schoolID, vehicleID: data.id }
 			),
 		onSuccess: invalidateQuery,
-		onError: () =>
-			snackBar.enqueueSnackbar({
-				...snackBarProps,
-				message: "Nie udało się usunąć pojazdu",
-				variant: "error",
-			}),
+		onError: () => toast.error("Nie udało się usunąć pojazdu"),
 	});
 
 	const editVehicleCallback = useCallback(
@@ -69,11 +63,7 @@ export default function VehicleTable({ schoolID, limitActions }: IProps) {
 					baseQuery={queryKey}
 					onSuccess={() => {
 						invalidateQuery();
-						snackBar.enqueueSnackbar({
-							...snackBarProps,
-							message: "Pomyślnie zapisano zmiany",
-							variant: "success",
-						});
+						toast.success("Pomyślnie zapisano zmiany");
 					}}
 					allowEdit={!limitActions}
 				/>

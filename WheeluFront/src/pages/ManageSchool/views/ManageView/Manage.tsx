@@ -15,18 +15,15 @@ import {
 	Typography,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { useSnackbar } from "notistack";
-import { AppContext } from "../../../../App";
 import SchoolService from "../../../../services/School";
+import { toast } from "react-toastify";
 
 export default function ManageSchoolView() {
 	const [savingDataChanges, setSavingDataChanges] = useState(false);
 
-	const { snackBarProps } = useContext(AppContext);
 	const { access, schoolData } = useContext(SchoolPageContext);
 	const params = useParams();
 	const qClient = useQueryClient();
-	const snack = useSnackbar();
 
 	const { data: cities, isFetching: fetchingCities } = useQuery<
 		API.City.GetAll.IResponse,
@@ -66,20 +63,14 @@ export default function ManageSchoolView() {
 			qClient.invalidateQueries({
 				queryKey: ["Schools", "#", parseInt(params["id"]!)],
 			});
-			snack.enqueueSnackbar({
-				...snackBarProps,
-				message: "Pomyślnie zmieniono widoczność.",
-				variant: "success",
-			});
+			toast.success("Pomyślnie zmieniono widoczność.");
 		},
 		onError: (err) => {
-			snack.enqueueSnackbar({
-				...snackBarProps,
-				message: `Wystąpił problem podczas zmiany widoczności. ${SchoolService.translateSchoolUpdateErrorCode(
+			toast.error(
+				`Wystąpił problem podczas zmiany widoczności. ${SchoolService.translateSchoolUpdateErrorCode(
 					err.code
-				)}`,
-				variant: "error",
-			});
+				)}`
+			);
 		},
 	});
 
@@ -99,20 +90,14 @@ export default function ManageSchoolView() {
 			qClient.invalidateQueries({
 				queryKey: ["Schools", "#", parseInt(params["id"]!)],
 			});
-			snack.enqueueSnackbar({
-				...snackBarProps,
-				message: "Pomyślnie zmieniono stan blokady.",
-				variant: "success",
-			});
+			toast.success("Pomyślnie zmieniono stan blokady.");
 		},
 		onError: (err) => {
-			snack.enqueueSnackbar({
-				...snackBarProps,
-				message: `Wystąpił problem podczas zmiany stanu blokady. ${SchoolService.translateSchoolUpdateErrorCode(
+			toast.error(
+				`Wystąpił problem podczas zmiany stanu blokady. ${SchoolService.translateSchoolUpdateErrorCode(
 					err.code
-				)}`,
-				variant: "error",
-			});
+				)}`
+			);
 		},
 	});
 

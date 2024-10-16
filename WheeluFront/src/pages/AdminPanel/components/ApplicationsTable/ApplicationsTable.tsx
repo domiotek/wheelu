@@ -1,14 +1,12 @@
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { API } from "../../../../types/api";
 import { callAPI, formatAddress } from "../../../../modules/utils";
 import { App } from "../../../../types/app";
 import SchoolApplicationService from "../../../../services/SchoolApplication";
 import { useNavigate } from "react-router-dom";
-import { useSnackbar } from "notistack";
-import { AppContext } from "../../../../App";
-import { LinearProgress } from "@mui/material";
+import { toast } from "react-toastify";
 
 interface IProps {
 	supportFilter?: boolean;
@@ -20,10 +18,10 @@ export default function ApplicationsTable({ supportFilter }: IProps) {
 		page: 0,
 	});
 
-	const { snackBarProps } = useContext(AppContext);
+	const loadingRef = useRef<number | string>();
+
 	const qClient = useQueryClient();
 	const navigate = useNavigate();
-	const snackBar = useSnackbar();
 
 	const { data, isFetching } = useQuery<
 		API.Application.GetAll.IResponse,
@@ -67,14 +65,20 @@ export default function ApplicationsTable({ supportFilter }: IProps) {
 				{ id: data.id },
 				true
 			),
-		onSuccess: async () =>
-			qClient.invalidateQueries({ queryKey: ["Applications"] }),
-		onError: () =>
-			snackBar.enqueueSnackbar({
-				...snackBarProps,
-				message: "Nie udało się odrzucić wniosku.",
-				variant: "error",
-			}),
+		onSuccess: async () => {
+			qClient.invalidateQueries({ queryKey: ["Applications"] });
+			if (loadingRef.current) {
+				toast.done(loadingRef.current);
+				loadingRef.current = undefined;
+			}
+		},
+		onError: () => {
+			toast.error("Nie udało się odrzucić wniosku.");
+			if (loadingRef.current) {
+				toast.done(loadingRef.current);
+				loadingRef.current = undefined;
+			}
+		},
 	});
 
 	const deleteMutation = useMutation<
@@ -90,25 +94,25 @@ export default function ApplicationsTable({ supportFilter }: IProps) {
 				{ id: data.id },
 				true
 			),
-		onSuccess: async () =>
-			qClient.invalidateQueries({ queryKey: ["Applications"] }),
-		onError: () =>
-			snackBar.enqueueSnackbar({
-				...snackBarProps,
-				message: "Nie udało się usunąć wniosku.",
-				variant: "error",
-			}),
+		onSuccess: async () => {
+			qClient.invalidateQueries({ queryKey: ["Applications"] });
+			if (loadingRef.current) {
+				toast.done(loadingRef.current);
+				loadingRef.current = undefined;
+			}
+		},
+		onError: () => {
+			toast.error("Nie udało się usunąć wniosku.");
+			if (loadingRef.current) {
+				toast.done(loadingRef.current);
+				loadingRef.current = undefined;
+			}
+		},
 	});
 
 	const showProgressSnack = useCallback((message: string) => {
-		snackBar.enqueueSnackbar({
-			...snackBarProps,
-			message: (
-				<>
-					{message} <LinearProgress variant="indeterminate" />
-				</>
-			),
-		});
+		if (loadingRef.current) toast.done(loadingRef.current);
+		loadingRef.current = toast.loading(message);
 	}, []);
 
 	const columns = useMemo(() => {

@@ -33,13 +33,18 @@ public enum CreateRideErrors
 {
     DBError,
     RideAssigned,
-
     VehicleUnavailable,
+}
+
+public enum ChangeRideVehicleErrors
+{
+    DBError,
+    VehicleUnavailable,
+    InvalidRideStatus,
 }
 
 public enum ChangeRideStateErrors
 {
     DBError,
-
     InvalidRideStatus,
 }

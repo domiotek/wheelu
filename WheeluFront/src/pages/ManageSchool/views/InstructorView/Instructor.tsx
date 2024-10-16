@@ -36,12 +36,12 @@ import CategoriesWidget from "../../../../components/CategoriesWidget/Categories
 import { FormProvider, TextFieldElement, useForm } from "react-hook-form-mui";
 import LoadingScreen from "../../../../components/LoadingScreen/LoadingScreen";
 import MessagePanel from "../../../../components/MessagePanel/MessagePanel";
-import { useSnackbar } from "notistack";
 import { AppContext } from "../../../../App";
 import { DateTime } from "luxon";
 import { CourseCategory } from "../../../../modules/enums";
 import InstructorService from "../../../../services/Instructor";
 import ScheduleModal from "../../../../modals/ScheduleModal/ScheduleModal";
+import { toast } from "react-toastify";
 
 export default function Instructor() {
 	const [visibilityState, setVisibilityState] = useState<boolean>(false);
@@ -53,11 +53,10 @@ export default function Instructor() {
 
 	const { schoolData, access, accessorUserID } =
 		useContext(SchoolPageContext);
-	const { snackBarProps, setModalContent } = useContext(AppContext);
+	const { setModalContent } = useContext(AppContext);
 
 	const params = useParams();
 	const qClient = useQueryClient();
-	const snackBar = useSnackbar();
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -120,12 +119,7 @@ export default function Instructor() {
 				queryParams
 			),
 		onSuccess: invalidateQueries,
-		onError: () =>
-			snackBar.enqueueSnackbar({
-				...snackBarProps,
-				message: "Nie udało się zapisać zmian.",
-				variant: "error",
-			}),
+		onError: () => toast.error("Nie udało się zapisać zmian."),
 	});
 
 	const detachMutation = useMutation<
@@ -145,13 +139,10 @@ export default function Instructor() {
 			invalidateQueries();
 		},
 		onError: (err) =>
-			snackBar.enqueueSnackbar({
-				...snackBarProps,
-				message:
-					"Nie udało się odłączyć profilu instruktora. " +
-					InstructorService.translateDetachSubmitErrorCode(err.code),
-				variant: "error",
-			}),
+			toast.error(
+				"Nie udało się odłączyć profilu instruktora. " +
+					InstructorService.translateDetachSubmitErrorCode(err.code)
+			),
 	});
 
 	const updateVisibilityCallback = useCallback(() => {

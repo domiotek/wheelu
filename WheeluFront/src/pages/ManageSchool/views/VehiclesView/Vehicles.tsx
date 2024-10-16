@@ -10,7 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { SchoolPageContext } from "../../ManageSchoolPage";
 import { OutsideContextNotifier } from "../../../../modules/utils";
 import VehicleModal from "../../../../modals/VehicleModal/VehicleModal";
-import { useSnackbar } from "notistack";
+import { toast } from "react-toastify";
 
 interface IContext {
 	queryKey: (string | number)[];
@@ -24,10 +24,9 @@ export const VehicleContext = React.createContext<IContext>({
 
 export default function VehiclesSchoolView() {
 	const params = useParams();
-	const { setModalContent, snackBarProps } = useContext(AppContext);
+	const { setModalContent } = useContext(AppContext);
 	const { access } = useContext(SchoolPageContext);
 	const qClient = useQueryClient();
-	const snack = useSnackbar();
 
 	const queryKey = useMemo(
 		() => ["Schools", "#", parseInt(params["id"] ?? ""), "Vehicles"],
@@ -45,11 +44,7 @@ export default function VehiclesSchoolView() {
 				mode="create"
 				onSuccess={() => {
 					invalidateQuery();
-					snack.enqueueSnackbar({
-						...snackBarProps,
-						message: "Pomyślnie dodano pojazd",
-						variant: "success",
-					});
+					toast.success("Pomyślnie dodano pojazd");
 				}}
 				baseQuery={queryKey}
 				schoolID={parseInt(params["id"] ?? "")}

@@ -33,4 +33,15 @@ export const DateTimeFormatter = {
 
 		return dateTime.toFormat(format);
 	},
+
+	formatAdaptiveFriendly: (iso: string) => {
+		const time = DateTime.fromISO(iso);
+		const today = DateTime.now();
+
+		return time.toFormat(
+			`EEEE, dd${time.month != today.month ? "/LL" : ""}${
+				time.year != today.year ? "/yyyy" : ""
+			}`
+		);
+	},
 };

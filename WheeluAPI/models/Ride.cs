@@ -11,7 +11,28 @@ public enum RideStatus
     Canceled,
 }
 
-public class Ride
+public interface IRide
+{
+    public int Id { get; set; }
+
+    public RideStatus Status { get; set; }
+
+    public Course Course { get; set; }
+
+    public User Student { get; set; }
+
+    public SchoolInstructor Instructor { get; set; }
+
+    public DateTime? StartTime { get; set; }
+
+    public DateTime? EndTime { get; set; }
+
+    public Vehicle.Vehicle Vehicle { get; set; }
+
+    public double HoursCount { get; }
+}
+
+public class Ride : IRide
 {
     public int Id { get; set; }
 
@@ -46,9 +67,12 @@ public class Ride
     }
 }
 
-public class CanceledRide
+public class CanceledRide : IRide
 {
     public int Id { get; set; }
+
+    [NotMapped]
+    public required RideStatus Status { get; set; } = RideStatus.Canceled;
 
     public virtual required Course Course { get; set; }
 
@@ -56,9 +80,9 @@ public class CanceledRide
 
     public virtual required SchoolInstructor Instructor { get; set; }
 
-    public required DateTime StartTime { get; set; }
+    public DateTime? StartTime { get; set; }
 
-    public required DateTime EndTime { get; set; }
+    public DateTime? EndTime { get; set; }
 
     public virtual required Vehicle.Vehicle Vehicle { get; set; }
 

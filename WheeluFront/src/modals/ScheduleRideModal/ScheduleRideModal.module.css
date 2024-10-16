@@ -1,0 +1,73 @@
+.Modal {
+	min-width: 320px;
+	width: 60%;
+	max-width: 790px;
+	height: 600px;
+}
+
+.Content {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.Form {
+	display: flex;
+	flex-direction: column;
+	padding: 0 0;
+	flex: 1;
+}
+
+.PeopleListItem {
+	flex-direction: column;
+	gap: 0.5em;
+}
+
+.PeopleListItem>* {
+	width: 100%;
+}
+
+.PeopleListItem .Divider {
+	position: absolute;
+	top: 50%;
+}
+
+.TimeSlot {
+	padding: 1.5em 3em;
+	margin: 1em;
+	border: solid 1px var(--time-slot-bg);
+	border-radius: 0.5em;
+	display: flex;
+	flex-direction: column;
+}
+
+.VehicleSelector {
+	margin: 1em;
+}
+
+.ButtonsBar {
+	margin-top: auto;
+}
+
+@media (min-width: 769px) {
+	.Form {
+		padding: 0 3em;
+	}
+
+	.PeopleListItem {
+		gap: unset;
+		flex-direction: row;
+	}
+
+	.PeopleListItem .Divider {
+		display: none;
+	}
+
+	.TimeSlot {
+		width: fit-content;
+	}
+
+	.VehicleSelector {
+		max-width: 300px;
+	}
+}

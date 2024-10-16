@@ -12,7 +12,7 @@ import {
 import LazyBackendImage from "../../components/LazyBackendImage/LazyBackendImage";
 import commonClasses from "./Commons.module.css";
 import classes from "./SearchCourse.module.css";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CourseCategory, SortingType } from "../../modules/enums";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -25,8 +25,7 @@ import {
 } from "../../modules/constants";
 import { CurrencyFormatter } from "../../modules/formatters";
 import MessagePanel from "../../components/MessagePanel/MessagePanel";
-import { useSnackbar } from "notistack";
-import { AppContext } from "../../App";
+import { toast } from "react-toastify";
 
 export default function SearchCourse() {
 	const [page, setPage] = useState<number>(1);
@@ -34,11 +33,8 @@ export default function SearchCourse() {
 	const [category, setCategory] = useState<CourseCategory | -1>(-1);
 	const [sortType, setSortType] = useState<SortingType>(SortingType.Asc);
 
-	const { snackBarProps } = useContext(AppContext);
-
 	const navigate = useNavigate();
 	const location = useLocation();
-	const snack = useSnackbar();
 
 	const { data, isFetching, failureCount } = useQuery<
 		API.Offers.Courses.Search.IResponse,
@@ -107,12 +103,7 @@ export default function SearchCourse() {
 	}, []);
 
 	useEffect(() => {
-		if (failureCount == 1)
-			snack.enqueueSnackbar({
-				...snackBarProps,
-				message: "Coś poszło nie tak",
-				variant: "error",
-			});
+		if (failureCount == 1) toast.error("Coś poszło nie tak");
 	}, [failureCount]);
 
 	return (

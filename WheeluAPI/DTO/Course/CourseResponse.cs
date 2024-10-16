@@ -1,3 +1,4 @@
+using WheeluAPI.DTO.Instructor;
 using WheeluAPI.DTO.School;
 using WheeluAPI.DTO.User;
 using WheeluAPI.Models;
@@ -34,6 +35,10 @@ public class CourseResponse
     public required ShortSchoolResponse School { get; set; }
 
     public required ShortUserResponse Student { get; set; }
+
+    public required int InstructorId { get; set; }
+
+    public required int SchoolInstructorId { get; set; }
 
     public required ShortUserResponse Instructor { get; set; }
 

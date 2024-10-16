@@ -1,3 +1,9 @@
 .SlotInThePast {
 	background-color: var(--rbc-slot-in-the-past);
 }
+
+.DisabledEvent {
+	background-color: #797979;
+	border-color: #595959 !important;
+	pointer-events: none;
+}

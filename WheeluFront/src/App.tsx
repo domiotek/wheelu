@@ -24,7 +24,7 @@ import { callAPI, c, OutsideContextNotifier } from "./modules/utils";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { App as AppNm } from "./types/app";
 import { AccessLevel } from "./modules/enums.ts";
-import { OptionsObject, SnackbarProvider } from "notistack";
+import { Bounce, ToastContainer } from "react-toastify";
 import ModalContainer from "./components/ModalContainer/ModalContainer.tsx";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
@@ -56,11 +56,6 @@ const darkTheme = createTheme(
 	plPLx
 );
 
-const commonSnackBarProps: OptionsObject = {
-	anchorOrigin: { horizontal: "right", vertical: "bottom" },
-	preventDuplicate: true,
-};
-
 export const AppContext = createContext<AppNm.IAppContext>({
 	lightTheme,
 	darkTheme,
@@ -69,7 +64,6 @@ export const AppContext = createContext<AppNm.IAppContext>({
 	setTheme: OutsideContextNotifier,
 	userDetails: null,
 	accessLevel: AccessLevel.Anonymous,
-	snackBarProps: commonSnackBarProps,
 	setModalContent: OutsideContextNotifier,
 });
 
@@ -167,16 +161,13 @@ export default function App({ useSplash }: IProps) {
 				setTheme: (theme) => setDarkMode(theme == "dark"),
 				userDetails: data ?? null,
 				accessLevel,
-				snackBarProps: commonSnackBarProps,
 				setModalContent: modalContentSetter,
 			}}
 		>
 			<LocalizationProvider dateAdapter={AdapterLuxon}>
 				<ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
 					<CssBaseline>
-						<SnackbarProvider>
-							<Outlet />
-						</SnackbarProvider>
+						<Outlet />
 
 						<Grid
 							container
@@ -220,6 +211,18 @@ export default function App({ useSplash }: IProps) {
 						>
 							{modalContent}
 						</ModalContainer>
+
+						<ToastContainer
+							position="bottom-right"
+							autoClose={5000}
+							closeOnClick
+							pauseOnFocusLoss
+							draggable
+							pauseOnHover
+							theme={darkMode ? "dark" : "light"}
+							transition={Bounce}
+							stacked
+						/>
 					</CssBaseline>
 				</ThemeProvider>
 			</LocalizationProvider>

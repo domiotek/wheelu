@@ -7,6 +7,7 @@ using WheeluAPI.DTO.SchoolApplication;
 using WheeluAPI.helpers;
 using WheeluAPI.Helpers;
 using WheeluAPI.models;
+using WheeluAPI.Models.Vehicle;
 
 namespace WheeluAPI.Services;
 
@@ -282,6 +283,17 @@ public class Schoolervice(
 
         return false;
     }
+
+    public IEnumerable<Vehicle> GetVehiclesAvailbleAt(
+        School school,
+        DateTime after,
+        DateTime before
+    )
+    {
+        return dbContext
+            .Vehicles.Where(v => v.School.Id == school.Id)
+            .Where(v => !v.Rides.Any(r => r.StartTime < before && r.EndTime > after));
+    }
 }
 
 public interface ISchoolService
@@ -324,4 +336,6 @@ public interface ISchoolService
         string email,
         SchoolManagementAccessMode mode = SchoolManagementAccessMode.OwnerOnly
     );
+
+    IEnumerable<Vehicle> GetVehiclesAvailbleAt(School school, DateTime after, DateTime before);
 }

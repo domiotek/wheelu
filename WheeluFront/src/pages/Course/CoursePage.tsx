@@ -13,9 +13,10 @@ import {
 import classes from "./CoursePage.module.css";
 import { Message } from "@mui/icons-material";
 import { CoursePageTab } from "../../modules/enums";
-import {
+import React, {
 	Suspense,
 	useCallback,
+	useContext,
 	useLayoutEffect,
 	useMemo,
 	useState,
@@ -23,27 +24,47 @@ import {
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import LoadingScreen from "../../components/LoadingScreen/LoadingScreen";
 import ProgressRingWithText from "../../components/ProgressRingWithText/ProgressRingWithText";
-import { useQuery } from "@tanstack/react-query";
+import { QueryKey, useQuery } from "@tanstack/react-query";
 import { API } from "../../types/api";
 import { callAPI } from "../../modules/utils";
 import { CourseCategoriesMapping } from "../../modules/constants";
 import AuthService from "../../services/Auth";
 import { App } from "../../types/app";
+import { AppContext } from "../../App";
+
+interface ICoursePageContext {
+	course: App.Models.ICourse | null;
+	baseQuery: QueryKey;
+	role: "instructor" | "student" | "other";
+	canEdit: boolean;
+}
+
+export const CoursePageContext = React.createContext<ICoursePageContext>({
+	course: null,
+	baseQuery: [],
+	role: "other",
+	canEdit: false,
+});
+
 export default function CoursePage() {
 	const [activeTab, setActiveTab] = useState<CoursePageTab>(
 		CoursePageTab.Rides
 	);
+
+	const { userDetails } = useContext(AppContext);
 
 	const navigate = useNavigate();
 	const params = useParams();
 
 	const courseID = useMemo(() => parseInt(params["courseID"]!), []);
 
+	const queryKey = useMemo(() => ["Courses", "#", courseID], [courseID]);
+
 	const { data, error, isPending } = useQuery<
 		API.Courses.Get.IResponse,
 		API.Courses.Get.IEndpoint["error"]
 	>({
-		queryKey: ["Courses", "#", courseID],
+		queryKey,
 		queryFn: () =>
 			callAPI<API.Courses.Get.IEndpoint>(
 				"GET",
@@ -73,12 +94,46 @@ export default function CoursePage() {
 
 	useLayoutEffect(() => {
 		if (error?.code == "EntityNotFound") navigate("/courses");
-	}, [error]);
+
+		if (data == null) return;
+
+		if (
+			userDetails?.role == "Student" &&
+			data.student.id != userDetails.userId
+		)
+			navigate("/courses");
+	}, [error, data]);
 
 	const categoryName = useMemo(() => {
 		return CourseCategoriesMapping.find((x) => x.id == data?.category)
 			?.name;
 	}, [data?.category]);
+
+	const role = useMemo(() => {
+		switch (userDetails?.role) {
+			case "Student":
+				return "student";
+			case "Instructor":
+				return "instructor";
+			default:
+				return "other";
+		}
+	}, []);
+
+	const canEdit = useMemo(() => {
+		if (!data || !userDetails) return false;
+
+		const role = userDetails.role;
+		if (role == "Administrator" || role == "SchoolManager") return false;
+
+		if (role == "Instructor" && data.instructor.id != userDetails.userId)
+			return false;
+
+		if (role == "Student" && data.student.id != userDetails.userId)
+			return false;
+
+		return true;
+	}, [data]);
 
 	if (isPending) return <LoadingScreen />;
 
@@ -151,10 +206,18 @@ export default function CoursePage() {
 				<Tab label="Egzaminy" />
 				<Tab label="Zarządzaj" />
 			</Tabs>
-
-			<Suspense fallback={<LoadingScreen />}>
-				<Outlet />
-			</Suspense>
+			<CoursePageContext.Provider
+				value={{
+					course: data ?? null,
+					baseQuery: queryKey,
+					role,
+					canEdit,
+				}}
+			>
+				<Suspense fallback={<LoadingScreen />}>
+					<Outlet />
+				</Suspense>
+			</CoursePageContext.Provider>
 		</div>
 	);
 }

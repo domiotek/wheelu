@@ -10,9 +10,8 @@ import {
 } from "../../../../constants.ts";
 import { InstructorsContext } from "../Instructors.tsx";
 import { DateTime } from "luxon";
-import { AppContext } from "../../../../../App.tsx";
-import { useSnackbar } from "notistack";
 import { SchoolPageContext } from "../../../ManageSchoolPage.tsx";
+import { toast } from "react-toastify";
 
 interface IProps {
 	schoolID: number;
@@ -24,10 +23,8 @@ export default function InviteTable({ schoolID }: IProps) {
 		page: 0,
 	});
 
-	const { snackBarProps } = useContext(AppContext);
 	const { baseQueryKey } = useContext(InstructorsContext);
 	const { access } = useContext(SchoolPageContext);
-	const snackBar = useSnackbar();
 	const qClient = useQueryClient();
 
 	const { data, isFetching } = useQuery<
@@ -66,18 +63,9 @@ export default function InviteTable({ schoolID }: IProps) {
 			),
 		onSuccess: () => {
 			invalidateQuery();
-			snackBar.enqueueSnackbar({
-				...snackBarProps,
-				message: "Wiadomość wysłana!",
-				variant: "success",
-			});
+			toast.success("Wiadomość wysłana!");
 		},
-		onError: () =>
-			snackBar.enqueueSnackbar({
-				...snackBarProps,
-				message: "Nie udało się wysłać wiadomości",
-				variant: "error",
-			}),
+		onError: () => toast.error("Nie udało się wysłać wiadomości"),
 	});
 
 	const renewMutation = useMutation<
@@ -94,18 +82,9 @@ export default function InviteTable({ schoolID }: IProps) {
 			),
 		onSuccess: () => {
 			invalidateQuery();
-			snackBar.enqueueSnackbar({
-				...snackBarProps,
-				message: "Ważność zaproszenia odnowiona!",
-				variant: "success",
-			});
+			toast.success("Ważność zaproszenia odnowiona!");
 		},
-		onError: () =>
-			snackBar.enqueueSnackbar({
-				...snackBarProps,
-				message: "Nie udało się odnowić zaproszenia",
-				variant: "error",
-			}),
+		onError: () => toast.error("Nie udało się odnowić zaproszenia"),
 	});
 
 	const cancelMutation = useMutation<
@@ -122,18 +101,9 @@ export default function InviteTable({ schoolID }: IProps) {
 			),
 		onSuccess: () => {
 			invalidateQuery();
-			snackBar.enqueueSnackbar({
-				...snackBarProps,
-				message: "Zaproszenie anulowane!",
-				variant: "success",
-			});
+			toast.success("Zaproszenie anulowane!");
 		},
-		onError: () =>
-			snackBar.enqueueSnackbar({
-				...snackBarProps,
-				message: "Nie udało się anulować zaproszenia",
-				variant: "error",
-			}),
+		onError: () => toast.error("Nie udało się anulować zaproszenia"),
 	});
 
 	const columns = useMemo(() => {

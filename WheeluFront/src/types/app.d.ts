@@ -7,7 +7,7 @@ import {
 } from "../modules/enums";
 import AdminPanel from "../pages/AdminPanel/AdminPanel";
 import { DateTime } from "luxon";
-import { HTMLInputTypeAttribute } from "react";
+import { HTMLInputTypeAttribute, MutableRefObject } from "react";
 
 export namespace App {
 	namespace Models {
@@ -264,8 +264,9 @@ export namespace App {
 			category: CourseCategory;
 			schoolId: number;
 			student: IShortUser;
+			instructorId: number;
+			schoolInstructorId: number;
 			instructor: IShortUser;
-			instructor: IShortInstructorProfile;
 			hoursCount: number;
 			pricePerHour: number;
 			createdAt: string;
@@ -389,13 +390,19 @@ export namespace App {
 		setTheme: (theme: "dark" | "light") => void;
 		userDetails: Models.IIdentityUser | null;
 		accessLevel: AccessLevel;
-		snackBarProps: import("notistack").OptionsObject;
 		setModalContent: (content: JSX.Element) => void;
 	}
 
 	type TModalClosingListener = (() => boolean) | null;
 
+	interface IInternalModal {
+		shown: MutableRefObject<boolean>;
+		closeMe: () => void;
+	}
+
 	interface IModalContext {
+		__root: boolean;
+		__registerChildModal: (internalModalInfo: IInternalModal) => void;
 		closeModal: () => void;
 		setAllowCoverClosing: (state: boolean) => void;
 		setOnCoverCloseAttemptListener: (

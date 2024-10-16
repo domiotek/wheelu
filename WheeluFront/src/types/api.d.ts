@@ -1,6 +1,7 @@
 import {
 	AuthorizabledAccountActions,
 	CourseCategory,
+	RideStatus,
 	SortingType,
 } from "../modules/enums";
 import { App } from "./app";
@@ -853,12 +854,17 @@ export namespace API {
 		namespace GetAllOfSchool {
 			type IResponse = App.Models.IShortVehicle[];
 
+			interface IRequest extends Record<string, string> {
+				after?: string;
+				before?: string;
+			}
+
 			type IEndpoint = _.IBuildAPIEndpoint<
 				"GET",
 				"/api/v1/schools/:schoolID/vehicles",
 				IResponse,
 				_.TCommonServerErrorCodes,
-				null,
+				IRequest,
 				IParams
 			>;
 		}
@@ -944,6 +950,77 @@ export namespace API {
 				IParams
 			>;
 		}
+
+		interface ICourseBaseParams extends Record<string, number> {
+			courseID: number;
+		}
+
+		namespace GetCourseRides {
+			type IResponse = App.Models.IRide[];
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/courses/:courseID/rides",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				null,
+				ICourseBaseParams
+			>;
+		}
+
+		namespace CreateRide {
+			interface IRequest extends Record<string, number> {
+				slotID: number;
+				vehicleID: number;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"POST",
+				"/api/v1/courses/:courseID/rides",
+				null,
+				_.TCommonServerErrorCodes,
+				IRequest,
+				ICourseBaseParams
+			>;
+		}
+
+		namespace SetRideState {
+			interface IRequest extends Record<string, number> {
+				newStatus: RideStatus;
+			}
+
+			interface IParams extends ICourseBaseParams {
+				rideID: number;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"PUT",
+				"/api/v1/courses/:courseID/rides/:rideID",
+				null,
+				"InvalidRideStatus",
+				IRequest,
+				IParams
+			>;
+		}
+
+		namespace SetRideVehicle {
+			interface IRequest extends Record<string, number> {
+				newVehicleId: number;
+			}
+
+			interface IParams extends ICourseBaseParams {
+				rideID: number;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"PUT",
+				"/api/v1/courses/:courseID/rides/:rideID/vehicle",
+				null,
+				"VehicleUnavailable" | "InvalidRideStatus",
+				IRequest,
+				IParams
+			>;
+		}
 	}
 
 	namespace Transactions {
@@ -964,7 +1041,7 @@ export namespace API {
 				"GET",
 				"/api/v1/transactions",
 				IResponse,
-				_.TCommonServerErrorCodes,
+				"RideAssigned" | "VehicleUnavailable",
 				Partial<_.IPagingRequest> & IRequestData,
 				IBaseParams
 			>;

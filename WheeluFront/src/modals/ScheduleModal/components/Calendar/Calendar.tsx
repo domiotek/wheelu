@@ -23,9 +23,16 @@ const localizer = luxonLocalizer(DateTime);
 interface IProps {
 	slots: App.Models.IScheduleSlot[] | null;
 	allowAlter: boolean;
+	isPickMode?: boolean;
+	onSlotPick?: (slot: App.Models.IScheduleSlot) => void;
 }
 
-export default function Calendar({ slots, allowAlter }: IProps) {
+export default function Calendar({
+	slots,
+	allowAlter,
+	isPickMode,
+	onSlotPick,
+}: IProps) {
 	const [view, setView] = useState<View>("day");
 	const [modalContent, setModalContent] = useState<JSX.Element | null>(null);
 
@@ -73,21 +80,32 @@ export default function Calendar({ slots, allowAlter }: IProps) {
 		[allowAlter]
 	);
 
-	const openSlotDetailsModal = useCallback(
+	const findSlot = useCallback(
 		(event: Event) => {
-			const slot = slots?.find((slot) =>
+			return slots?.find((slot) =>
 				DateTime.fromISO(slot.startTime).equals(
 					DateTime.fromJSDate(event.start!)
 				)
 			);
+		},
+		[slots]
+	);
+
+	const slotSelect = useCallback(
+		(event: Event) => {
+			const slot = findSlot(event);
 
 			if (!slot) return;
 
-			setModalContent(
-				<SlotDetailsModal slot={slot} allowEdit={allowAlter} />
-			);
+			if (isPickMode) {
+				if (!slot.ride && onSlotPick) onSlotPick(slot);
+			} else {
+				setModalContent(
+					<SlotDetailsModal slot={slot} allowEdit={allowAlter} />
+				);
+			}
 		},
-		[slots]
+		[slots, isPickMode]
 	);
 
 	if (slots == null) return <LoadingScreen />;
@@ -111,17 +129,31 @@ export default function Calendar({ slots, allowAlter }: IProps) {
 						? `${AuthService.getUserFullName(
 								slot.ride.course.student
 						  )}`
+						: DateTime.fromISO(slot.startTime) < DateTime.now()
+						? "Przeszły"
 						: "Wolny",
 				}))}
 				onSelectSlot={openNewSlotModal}
-				selectable
+				selectable={!isPickMode}
 				scrollToTime={DateTime.now().set({ hour: 16 }).toJSDate()}
 				slotPropGetter={(date) =>
 					DateTime.fromJSDate(date) < DateTime.now()
 						? { className: classes.SlotInThePast }
 						: {}
 				}
-				onSelectEvent={openSlotDetailsModal}
+				eventPropGetter={(event) => {
+					if (!isPickMode) return {};
+
+					const slot = findSlot(event);
+
+					return DateTime.fromJSDate(event.start!) < DateTime.now() ||
+						slot?.ride
+						? {
+								className: classes.DisabledEvent,
+						  }
+						: {};
+				}}
+				onSelectEvent={slotSelect}
 			/>
 			<ModalContainer
 				show={modalContent != null}
