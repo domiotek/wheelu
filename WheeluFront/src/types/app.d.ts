@@ -7,7 +7,8 @@ import {
 } from "../modules/enums";
 import AdminPanel from "../pages/AdminPanel/AdminPanel";
 import { DateTime } from "luxon";
-import { HTMLInputTypeAttribute, MutableRefObject } from "react";
+import { HTMLInputTypeAttribute, MutableRefObject, ReactNode } from "react";
+import { AlertColor } from "@mui/material";
 
 export namespace App {
 	namespace Models {
@@ -155,7 +156,7 @@ export namespace App {
 			pricePerHour: number;
 			createdAt: string;
 			lastUpdatedAt: string;
-			instructors: IShortEmployedInstructor[];
+			instructors: ILimitedEmployedInstructor[];
 			vehicles: IShortVehicle[];
 		}
 
@@ -185,25 +186,27 @@ export namespace App {
 
 		interface IShortEmployedInstructor {
 			id: number;
-			visible: boolean;
 			instructor: IShortInstructorProfile;
 			schoolId: number;
+		}
+
+		interface ILimitedEmployedInstructor extends IShortEmployedInstructor {
+			visible: boolean;
 			assignedCoursesCount: number;
 			activeCoursesCount: number;
 			maximumConcurrentStudents: number;
 			allowedCategories: CourseCategory[];
 		}
 
-		interface IEmployedInstructor {
-			id: number;
-			instructor: IShortInstructorProfile;
+		interface IEmployedInstructor
+			extends Omit<
+				ILimitedEmployedInstructor,
+				"schoolId" | "assignedCoursesCount" | "activeCoursesCount"
+			> {
 			school: IShortSchool;
 			detached: boolean;
 			employmentRecords: IEmploymentRecord[];
-			visible: boolean;
-			assignedCourses: IShortCourse[];
-			maximumConcurrentStudents: number;
-			allowedCategories: CourseCategory[];
+			assignedCourses: ILimitedCourse[];
 		}
 
 		interface IInstructorInvite {
@@ -264,8 +267,14 @@ export namespace App {
 			category: CourseCategory;
 			schoolId: number;
 			student: IShortUser;
-			instructorId: number;
-			schoolInstructorId: number;
+			instructor: IShortUser;
+		}
+
+		interface ILimitedCourse {
+			id: number;
+			category: CourseCategory;
+			schoolId: number;
+			student: IShortUser;
 			instructor: IShortUser;
 			hoursCount: number;
 			pricePerHour: number;
@@ -273,15 +282,20 @@ export namespace App {
 			archived: boolean;
 		}
 
-		interface ICourse extends Omit<IShortCourse, "schoolId"> {
+		interface ICourse extends Omit<ILimitedCourse, "schoolId"> {
+			instructorId: number;
+			schoolInstructorId: number;
 			school: IShortSchool;
+			usedHours: number;
+			nextRide?: IShortRide;
+			ongoingRide?: IShortRide;
 		}
 
 		interface IShortTransaction {
 			id: string;
 			state: "Registered" | "Complete" | "Canceled" | "Refund";
 			itemCount: number;
-			course?: IShortCourse;
+			course?: ILimitedCourse;
 			user: IShortUser;
 			schoolId: number;
 			totalAmount: number;
@@ -293,7 +307,7 @@ export namespace App {
 
 		interface IShortScheduleSlot {
 			id: number;
-			instructor: IShortEmployedInstructor;
+			instructor: ILimitedEmployedInstructor;
 			startTime: string;
 			endTime: string;
 		}
@@ -305,14 +319,14 @@ export namespace App {
 		interface IShortRide {
 			id: number;
 			status: RideStatus;
+			slot?: IShortScheduleSlot;
 			course: IShortCourse;
-			startTime?: string;
-			endTime?: string;
+			startTime: string;
+			endTime: string;
 			hoursCount: number;
 		}
 
 		interface IRide extends IShortRide {
-			slot?: IShortScheduleSlot;
 			vehicle: IShortVehicle;
 		}
 	}
@@ -376,6 +390,15 @@ export namespace App {
 				schoolName: string;
 				startTime: Date;
 				endTime?: Date;
+			}
+		}
+
+		namespace CoursePage {
+			interface IAlertDef {
+				title: string;
+				content: string;
+				action?: ReactNode;
+				variant: AlertColor;
 			}
 		}
 	}

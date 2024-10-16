@@ -1,4 +1,10 @@
-import { useContext, useLayoutEffect, useMemo, useState } from "react";
+import {
+	useContext,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useState,
+} from "react";
 import ModalContainer, {
 	ModalContext,
 } from "../../components/ModalContainer/ModalContainer";
@@ -25,26 +31,61 @@ import { RideStatus } from "../../modules/enums";
 import { GetUserConfirmation } from "../../modules/features";
 import InlineDot from "../../components/InlineDot/InlineDot";
 import { toast } from "react-toastify";
+import LoadingScreen from "../../components/LoadingScreen/LoadingScreen";
 
 interface IProps {
-	ride: App.Models.IRide;
+	ride?: App.Models.IRide;
+	rideID: number;
+	courseID: number;
 	canAlterState: boolean;
 	canChangeVehicle: boolean;
 }
 
 export default function RideDetailsModal({
-	ride,
+	ride: incomingRide,
+	rideID,
+	courseID,
 	canAlterState,
 	canChangeVehicle,
 }: IProps) {
 	const [modalContent, setModalContent] = useState<JSX.Element | null>(null);
 	const [changingVehicle, setChangingVehicle] = useState<boolean>(false);
-	const [selectedVehicleID, setSelectedVehicleID] = useState<number>(
-		ride.vehicle.id
+	const [selectedVehicleID, setSelectedVehicleID] = useState<number>(-1);
+	const [ride, setRide] = useState<App.Models.IRide | null>(
+		incomingRide ?? null
 	);
 
 	const { setHostClassName, closeModal } = useContext(ModalContext);
 	const qClient = useQueryClient();
+
+	const { data: fetchedRide, failureCount } = useQuery<
+		API.Courses.GetCourseRide.IResponse,
+		API.Courses.GetCourseRide.IEndpoint["error"]
+	>({
+		queryKey: ["Courses", "#", courseID, "Rides", "#", rideID],
+		queryFn: () =>
+			callAPI<API.Courses.GetCourseRide.IEndpoint>(
+				"GET",
+				"/api/v1/courses/:courseID/rides/:rideID",
+				null,
+				{ courseID, rideID }
+			),
+		retry: true,
+		staleTime: 60000,
+		enabled: incomingRide == null,
+	});
+
+	useEffect(() => {
+		console.log(incomingRide);
+		if (failureCount == 1) {
+			toast.error("Nie udało się pobrać informacji o jeździe");
+		}
+
+		if (fetchedRide) {
+			setRide(fetchedRide);
+			setSelectedVehicleID(fetchedRide.vehicle.id);
+		}
+	}, [fetchedRide, failureCount]);
 
 	const { data: vehicles, isPending } = useQuery<
 		API.Vehicles.GetAllOfSchool.IResponse,
@@ -53,22 +94,22 @@ export default function RideDetailsModal({
 		queryKey: [
 			"Schools",
 			"#",
-			ride.course.schoolId,
+			ride?.course.schoolId,
 			"Vehicles",
-			ride.slot?.startTime,
+			ride?.slot?.startTime,
 			"-",
-			ride.slot?.endTime,
+			ride?.slot?.endTime,
 		],
 		queryFn: () =>
 			callAPI<API.Vehicles.GetAllOfSchool.IEndpoint>(
 				"GET",
 				"/api/v1/schools/:schoolID/vehicles",
-				{ after: ride.slot!.startTime, before: ride.slot!.endTime },
-				{ schoolID: ride.course.schoolId }
+				{ after: ride!.slot!.startTime, before: ride!.slot!.endTime },
+				{ schoolID: ride!.course.schoolId }
 			),
 		retry: true,
 		staleTime: 60000,
-		enabled: canChangeVehicle,
+		enabled: canChangeVehicle && ride != null,
 	});
 
 	const setStateMutation = useMutation<
@@ -81,13 +122,13 @@ export default function RideDetailsModal({
 				"PUT",
 				"/api/v1/courses/:courseID/rides/:rideID",
 				{ newStatus: status },
-				{ courseID: ride.course.id, rideID: ride.id }
+				{ courseID: ride!.course.id, rideID: ride!.id }
 			);
 		},
 		onSuccess: () => {
 			closeModal();
 			qClient.invalidateQueries({
-				queryKey: ["Courses", "#", ride.course.id, "Rides"],
+				queryKey: ["Courses", "#", ride!.course.id, "Rides"],
 			});
 			toast.success("Pomyślnie zmieniono status jazdy.");
 		},
@@ -103,13 +144,13 @@ export default function RideDetailsModal({
 				"PUT",
 				"/api/v1/courses/:courseID/rides/:rideID/vehicle",
 				{ newVehicleId: selectedVehicleID },
-				{ courseID: ride.course.id, rideID: ride.id }
+				{ courseID: ride!.course.id, rideID: ride!.id }
 			);
 		},
 		onSuccess: () => {
 			closeModal();
 			qClient.invalidateQueries({
-				queryKey: ["Courses", "#", ride.course.id, "Rides"],
+				queryKey: ["Courses", "#", ride!.course.id, "Rides"],
 			});
 			toast.success("Pomyślnie przypisano pojazd do jazdy.");
 		},
@@ -121,12 +162,14 @@ export default function RideDetailsModal({
 	}, []);
 
 	const startTime = useMemo(() => {
-		return DateTime.fromISO(ride.startTime ?? ride.slot?.startTime!);
-	}, []);
+		return DateTime.fromISO(ride?.startTime ?? ride?.slot?.startTime!);
+	}, [ride]);
 
 	const endTime = useMemo(() => {
-		return DateTime.fromISO(ride.endTime ?? ride.slot?.endTime!);
-	}, []);
+		return DateTime.fromISO(ride?.endTime ?? ride?.slot?.endTime!);
+	}, [ride]);
+
+	if (!ride) return <LoadingScreen />;
 
 	return (
 		<div className={classes.Content}>

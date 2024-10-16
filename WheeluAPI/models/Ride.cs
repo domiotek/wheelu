@@ -17,6 +17,8 @@ public interface IRide
 
     public RideStatus Status { get; set; }
 
+    public RideSlot? Slot { get; set; }
+
     public Course Course { get; set; }
 
     public User Student { get; set; }
@@ -38,7 +40,9 @@ public class Ride : IRide
 
     public required RideStatus Status { get; set; } = RideStatus.Planned;
 
+#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
     public virtual required RideSlot Slot { get; set; }
+#pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
 
     public virtual required Course Course { get; set; }
 
@@ -73,6 +77,9 @@ public class CanceledRide : IRide
 
     [NotMapped]
     public required RideStatus Status { get; set; } = RideStatus.Canceled;
+
+    [NotMapped]
+    public required RideSlot? Slot { get; set; } = null;
 
     public virtual required Course Course { get; set; }
 

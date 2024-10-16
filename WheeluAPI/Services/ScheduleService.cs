@@ -364,6 +364,7 @@ public class ScheduleService(ApplicationDbContext dbContext) : BaseService
         {
             Id = ride.Id,
             Status = RideStatus.Canceled,
+            Slot = null,
             Course = ride.Course,
             Student = ride.Student,
             Instructor = ride.Instructor,

@@ -11,7 +11,7 @@ public class ShortTransactionDTO
 
     public required int ItemCount { get; set; }
 
-    public ShortCourseResponse? Course { get; set; }
+    public LimitedCourseResponse? Course { get; set; }
 
     public required int SchoolId { get; set; }
 

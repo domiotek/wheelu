@@ -37,6 +37,7 @@ public class ScheduleMapper(
         return new ShortRideResponse
         {
             Id = source.Id,
+            Slot = source.Slot != null ? GetShortSlotDTO(source.Slot) : null,
             Status = source.Status,
             StartTime = source.StartTime,
             EndTime = source.EndTime,
@@ -53,7 +54,7 @@ public class ScheduleMapper(
             Status = source.Status,
             StartTime = source.StartTime,
             EndTime = source.EndTime,
-            Course = courseMapper.GetShortDTO(source.Course),
+            Course = courseMapper.GetLimitedDTO(source.Course),
             HoursCount = source.HoursCount,
             Slot = GetShortSlotDTO(source.Slot),
             Vehicle = vehicleMapper.GetShortDTO(source.Vehicle),
@@ -68,7 +69,7 @@ public class ScheduleMapper(
             Status = RideStatus.Canceled,
             StartTime = source.StartTime,
             EndTime = source.EndTime,
-            Course = courseMapper.GetShortDTO(source.Course),
+            Course = courseMapper.GetLimitedDTO(source.Course),
             HoursCount = source.HoursCount,
             Slot = null,
             Vehicle = vehicleMapper.GetShortDTO(source.Vehicle),

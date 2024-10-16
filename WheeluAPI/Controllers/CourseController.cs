@@ -81,7 +81,7 @@ public class CourseController(
 
     [HttpGet("/api/v1/schools/{schoolID}/courses")]
     [Authorize]
-    [ProducesResponseType(typeof(List<ShortCourseResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<LimitedCourseResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetSchoolCoursesAsync(
@@ -110,14 +110,14 @@ public class CourseController(
             var results = await query.Where(c => c.School == school).ToListAsync();
 
             return Paginated(
-                mapper.MapToShortDTO(results),
+                mapper.MapToLimitedDTO(results),
                 await courseService.CountAsync(school),
                 appliedPageSize
             );
         }
 
         return Paginated(
-            mapper.MapToShortDTO(school.Courses),
+            mapper.MapToLimitedDTO(school.Courses),
             school.Courses.Count,
             school.Courses.Count
         );
@@ -235,11 +235,11 @@ public class CourseController(
             scheduleMapper
                 .MapToRideDTO(validationResult.Course!.Rides)
                 .Concat(scheduleMapper.MapToRideDTO(validationResult.Course.CanceledRides))
-                .OrderBy(c => c.StartTime)
+                .OrderByDescending(c => c.StartTime ?? c.Slot?.StartTime)
         );
     }
 
-    [HttpGet("rides/rideID")]
+    [HttpGet("rides/{rideID}")]
     [Authorize]
     [ProducesResponseType(typeof(RideResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

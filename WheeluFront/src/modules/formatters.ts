@@ -34,8 +34,8 @@ export const DateTimeFormatter = {
 		return dateTime.toFormat(format);
 	},
 
-	formatAdaptiveFriendly: (iso: string) => {
-		const time = DateTime.fromISO(iso);
+	formatAdaptiveFriendly: (iso: string | DateTime) => {
+		const time = DateTime.isDateTime(iso) ? iso : DateTime.fromISO(iso);
 		const today = DateTime.now();
 
 		return time.toFormat(

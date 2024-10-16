@@ -10,7 +10,7 @@ import AuthService from "../../../../../services/Auth";
 import { renderCategoryChips } from "../../../../../modules/features";
 
 interface IProps {
-	courses: App.Models.IShortCourse[];
+	courses: App.Models.ILimitedCourse[];
 }
 
 export default function InstructorCourseTable({ courses }: IProps) {
@@ -20,7 +20,7 @@ export default function InstructorCourseTable({ courses }: IProps) {
 	});
 
 	const columns = useMemo(() => {
-		const result: GridColDef<App.Models.IShortCourse>[] = [
+		const result: GridColDef<App.Models.ILimitedCourse>[] = [
 			{ field: "id", headerName: "ID", width: 75, type: "number" },
 			{
 				field: "student",

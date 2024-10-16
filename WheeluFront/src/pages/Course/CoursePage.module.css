@@ -44,6 +44,17 @@
 	margin-top: 2em;
 }
 
+.PeopleListItem {
+	gap: 1em;
+	flex-wrap: wrap;
+}
+
+.PeopleListItem>* {
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+}
+
 @media (min-width: 600px) {
 	.HeaderSection .ProgressListItem {
 		flex-direction: row;

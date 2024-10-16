@@ -23,7 +23,7 @@ public class CourseOfferResponse
 
     public required DateTime LastUpdatedAt { get; set; }
 
-    public required List<ShortSchoolInstructorResponse> Instructors { get; set; }
+    public required List<LimitedSchoolInstructorResponse> Instructors { get; set; }
 
     public required List<ShortVehicleResponse> Vehicles { get; set; }
 }

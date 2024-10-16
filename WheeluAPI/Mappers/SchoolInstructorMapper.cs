@@ -26,15 +26,15 @@ public class SchoolInstructorDTOMapper(CourseMapper courseMapper, SchoolMapper s
                     EndTime = rec.EndTime,
                 })
                 .ToList(),
-            AssignedCourses = courseMapper.MapToShortDTO(source.AssignedCourses),
+            AssignedCourses = courseMapper.MapToLimitedDTO(source.AssignedCourses),
             MaximumConcurrentStudents = source.MaximumConcurrentStudents,
             AllowedCategories = source.AllowedCategories.Select(c => c.Id).ToList(),
         };
     }
 
-    public ShortSchoolInstructorResponse GetShortDTO(SchoolInstructor source)
+    public LimitedSchoolInstructorResponse GetLimitedDTO(SchoolInstructor source)
     {
-        return new ShortSchoolInstructorResponse
+        return new LimitedSchoolInstructorResponse
         {
             Id = source.Id,
             Visible = source.Visible,
@@ -51,13 +51,34 @@ public class SchoolInstructorDTOMapper(CourseMapper courseMapper, SchoolMapper s
         };
     }
 
+    public ShortSchoolInstructorResponse GetShortDTO(SchoolInstructor source)
+    {
+        return new ShortSchoolInstructorResponse
+        {
+            Id = source.Id,
+            Instructor = new ShortInstructorResponse
+            {
+                Id = source.Instructor.Id,
+                User = source.Instructor.User.GetShortDTO(),
+            },
+            SchoolId = source.School.Id,
+        };
+    }
+
     public List<SchoolInstructorResponse> MapToDTO(List<SchoolInstructor> source)
     {
         return source.Select(GetDTO).ToList();
     }
 
-    public List<ShortSchoolInstructorResponse> MapToShortDTO(List<SchoolInstructor> source)
+    public List<LimitedSchoolInstructorResponse> MapToLimitedDTO(List<SchoolInstructor> source)
     {
-        return source.Select(GetShortDTO).ToList();
+        return source.Select(GetLimitedDTO).ToList();
+    }
+
+    public IEnumerable<ShortSchoolInstructorResponse> MapToShortDTO(
+        IEnumerable<SchoolInstructor> source
+    )
+    {
+        return source.Select(GetShortDTO);
     }
 }

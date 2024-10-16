@@ -47,6 +47,11 @@ public class Course
         get { return false; }
     }
 
+    public Ride? OngoingRide
+    {
+        get { return Rides.Where(r => r.Status == RideStatus.Ongoing).FirstOrDefault(); }
+    }
+
     [NotMapped]
     public Ride? NextRide
     {
@@ -55,7 +60,7 @@ public class Course
             return Rides
                 .Where(r => r.Status == RideStatus.Planned)
                 .OrderBy(r => r.StartTime)
-                .First();
+                .FirstOrDefault();
         }
     }
 }

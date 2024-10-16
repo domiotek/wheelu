@@ -57,15 +57,20 @@ export default function RidesView() {
 		setModalContent(<ScheduleRideModal course={course} />);
 	}, [course]);
 
-	const openRideModal = useCallback((ride: App.Models.IRide) => {
-		setModalContent(
-			<RideDetailsModal
-				ride={ride}
-				canAlterState={canEdit}
-				canChangeVehicle={canEdit && role == "instructor"}
-			/>
-		);
-	}, []);
+	const openRideModal = useCallback(
+		(ride: App.Models.IRide) => {
+			setModalContent(
+				<RideDetailsModal
+					ride={ride}
+					rideID={ride.id}
+					courseID={course!.id}
+					canAlterState={canEdit}
+					canChangeVehicle={canEdit && role == "instructor"}
+				/>
+			);
+		},
+		[course, canEdit, role]
+	);
 
 	return (
 		<div className={classes.Wrapper}>

@@ -59,7 +59,7 @@ export default function CourseTable({ schoolID, supportFilter }: IProps) {
 	});
 
 	const columns = useMemo(() => {
-		const result: GridColDef<App.Models.IShortCourse>[] = [
+		const result: GridColDef<App.Models.ILimitedCourse>[] = [
 			{ field: "id", headerName: "ID", width: 75, type: "number" },
 			{
 				field: "student",

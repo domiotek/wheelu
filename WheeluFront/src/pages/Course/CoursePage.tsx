@@ -1,6 +1,4 @@
 import {
-	Alert,
-	AlertTitle,
 	Button,
 	IconButton,
 	List,
@@ -31,6 +29,7 @@ import { CourseCategoriesMapping } from "../../modules/constants";
 import AuthService from "../../services/Auth";
 import { App } from "../../types/app";
 import { AppContext } from "../../App";
+import AlertPanel from "./components/AlertPanel";
 
 interface ICoursePageContext {
 	course: App.Models.ICourse | null;
@@ -57,7 +56,6 @@ export default function CoursePage() {
 	const params = useParams();
 
 	const courseID = useMemo(() => parseInt(params["courseID"]!), []);
-
 	const queryKey = useMemo(() => ["Courses", "#", courseID], [courseID]);
 
 	const { data, error, isPending } = useQuery<
@@ -137,6 +135,8 @@ export default function CoursePage() {
 
 	if (isPending) return <LoadingScreen />;
 
+	if (!data) return;
+
 	return (
 		<div className={classes.Wrapper}>
 			<Typography variant="h4">Kurs kategorii {categoryName}</Typography>
@@ -144,27 +144,46 @@ export default function CoursePage() {
 			<section className={classes.HeaderSection}>
 				<ProgressRingWithText
 					className={classes.HoursIndicator}
-					value={(0 / (data?.hoursCount ?? 1)) * 100}
-					caption={`0/${data?.hoursCount} godzin`}
+					value={(data.usedHours / data.hoursCount) * 100}
+					caption={`${data.usedHours}/${data.hoursCount} godzin`}
 					color="secondary"
 				/>
 				<List className={classes.PropList}>
 					<ListItem divider>
 						<ListItemText
 							primary="Szkoła"
-							secondary={data?.school.name}
+							secondary={data.school.name}
 						/>
 					</ListItem>
-					<ListItem divider>
-						<ListItemText
-							primary="Instruktor"
-							secondary={AuthService.getUserFullName(
-								data?.instructor as App.Models.IShortUser
-							)}
-						/>
-						<IconButton color="secondary">
-							<Message />
-						</IconButton>
+					<ListItem divider className={classes.PeopleListItem}>
+						{!canEdit ||
+							(role == "student" && (
+								<div>
+									<ListItemText
+										primary="Instruktor"
+										secondary={AuthService.getUserFullName(
+											data.instructor
+										)}
+									/>
+									<IconButton color="secondary">
+										<Message />
+									</IconButton>
+								</div>
+							))}
+						{!canEdit ||
+							(role == "instructor" && (
+								<div>
+									<ListItemText
+										primary="Kursant"
+										secondary={AuthService.getUserFullName(
+											data.student
+										)}
+									/>
+									<IconButton color="secondary">
+										<Message />
+									</IconButton>
+								</div>
+							))}
 					</ListItem>
 					<ListItem className={classes.ProgressListItem} divider>
 						<ListItemText
@@ -180,18 +199,7 @@ export default function CoursePage() {
 					</ListItem>
 				</List>
 			</section>
-			<Alert
-				className={classes.Alert}
-				variant="outlined"
-				action={
-					<Button color="inherit" variant="outlined">
-						Zobacz jazdę
-					</Button>
-				}
-			>
-				<AlertTitle>Twoja następna jazda</AlertTitle>
-				Masz zaplanowaną jazdę w Piątek 12 o 15.
-			</Alert>
+			<AlertPanel course={data} role={role} canEdit={canEdit} />
 			<Tabs
 				className={classes.Tabs}
 				orientation="horizontal"
@@ -208,7 +216,7 @@ export default function CoursePage() {
 			</Tabs>
 			<CoursePageContext.Provider
 				value={{
-					course: data ?? null,
+					course: data,
 					baseQuery: queryKey,
 					role,
 					canEdit,

@@ -93,7 +93,7 @@ export default function ScheduleRideModal({ course }: IProps) {
 		onSuccess: () => {
 			closeModal();
 			qClient.invalidateQueries({
-				queryKey: ["Courses", "#", course.id, "Rides"],
+				queryKey: ["Courses", "#", course.id],
 			});
 		},
 	});

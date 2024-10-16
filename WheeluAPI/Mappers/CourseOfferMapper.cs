@@ -31,7 +31,7 @@ public class CourseOfferDTOMapper(
             PricePerHour = source.PricePerHour,
             CreatedAt = source.CreatedAt,
             LastUpdatedAt = source.LastUpdatedAt,
-            Instructors = instructorMapper.MapToShortDTO(instructors),
+            Instructors = instructorMapper.MapToLimitedDTO(instructors),
             Vehicles = vehicleMapper.MapToShortDTO(vehicles),
         };
     }

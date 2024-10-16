@@ -915,7 +915,7 @@ export namespace API {
 		}
 
 		namespace GetManyOfSchool {
-			type IResponse = _.IPaginatedResponse<App.Models.IShortCourse>;
+			type IResponse = _.IPaginatedResponse<App.Models.ILimitedCourse>;
 
 			type IEndpoint = _.IBuildAPIEndpoint<
 				"GET",
@@ -953,6 +953,23 @@ export namespace API {
 
 		interface ICourseBaseParams extends Record<string, number> {
 			courseID: number;
+		}
+
+		namespace GetCourseRide {
+			type IResponse = App.Models.IRide;
+
+			interface IParams extends ICourseBaseParams {
+				rideID: number;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/courses/:courseID/rides/:rideID",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				null,
+				IParams
+			>;
 		}
 
 		namespace GetCourseRides {

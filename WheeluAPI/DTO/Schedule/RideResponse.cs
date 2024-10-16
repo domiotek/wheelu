@@ -10,6 +10,8 @@ public class ShortRideResponse
 
     public required RideStatus Status { get; set; }
 
+    public ShortRideSlotResponse? Slot { get; set; }
+
     public required ShortCourseResponse Course { get; set; }
 
     public DateTime? StartTime { get; set; }
@@ -27,7 +29,7 @@ public class RideResponse
 
     public ShortRideSlotResponse? Slot { get; set; }
 
-    public required ShortCourseResponse Course { get; set; }
+    public required LimitedCourseResponse Course { get; set; }
 
     public DateTime? StartTime { get; set; }
 

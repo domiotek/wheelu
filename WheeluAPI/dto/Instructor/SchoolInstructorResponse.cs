@@ -8,6 +8,15 @@ public class ShortSchoolInstructorResponse
 {
     public int Id { get; set; }
 
+    public required ShortInstructorResponse Instructor { get; set; }
+
+    public required int SchoolId { get; set; }
+}
+
+public class LimitedSchoolInstructorResponse
+{
+    public int Id { get; set; }
+
     public required bool Visible { get; set; }
 
     public required ShortInstructorResponse Instructor { get; set; }
@@ -36,7 +45,7 @@ public class SchoolInstructorResponse
 
     public required bool Visible { get; set; }
 
-    public required List<ShortCourseResponse> AssignedCourses { get; set; }
+    public required List<LimitedCourseResponse> AssignedCourses { get; set; }
 
     public required int MaximumConcurrentStudents { get; set; }
 
