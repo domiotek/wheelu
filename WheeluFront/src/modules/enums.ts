@@ -66,3 +66,15 @@ export enum RideStatus {
 	Finished,
 	Canceled,
 }
+
+export enum RequestStatus {
+	Pending,
+	Resolved,
+	Canceled,
+	Rejected,
+}
+
+export enum requestorType {
+	Student, 
+	Instructor
+}

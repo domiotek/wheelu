@@ -28,7 +28,7 @@ public class CourseMapper(SchoolMapper schoolMapper, IServiceProvider servicePro
             SchoolId = source.School.Id,
             Student = source.Student.GetShortDTO(),
             Instructor = source.Instructor.Instructor.User.GetShortDTO(),
-            HoursCount = source.BaseHoursCount,
+            HoursCount = source.HoursCount,
             PricePerHour = source.PricePerHour,
             CreatedAt = source.CreatedAt,
             Archived = source.Archived,
@@ -49,7 +49,7 @@ public class CourseMapper(SchoolMapper schoolMapper, IServiceProvider servicePro
             SchoolInstructorId = source.Instructor.Id,
             Instructor = source.Instructor.Instructor.User.GetShortDTO(),
             UsedHours = source.UsedHours,
-            HoursCount = source.BaseHoursCount,
+            HoursCount = source.HoursCount,
             PricePerHour = source.PricePerHour,
             NextRide =
                 source.NextRide != null ? _scheduleMapper.GetShortRideDTO(source.NextRide) : null,
@@ -75,5 +75,24 @@ public class CourseMapper(SchoolMapper schoolMapper, IServiceProvider servicePro
     public List<CourseResponse> MapToDTO(List<Course> courses)
     {
         return courses.Select(GetDTO).ToList();
+    }
+
+    public HoursPackageResponse GetHoursPackageDTO(HoursPackage source)
+    {
+        return new HoursPackageResponse
+        {
+            Id = source.Id,
+            Status = source.Transaction?.State.ToString(),
+            TransactionID = source.Transaction?.Id,
+            TotalPaymentAmount = source.Transaction?.TotalAmount ?? 0,
+            Course = GetShortDTO(source.Course),
+            HoursCount = source.HoursCount,
+            Created = source.Created,
+        };
+    }
+
+    public IEnumerable<HoursPackageResponse> MapToHoursPackageDTO(IEnumerable<HoursPackage> source)
+    {
+        return source.Select(GetHoursPackageDTO);
     }
 }

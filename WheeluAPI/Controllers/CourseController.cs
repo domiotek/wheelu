@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WheeluAPI.DTO.Course;
+using WheeluAPI.DTO.Course.InstructorChangeRequest;
 using WheeluAPI.DTO.Errors;
 using WheeluAPI.DTO.Schedule;
 using WheeluAPI.DTO.Transaction;
@@ -23,7 +24,6 @@ public class CourseController(
     ISchoolService schoolService,
     ISchoolInstructorService instructorService,
     IUserService userService,
-    TransactionService transactionService,
     CourseService courseService,
     CourseMapper mapper,
     ScheduleService scheduleService,
@@ -96,6 +96,19 @@ public class CourseController(
             return BadRequest(
                 new APIError { Code = APIErrorCode.EntityNotFound, Details = ["School not found."] }
             );
+        }
+
+        var requestorEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (
+            !await schoolService.ValidateSchoolManagementAccess(
+                school,
+                requestorEmail!,
+                SchoolManagementAccessMode.All
+            )
+        )
+        {
+            return BadRequest(new APIError { Code = APIErrorCode.AccessDenied });
         }
 
         if (pagingMeta.PageNumber != null)
@@ -175,38 +188,59 @@ public class CourseController(
             var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await userService.GetUserByEmailAsync(userID ?? "");
 
-            var courseResult = await courseService.CreateCourseAsync(
-                new CourseData
-                {
-                    student = user!,
-                    instructor = instructor,
-                    offer = offer,
-                }
+            var result = await courseService.ProcessCoursePurchaseRequest(
+                user!,
+                instructor,
+                offer,
+                request.TotalAmount
             );
-
-            if (!courseResult.IsSuccess)
-                return BadRequest(
-                    new APIError<CourseCreationErrors>
-                    {
-                        Code = courseResult.ErrorCode,
-                        Details = courseResult.Details,
-                    }
-                );
-
-            var transactionCreateRequest = new CreateTransactionRequest
-            {
-                ClientTotalAmount = request.TotalAmount,
-                Payer = user!,
-                Course = courseResult.Data!,
-                Offer = offer,
-            };
-
-            var result = await transactionService.CreateTransaction(transactionCreateRequest);
 
             if (!result.IsSuccess)
             {
                 return BadRequest(
-                    new APIError<CreateTransactionErrors>
+                    new APIError<CoursePurchaseErrors>
+                    {
+                        Code = result.ErrorCode,
+                        Details = result.Details,
+                    }
+                );
+            }
+
+            scope.Complete();
+            return Ok(new BuyCourseResponse { PaymentUrl = result.Data!.PaymentUrl });
+        }
+    }
+
+    [HttpPost("purchase-hours")]
+    [Authorize(Roles = "Student")]
+    [ProducesResponseType(typeof(BuyCourseResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> BuyHoursAsync([FromBody] BuyHoursRequest request, int courseID)
+    {
+        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            var course = await courseService.GetCourseByIDAsync(courseID);
+
+            if (course == null)
+                return BadRequest(
+                    new APIError
+                    {
+                        Code = APIErrorCode.EntityNotFound,
+                        Details = ["Offer not found."],
+                    }
+                );
+
+            var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (course.Student.Email != userEmail)
+                return BadRequest(new APIError { Code = APIErrorCode.AccessDenied });
+
+            var result = await courseService.ProcessHoursPurchaseRequest(course, request);
+
+            if (!result.IsSuccess)
+            {
+                return BadRequest(
+                    new APIError<CourseHoursPurchaseErrors>
                     {
                         Code = result.ErrorCode,
                         Details = result.Details,
@@ -236,6 +270,25 @@ public class CourseController(
                 .MapToRideDTO(validationResult.Course!.Rides)
                 .Concat(scheduleMapper.MapToRideDTO(validationResult.Course.CanceledRides))
                 .OrderByDescending(c => c.StartTime ?? c.Slot?.StartTime)
+        );
+    }
+
+    [HttpGet("hours-packages")]
+    [Authorize]
+    [ProducesResponseType(typeof(List<HoursPackageResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetHoursPackages(int courseID)
+    {
+        var validationResult = await ValidateAccess(courseID);
+
+        if (validationResult.ActionResult != null)
+            return validationResult.ActionResult;
+
+        return Ok(
+            mapper
+                .MapToHoursPackageDTO(validationResult.Course!.BoughtHoursPackages)
+                .OrderByDescending(c => c.Created)
         );
     }
 
@@ -400,7 +453,7 @@ public class CourseController(
 
     [HttpPut("rides/{rideID}/vehicle")]
     [Authorize(Roles = "Instructor")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ChangeRideVehicle(
@@ -462,6 +515,70 @@ public class CourseController(
             scope.Complete();
         }
 
-        return StatusCode(201);
+        return Ok();
+    }
+
+    [HttpPut("instructor")]
+    [Authorize(Roles = "SchoolManager")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ChangeInstructorAsync(
+        int courseID,
+        [FromBody] ChangeInstructorRequest request
+    )
+    {
+        var validationResult = await ValidateAccess(courseID);
+
+        if (validationResult.ActionResult != null)
+            return validationResult.ActionResult;
+
+        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            var course = validationResult.Course!;
+
+            if (course.OngoingRide != null)
+                return BadRequest(
+                    new APIError<ChangeInstructorErrors>
+                    {
+                        Code = ChangeInstructorErrors.RideOngoing,
+                    }
+                );
+
+            if (!await scheduleService.CancelAllRides(course, validationResult.Requestor!))
+                return BadRequest(
+                    new APIError<ChangeInstructorErrors> { Code = ChangeInstructorErrors.DbError }
+                );
+
+            var instructor = await instructorService.GetInstructorByIDAsync(request.InstructorId);
+
+            if (instructor == null)
+                return NotFound(
+                    new APIError
+                    {
+                        Code = APIErrorCode.EntityNotFound,
+                        Details = ["Instructor not found."],
+                    }
+                );
+
+            var changeResult = await courseService.ChangeCourseInstructorAsync(
+                course,
+                instructor,
+                true
+            );
+
+            if (!changeResult.IsSuccess)
+                return BadRequest(
+                    new APIError<ChangeInstructorErrors>
+                    {
+                        Code = changeResult.ErrorCode,
+                        Details = changeResult.Details,
+                    }
+                );
+
+            scope.Complete();
+        }
+
+        return Ok();
     }
 }

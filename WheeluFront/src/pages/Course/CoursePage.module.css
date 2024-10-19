@@ -80,6 +80,15 @@
 	.HeaderSection .PropList {
 		flex-basis: 70%;
 	}
+
+	.PeopleListItem {
+		flex-wrap: unset;
+		width: 100%
+	}
+
+	.PeopleListItem:has(> *+*)>* {
+		width: 50%;
+	}
 }
 
 @media (min-width: 1025px) {

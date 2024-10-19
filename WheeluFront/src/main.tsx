@@ -119,6 +119,9 @@ const SchoolManagementCoursesView = React.lazy(
 const SchoolManagementTransactionsView = React.lazy(
 	() => import("./pages/ManageSchool/views/TransactionsView/Transactions.tsx")
 );
+const SchoolManagementRequestsView = React.lazy(
+	() => import("./pages/ManageSchool/views/RequestsView/RequestsView.tsx")
+);
 
 /** Public School sub-views */
 
@@ -141,6 +144,9 @@ const PublicSchoolContactView = React.lazy(
 /** Course sub-views */
 const CourseRidesView = React.lazy(
 	() => import("./pages/Course/views/RidesView/RidesView.tsx")
+);
+const CourseManageView = React.lazy(
+	() => import("./pages/Course/views/ManageView/ManageView.tsx")
 );
 
 const qClient = new QueryClient();
@@ -176,6 +182,7 @@ const schoolManagementViews = (
 			path="transactions"
 			element={<SchoolManagementTransactionsView />}
 		/>
+		<Route path="requests" element={<SchoolManagementRequestsView />} />
 	</>
 );
 
@@ -269,6 +276,10 @@ root.render(
 								element={<CoursePage />}
 							>
 								<Route path="*" element={<CourseRidesView />} />
+								<Route
+									path="manage"
+									element={<CourseManageView />}
+								/>
 							</Route>
 						</Route>
 

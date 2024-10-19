@@ -1,0 +1,37 @@
+.Wrapper {
+	display: flex;
+	flex-direction: column;
+	margin-top: 2em;
+	max-width: 900px;
+	gap: 0.5em;
+}
+
+.List li {
+	gap: 0.5em;
+}
+
+.Alert {
+	margin: 2em 0;
+}
+
+.Wrapper section {
+	padding: 0 0.5em;
+}
+
+.SectionButton {
+	margin-top: 1.5em;
+	width: fit-content;
+}
+
+.RequestNote {
+	margin-top: 1em;
+}
+
+.HoursPackageStatus {
+	flex-grow: 0;
+	text-align: right;
+}
+
+.NoHoursPackagesMessage img {
+	max-width: 100px;
+}

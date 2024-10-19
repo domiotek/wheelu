@@ -50,6 +50,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public DbSet<CanceledRide> CanceledRides { get; set; }
 
+    public DbSet<InstructorChangeRequest> InstructorChangeRequests { get; set; }
+
+    public DbSet<HoursPackage> HoursPackages { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

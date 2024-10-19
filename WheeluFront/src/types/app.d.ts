@@ -1,6 +1,8 @@
 import { Email } from "@mui/icons-material";
 import {
 	CourseCategory,
+	requestorType,
+	RequestStatus,
 	RideStatus,
 	TransmissionType,
 	VehiclePartType,
@@ -291,9 +293,15 @@ export namespace App {
 			ongoingRide?: IShortRide;
 		}
 
+		type TransactionState =
+			| "Registered"
+			| "Complete"
+			| "Canceled"
+			| "Refund";
+
 		interface IShortTransaction {
 			id: string;
-			state: "Registered" | "Complete" | "Canceled" | "Refund";
+			state: TransactionState;
 			itemCount: number;
 			course?: ILimitedCourse;
 			user: IShortUser;
@@ -328,6 +336,28 @@ export namespace App {
 
 		interface IRide extends IShortRide {
 			vehicle: IShortVehicle;
+		}
+
+		interface IHourPackage {
+			id: number;
+			course: IShortCourse;
+			transactionID?: string;
+			status?: TransactionState;
+			totalPaymentAmount: number;
+			hoursCount: number;
+			created: string;
+		}
+
+		interface IInstructorChangeRequest {
+			id: number;
+			status: RequestStatus;
+			requestor: IShortUser;
+			requestorType: requestorType;
+			course: IShortCourse;
+			requestedInstructor?: IShortEmployedInstructor;
+			note: string;
+			requestedAt: string;
+			lastStatusChange: string;
 		}
 	}
 
@@ -399,6 +429,20 @@ export namespace App {
 				content: string;
 				action?: ReactNode;
 				variant: AlertColor;
+			}
+		}
+
+		namespace PurchaseFlow {
+			interface IStepDef {
+				name: string;
+				view: JSX.Element;
+			}
+
+			interface ICartItemDef {
+				name: string;
+				helper: ReactNode;
+				count: number;
+				pricePerItem: number;
 			}
 		}
 	}

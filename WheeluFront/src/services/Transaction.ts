@@ -2,7 +2,7 @@ import { App } from "../types/app";
 
 export default class TransactionService {
 	public static translateTransactionStatus(
-		state: App.Models.IShortTransaction["state"]
+		state: App.Models.TransactionState
 	): string {
 		switch (state) {
 			case "Complete":

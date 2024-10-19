@@ -26,16 +26,28 @@ public class Course
     [NotMapped]
     public double UsedHours
     {
+        get { return Rides.Where(x => x.Status == RideStatus.Finished).Sum(x => x.HoursCount); }
+    }
+
+    [NotMapped]
+    public int HoursCount
+    {
         get
         {
-
-            return Rides.Where(x => x.Status == RideStatus.Finished).Sum(x => x.HoursCount);
+            return BaseHoursCount
+                + BoughtHoursPackages
+                    .Where(p =>
+                        p.Transaction == null || p.Transaction.State == TransactionState.Complete
+                    )
+                    .Sum(i => i.HoursCount);
         }
     }
 
     public required int BaseHoursCount { get; set; }
 
     public required decimal PricePerHour { get; set; }
+
+    public virtual required List<HoursPackage> BoughtHoursPackages { get; set; }
 
     public required DateTime CreatedAt { get; set; }
 

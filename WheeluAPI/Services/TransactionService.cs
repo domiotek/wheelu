@@ -177,20 +177,7 @@ public class TransactionService(
         var result =
             new ServiceActionWithDataResult<CreateTransactionErrors, CreateTransactionResponse>();
 
-        var transactionItems = new List<TransactionItem>();
-
-        var calcAmount = requestData.Offer.Price;
-
-        transactionItems.Add(
-            new TransactionItem
-            {
-                Type = TransactionItemType.Course,
-                Name = $"Kurs {requestData.Offer.Category.Name}",
-                Quantity = 1,
-                Total = requestData.Offer.Price,
-                RelatedId = requestData.Offer.Id,
-            }
-        );
+        var calcAmount = requestData.Items.Sum(i => i.Total);
 
         if (calcAmount != requestData.ClientTotalAmount)
         {
@@ -204,9 +191,9 @@ public class TransactionService(
 
         var request = new RegisterTransactionRequest
         {
-            Amount = requestData.Offer.Price,
-            Description = $"Kurs kategorii {requestData.Offer.Category.Name} na Wheelu.",
-            SchoolID = requestData.Offer.School.Id,
+            Amount = calcAmount,
+            Description = requestData.Description,
+            SchoolID = requestData.Course.School.Id,
             Payer = new PayerDetails
             {
                 Email = requestData.Payer.Email!,
@@ -228,7 +215,7 @@ public class TransactionService(
             State = TransactionState.Registered,
             School = requestData.Course.School,
             Course = requestData.Course,
-            Items = transactionItems,
+            Items = requestData.Items,
             User = requestData.Payer,
             TotalAmount = requestData.ClientTotalAmount,
             Registered = DateTime.UtcNow,
@@ -263,15 +250,30 @@ public class TransactionService(
     }
 
     /// <summary>
-    /// Also removes related Course identity!!
+    /// Also removes related identities
     /// </summary>
     public async Task<bool> CancelTransaction(Transaction transaction)
     {
         transaction.State = TransactionState.Canceled;
         transaction.LastUpdate = DateTime.UtcNow;
 
-        dbContext.Courses.Remove(transaction.Course!);
-        transaction.Course = null;
+        foreach (var item in transaction.Items)
+        {
+            switch (item.Type)
+            {
+                case TransactionItemType.Course:
+                    dbContext.Courses.Remove(transaction.Course!);
+                    transaction.Course = null;
+                    break;
+                case TransactionItemType.AdditionalHour:
+                    var package = await dbContext.HoursPackages.FindAsync(item.RelatedId);
+                    if (package != null)
+                        dbContext.HoursPackages.Remove(package);
+                    break;
+            }
+        }
+
+        if (transaction.Items.Find(i => i.Type == TransactionItemType.Course) != null) { }
 
         dbContext.Transactions.Update(transaction);
 

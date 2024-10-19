@@ -1,0 +1,42 @@
+.Modal {
+	min-width: 320px;
+	width: 60%;
+	max-width: 790px;
+	height: 800px;
+}
+
+.ModalContent {
+	display: flex;
+	flex-direction: column;
+	padding: 0.5em;
+	flex: 1;
+}
+
+.ViewContainer {
+	flex: 1;
+	margin-top: 1em;
+}
+
+.ListItem {
+	flex-direction: column;
+	gap: 1em;
+	align-items: flex-start;
+}
+
+.ListItem>*:nth-child(2) {
+	align-self: flex-end;
+}
+
+.ErrorPanel {
+	margin-bottom: 2em;
+}
+
+@media (min-width: 800px) {
+	.ListItem {
+		flex-direction: row;
+	}
+
+	.ListItem>* {
+		align-self: center !important;
+	}
+}

@@ -388,4 +388,15 @@ public class ScheduleService(ApplicationDbContext dbContext) : BaseService
 
         return result;
     }
+
+    public async Task<bool> CancelAllRides(Course course, User requestor)
+    {
+        var tasks = course
+            .Rides.Where(r => r.Status == RideStatus.Planned)
+            .Select(r => CancelRide(r, requestor));
+
+        var results = await Task.WhenAll(tasks);
+
+        return results.All(res => res.IsSuccess);
+    }
 }

@@ -1,0 +1,24 @@
+.ListItem {
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 1em;
+}
+
+.ListItem>*:nth-child(1) {
+	align-self: flex-start;
+}
+
+.Input {
+	max-width: 85px;
+	text-align: right;
+}
+
+@media (min-width: 769px) {
+	.ListItem {
+		flex-direction: row;
+	}
+
+	.ListItem>* {
+		align-self: center;
+	}
+}

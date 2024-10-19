@@ -1,0 +1,40 @@
+.Modal {
+	min-width: 320px;
+	width: 100%;
+	max-width: 790px;
+	height: 550px;
+}
+
+.Host {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.Content {
+	margin-top: 2em;
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+}
+
+.TextArea {
+	margin-top: 2em;
+}
+
+.ProgressRingWrapper {
+	padding: 0.5em;
+	display: flex;
+	justify-content: center;
+}
+
+.ProgressRingWrapper>* {
+	width: 25px !important;
+	height: 25px !important;
+}
+
+@media (min-width: 569px) {
+	.Content {
+		padding: 0 2em;
+	}
+}

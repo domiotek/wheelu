@@ -100,6 +100,26 @@ export default function CoursePage() {
 			data.student.id != userDetails.userId
 		)
 			navigate("/courses");
+
+		const parts = location.pathname.split("/");
+		const section = parts[parts.length - 1];
+
+		let tab;
+
+		switch (section) {
+			case "exams":
+				tab = CoursePageTab.Exams;
+				break;
+			case "manage":
+				tab = CoursePageTab.Manage;
+				break;
+			case "rides":
+			default:
+				tab = CoursePageTab.Rides;
+				break;
+		}
+
+		setActiveTab(tab);
 	}, [error, data]);
 
 	const categoryName = useMemo(() => {
@@ -156,34 +176,32 @@ export default function CoursePage() {
 						/>
 					</ListItem>
 					<ListItem divider className={classes.PeopleListItem}>
-						{!canEdit ||
-							(role == "student" && (
-								<div>
-									<ListItemText
-										primary="Instruktor"
-										secondary={AuthService.getUserFullName(
-											data.instructor
-										)}
-									/>
-									<IconButton color="secondary">
-										<Message />
-									</IconButton>
-								</div>
-							))}
-						{!canEdit ||
-							(role == "instructor" && (
-								<div>
-									<ListItemText
-										primary="Kursant"
-										secondary={AuthService.getUserFullName(
-											data.student
-										)}
-									/>
-									<IconButton color="secondary">
-										<Message />
-									</IconButton>
-								</div>
-							))}
+						{(!canEdit || role == "student") && (
+							<div>
+								<ListItemText
+									primary="Instruktor"
+									secondary={AuthService.getUserFullName(
+										data.instructor
+									)}
+								/>
+								<IconButton color="secondary">
+									<Message />
+								</IconButton>
+							</div>
+						)}
+						{(!canEdit || role == "instructor") && (
+							<div>
+								<ListItemText
+									primary="Kursant"
+									secondary={AuthService.getUserFullName(
+										data.student
+									)}
+								/>
+								<IconButton color="secondary">
+									<Message />
+								</IconButton>
+							</div>
+						)}
 					</ListItem>
 					<ListItem className={classes.ProgressListItem} divider>
 						<ListItemText

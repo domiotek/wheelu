@@ -91,6 +91,7 @@ builder.Services.AddScoped<CourseService>();
 builder.Services.AddScoped<TransactionService>();
 builder.Services.AddScoped<TPayService>();
 builder.Services.AddScoped<ScheduleService>();
+builder.Services.AddScoped<InstructorChangeRequestService>();
 
 builder.Services.AddScoped<SchoolMapper>();
 builder.Services.AddScoped<CourseOfferDTOMapper>();
@@ -101,6 +102,7 @@ builder.Services.AddScoped<VehicleMapper>();
 builder.Services.AddScoped<CourseMapper>();
 builder.Services.AddScoped<TransactionMapper>();
 builder.Services.AddScoped<ScheduleMapper>();
+builder.Services.AddScoped<InstructorChangeRequestMapper>();
 builder.Services.AddHttpClient();
 
 builder.Services.AddCors(options =>

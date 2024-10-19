@@ -1,3 +1,5 @@
+import { requestorType, RequestStatus } from "../modules/enums";
+
 export default class CourseService {
 	public static getCourseAlertText(
 		id: string,
@@ -57,5 +59,27 @@ export default class CourseService {
 		}
 
 		return "";
+	}
+
+	public static formatRequestStatus(status: RequestStatus) {
+		switch (status) {
+			case RequestStatus.Canceled:
+				return "Anulowany";
+			case RequestStatus.Pending:
+				return "Oczekujący";
+			case RequestStatus.Rejected:
+				return "Odrzucony";
+			case RequestStatus.Resolved:
+				return "Zrealizowany";
+		}
+	}
+
+	public static formatRequestorType(type: requestorType) {
+		switch (type) {
+			case requestorType.Student:
+				return "Kursant";
+			case requestorType.Instructor:
+				return "Instruktor";
+		}
 	}
 }

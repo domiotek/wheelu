@@ -1,6 +1,7 @@
 import {
 	AuthorizabledAccountActions,
 	CourseCategory,
+	RequestStatus,
 	RideStatus,
 	SortingType,
 } from "../modules/enums";
@@ -945,7 +946,10 @@ export namespace API {
 				"POST",
 				"/api/v1/offers/:offerID/purchase",
 				IResponse,
-				"InstructorUnavailable" | "SchoolBlocked",
+				| "InstructorUnavailable"
+				| "SchoolBlocked"
+				| "TPayError"
+				| "PriceMismatch",
 				IRequest,
 				IParams
 			>;
@@ -1036,6 +1040,138 @@ export namespace API {
 				"VehicleUnavailable" | "InvalidRideStatus",
 				IRequest,
 				IParams
+			>;
+		}
+
+		namespace BuyHours {
+			interface IRequest extends Record<string, number> {
+				hoursCount: number;
+				totalAmount: number;
+			}
+
+			interface IResponse {
+				paymentUrl: string;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"POST",
+				"/api/v1/courses/:courseID/purchase-hours",
+				IResponse,
+				"TPayError" | "PriceMismatch",
+				IRequest,
+				ICourseBaseParams
+			>;
+		}
+
+		namespace GetHoursPackages {
+			type IResponse = App.Models.IHourPackage[];
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/courses/:courseID/hours-packages",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				null,
+				ICourseBaseParams
+			>;
+		}
+
+		namespace ChangeInstructorRequest {
+			namespace GetFromCourse {
+				type IResponse = App.Models.IInstructorChangeRequest;
+
+				type IEndpoint = _.IBuildAPIEndpoint<
+					"GET",
+					"/api/v1/courses/:courseID/instructor-change-request",
+					IResponse,
+					_.TCommonServerErrorCodes,
+					null,
+					ICourseBaseParams
+				>;
+			}
+
+			namespace GetMany {
+				type IResponse =
+					_.IPaginatedResponse<App.Models.IInstructorChangeRequest>;
+
+				interface IParams extends Record<string, number> {
+					schoolID: number;
+				}
+
+				type IEndpoint = _.IBuildAPIEndpoint<
+					"GET",
+					"/api/v1/schools/:schoolID/instructor-change-requests",
+					IResponse,
+					_.TCommonServerErrorCodes,
+					Partial<_.IPagingRequest>,
+					IParams
+				>;
+			}
+
+			namespace Post {
+				interface IRequest
+					extends Record<string, number | string | undefined> {
+					instructorId?: number;
+					note: string;
+				}
+
+				type IEndpoint = _.IBuildAPIEndpoint<
+					"POST",
+					"/api/v1/courses/:courseID/instructor-change-request",
+					null,
+					"ExternalInstructor" | "InstructorNotAllowed",
+					IRequest,
+					ICourseBaseParams
+				>;
+			}
+
+			namespace PutStatus {
+				interface IRequest extends Record<string, number> {
+					newStatus: RequestStatus;
+				}
+
+				interface IParams extends Record<string, number> {
+					schoolID: number;
+					requestID: number;
+				}
+
+				type IEndpoint = _.IBuildAPIEndpoint<
+					"PUT",
+					"/api/v1/schools/:schoolID/instructor-change-requests/:requestID",
+					null,
+					"InvalidState",
+					IRequest,
+					IParams
+				>;
+			}
+
+			namespace DeleteFromCourse {
+				type IEndpoint = _.IBuildAPIEndpoint<
+					"DELETE",
+					"/api/v1/courses/:courseID/instructor-change-request",
+					null,
+					"InvalidState",
+					null,
+					ICourseBaseParams
+				>;
+			}
+		}
+
+		namespace ChangeInstructor {
+			interface IRequest extends Record<string, number> {
+				instructorId: number;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"PUT",
+				"/api/v1/courses/:courseID/instructor",
+				null,
+				| "ExternalInstructor"
+				| "InstructorUnavailable"
+				| "RidesPlanned"
+				| "RideOngoing",
+				IRequest,
+				ICourseBaseParams
 			>;
 		}
 	}

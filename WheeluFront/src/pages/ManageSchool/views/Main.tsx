@@ -3,6 +3,7 @@ import classes from "../ManageSchoolPage.module.css";
 import {
 	CarRental,
 	Folder,
+	Grading,
 	People,
 	ReceiptLong,
 	School,
@@ -52,6 +53,13 @@ export default function MainSchoolView() {
 			type: "link",
 			icon: ReceiptLong,
 			link: location.pathname + "/transactions",
+		});
+
+		uiTiles.push({
+			caption: "Wnioski",
+			type: "link",
+			icon: Grading,
+			link: location.pathname + "/requests",
 		});
 
 		uiTiles.push({

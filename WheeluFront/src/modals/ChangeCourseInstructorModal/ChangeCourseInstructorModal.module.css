@@ -1,0 +1,35 @@
+.Modal {
+	min-width: 300px;
+	width: 60%;
+	max-width: 520px;
+	height: 370px;
+}
+
+.Host {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.Alert {
+	margin-top: 1em;
+}
+
+.List {
+	flex: 1;
+}
+
+.NoInstructorsMessage img {
+	max-width: 100px;
+}
+
+.ProgressRingWrapper {
+	padding: 0.5em;
+	display: flex;
+	justify-content: center;
+}
+
+.ProgressRingWrapper>* {
+	width: 25px !important;
+	height: 25px !important;
+}
