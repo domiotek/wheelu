@@ -75,6 +75,13 @@ export enum RequestStatus {
 }
 
 export enum requestorType {
-	Student, 
-	Instructor
+	Student,
+	Instructor,
+}
+
+export enum SkillLevel {
+	None,
+	Medium,
+	Good,
+	Excelent,
 }

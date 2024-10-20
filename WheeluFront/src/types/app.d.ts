@@ -4,6 +4,7 @@ import {
 	requestorType,
 	RequestStatus,
 	RideStatus,
+	SkillLevel,
 	TransmissionType,
 	VehiclePartType,
 } from "../modules/enums";
@@ -264,6 +265,63 @@ export namespace App {
 			note?: string;
 		}
 
+		namespace CourseProgress {
+			type GeneralSkillTypes =
+				| "preparingVehicle"
+				| "clutchAndShifting"
+				| "componentKnowledge"
+				| "lightsHandling"
+				| "harshConditionsDriving";
+			interface IGeneralSkills {
+				[skillName: GeneralSkillTypes]: SkillLevel;
+			}
+
+			type GeneralDrivingSkillTypes =
+				| "rounaboutCrossing"
+				| "laneChanging"
+				| "classicIntersection"
+				| "givingWayPedestrians"
+				| "givingWayVehicles"
+				| "bicycleOvertaking"
+				| "vehicleOvertaking"
+				| "dynamicDriving"
+				| "speedAdjusting";
+
+			interface IGeneralDrivingSkills {
+				[skillName: GeneralDrivingSkillTypes]: SkillLevel;
+			}
+
+			type HighwayDrivingSkillTypes =
+				| "overtaking"
+				| "laneChanging"
+				| "speedAdjusting";
+
+			interface IHighwayDrivingSkills {
+				[skillName: HighwayDrivingSkillTypes]: SkillLevel;
+			}
+
+			type ManeuverSkillTypes =
+				| "perpendicularParking"
+				| "parallelParking"
+				| "diagonalParking"
+				| "startingUpTheHill"
+				| "stoppingAtDestination"
+				| "turningAroundOnIntersection"
+				| "turningAroundUsingInfrastructure";
+
+			interface IManeuverSkills {
+				[skillName: ManeuverSkillTypes]: SkillLevel;
+			}
+		}
+
+		interface ICourseProgress extends Record<string, Record<SkillLevel>> {
+			generalSkills: CourseProgress.IGeneralSkills;
+			developedAreaSkills: CourseProgress.IGeneralDrivingSkills;
+			undevelopedAreaSkills: CourseProgress.IGeneralDrivingSkills;
+			highwaySkills: CourseProgress.IHighwayDrivingSkills;
+			maneuverSkills: CourseProgress.IManeuverSkills;
+		}
+
 		interface IShortCourse {
 			id: number;
 			category: CourseCategory;
@@ -291,6 +349,7 @@ export namespace App {
 			usedHours: number;
 			nextRide?: IShortRide;
 			ongoingRide?: IShortRide;
+			courseProgress: ICourseProgress;
 		}
 
 		type TransactionState =

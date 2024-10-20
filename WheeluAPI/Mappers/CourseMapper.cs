@@ -57,6 +57,7 @@ public class CourseMapper(SchoolMapper schoolMapper, IServiceProvider servicePro
                 source.OngoingRide != null
                     ? _scheduleMapper.GetShortRideDTO(source.OngoingRide)
                     : null,
+            CourseProgress = source.CourseProgress,
             CreatedAt = source.CreatedAt,
             Archived = source.Archived,
         };

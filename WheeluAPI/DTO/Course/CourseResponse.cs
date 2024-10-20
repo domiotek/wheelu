@@ -60,6 +60,8 @@ public class CourseResponse
 
     public ShortRideResponse? OngoingRide { get; set; }
 
+    public required CourseProgress CourseProgress { get; set; }
+
     public required decimal PricePerHour { get; set; }
 
     public required DateTime CreatedAt { get; set; }

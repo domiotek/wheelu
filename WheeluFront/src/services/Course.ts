@@ -1,6 +1,14 @@
-import { requestorType, RequestStatus } from "../modules/enums";
+import { requestorType, RequestStatus, SkillLevel } from "../modules/enums";
+import { App } from "../types/app";
 
 export default class CourseService {
+	public static readonly skillColorMapping = {
+		[SkillLevel.None]: undefined,
+		[SkillLevel.Medium]: "warning",
+		[SkillLevel.Good]: "info",
+		[SkillLevel.Excelent]: "success",
+	} as const;
+
 	public static getCourseAlertText(
 		id: string,
 		role: "student" | "instructor" | "other" = "other",
@@ -80,6 +88,73 @@ export default class CourseService {
 				return "Kursant";
 			case requestorType.Instructor:
 				return "Instruktor";
+		}
+	}
+
+	public static formatCourseProgressGroup(
+		group: keyof App.Models.ICourseProgress
+	) {
+		switch (group) {
+			case "generalSkills":
+				return "Ogólne";
+			case "developedAreaSkills":
+				return "Ruch w obszarze zabudowanym";
+			case "undevelopedAreaSkills":
+				return "Ruch w obszarze niezabudowanym";
+			case "highwaySkills":
+				return "Ruch na drodze ekspresowej";
+			case "maneuverSkills":
+				return "Manewry";
+		}
+	}
+
+	public static formatCourseProgressSkill(skill: string) {
+		switch (skill) {
+			case "preparingVehicle":
+				return "Przygotowanie pojazdu do jazdy";
+			case "clutchAndShifting":
+				return "Obsługa sprzęgła i zmiana biegów";
+			case "componentKnowledge":
+				return "Znajomość podzespołów pojazdu";
+			case "lightsHandling":
+				return "Obsługa świateł";
+			case "harshConditionsDriving":
+				return "Jazda w trudnych warunkacj pogodowych";
+			case "roundaboutCrossing":
+				return "Przejazd przez rondo";
+			case "laneChanging":
+				return "Zmiana pasa ruchu";
+			case "classicIntersection":
+				return "Przejazd przez skrzyżowanie";
+			case "givingWayPedestrians":
+				return "Ustąpienie pierwszeństwa pieszym";
+			case "givingWayVehicles":
+				return "Ustąpienie pierwszeństwa pojazdom";
+			case "bicycleOvertaking":
+				return "Wyprzedzanie rowerzystów";
+			case "overtaking":
+			case "vehicleOvertaking":
+				return "Wyprzedzanie pojazdów";
+			case "dynamicDriving":
+				return "Dynamiczna jazda";
+			case "speedAdjusting":
+				return "Dostosowanie prędkości do warunków";
+			case "perpendicularParking":
+				return "Parkowanie prostopadłe";
+			case "parallelParking":
+				return "Parkowanie równoległe";
+			case "diagonalParking":
+				return "Parkowanie skośne";
+			case "startingUpTheHill":
+				return "Ruszanie ze wzniesienia";
+			case "stoppingAtDestination":
+				return "Zatrzymanie w wyznaczonym miejscu";
+			case "turningAroundOnIntersection":
+				return "Zawrót na skrzyżowaniu";
+			case "turningAroundUsingInfrastructure":
+				return "Zawrót z użyciem infrastruktury";
+			default:
+				return skill;
 		}
 	}
 }

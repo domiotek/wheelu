@@ -1174,6 +1174,21 @@ export namespace API {
 				ICourseBaseParams
 			>;
 		}
+
+		namespace UpdateProgress {
+			interface IRequest extends Record<string, any> {
+				progress: App.Models.ICourseProgress;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"PUT",
+				"/api/v1/courses/:courseID/progress",
+				null,
+				_.TCommonServerErrorCodes,
+				IRequest,
+				ICourseBaseParams
+			>;
+		}
 	}
 
 	namespace Transactions {

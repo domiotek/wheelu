@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 using WheeluAPI.models;
 
 namespace WheeluAPI.Models;
@@ -52,6 +53,17 @@ public class Course
     public required DateTime CreatedAt { get; set; }
 
     public virtual required List<Transaction> Transactions { get; set; }
+
+    public string CourseProgressJSON { get; set; } = "{}";
+
+    [NotMapped]
+    public CourseProgress CourseProgress
+    {
+        get =>
+            JsonConvert.DeserializeObject<CourseProgress>(CourseProgressJSON)
+            ?? new CourseProgress();
+        set => CourseProgressJSON = JsonConvert.SerializeObject(value);
+    }
 
     [NotMapped]
     public bool Archived

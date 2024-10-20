@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import classes from "./CoursePage.module.css";
 import { Message } from "@mui/icons-material";
-import { CoursePageTab } from "../../modules/enums";
+import { CoursePageTab, SkillLevel } from "../../modules/enums";
 import React, {
 	Suspense,
 	useCallback,
@@ -30,6 +30,7 @@ import AuthService from "../../services/Auth";
 import { App } from "../../types/app";
 import { AppContext } from "../../App";
 import AlertPanel from "./components/AlertPanel";
+import CourseProgressModal from "../../modals/CourseProgressModal/CourseProgressModal";
 
 interface ICoursePageContext {
 	course: App.Models.ICourse | null;
@@ -50,7 +51,7 @@ export default function CoursePage() {
 		CoursePageTab.Rides
 	);
 
-	const { userDetails } = useContext(AppContext);
+	const { userDetails, setModalContent } = useContext(AppContext);
 
 	const navigate = useNavigate();
 	const params = useParams();
@@ -89,6 +90,17 @@ export default function CoursePage() {
 
 		setActiveTab(tabID);
 	}, []);
+
+	const showProgressModal = useCallback(() => {
+		setModalContent(
+			<CourseProgressModal
+				courseID={data!.id}
+				queryKey={queryKey}
+				progressInfo={data!.courseProgress}
+				editAllowed={role == "instructor" && canEdit}
+			/>
+		);
+	}, [data]);
 
 	useLayoutEffect(() => {
 		if (error?.code == "EntityNotFound") navigate("/courses");
@@ -153,6 +165,23 @@ export default function CoursePage() {
 		return true;
 	}, [data]);
 
+	const courseProgress = useMemo(() => {
+		if (!data) return 0;
+
+		let total = 0;
+		let passable = 0;
+		for (const group in data.courseProgress) {
+			for (const skillID in data.courseProgress[group]) {
+				const skillLevel = data.courseProgress[group][
+					skillID
+				] as SkillLevel;
+				if (skillLevel >= SkillLevel.Good) passable += 1;
+				total += 1;
+			}
+		}
+		return Math.round((passable / total) * 100);
+	}, [data]);
+
 	if (isPending) return <LoadingScreen />;
 
 	if (!data) return;
@@ -209,8 +238,15 @@ export default function CoursePage() {
 							secondary="Jak dobrze radzisz sobie z poszczególnymi aspektami jazdy"
 						/>
 						<div className={classes.BreakContainer}>
-							<ProgressRingWithText value={100} caption="100%" />
-							<Button variant="outlined" color="secondary">
+							<ProgressRingWithText
+								value={courseProgress}
+								caption={`${courseProgress}%`}
+							/>
+							<Button
+								variant="outlined"
+								color="secondary"
+								onClick={showProgressModal}
+							>
 								Zobacz
 							</Button>
 						</div>

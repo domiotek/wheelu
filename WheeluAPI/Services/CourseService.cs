@@ -357,4 +357,11 @@ public class CourseService(
         result.IsSuccess = true;
         return result;
     }
+
+    public async Task<bool> UpdateCourseAsync(Course course)
+    {
+        dbContext.Courses.Update(course);
+
+        return await dbContext.SaveChangesAsync() > 0;
+    }
 }

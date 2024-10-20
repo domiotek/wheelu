@@ -581,4 +581,36 @@ public class CourseController(
 
         return Ok();
     }
+
+    [HttpPut("progress")]
+    [Authorize(Roles = "Instructor")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateCourseProgressAsync(
+        int courseID,
+        [FromBody] UpdateProgressRequest request
+    )
+    {
+        var validationResult = await ValidateAccess(courseID);
+
+        if (validationResult.ActionResult != null)
+            return validationResult.ActionResult;
+
+        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            var course = validationResult.Course!;
+
+            course.CourseProgress = request.Progress;
+
+            var changeResult = await courseService.UpdateCourseAsync(course);
+
+            if (!changeResult)
+                return BadRequest(new APIError { Code = APIErrorCode.DbError });
+
+            scope.Complete();
+        }
+
+        return Ok();
+    }
 }
