@@ -999,7 +999,7 @@ export namespace API {
 				"POST",
 				"/api/v1/courses/:courseID/rides",
 				null,
-				_.TCommonServerErrorCodes,
+				"RideAssigned" | "VehicleUnavailable" | "InsufficientHoursLeft",
 				IRequest,
 				ICourseBaseParams
 			>;

@@ -25,7 +25,8 @@ import RideDetailsModal from "../../../../modals/RideDetailsModal/RideDetailsMod
 
 export default function RidesView() {
 	const { setModalContent } = useContext(AppContext);
-	const { course, baseQuery, canEdit, role } = useContext(CoursePageContext);
+	const { course, baseQuery, canEdit, role, ranOutOfHours } =
+		useContext(CoursePageContext);
 
 	const { data, isPending } = useQuery<
 		API.Courses.GetCourseRides.IResponse,
@@ -74,7 +75,7 @@ export default function RidesView() {
 
 	return (
 		<div className={classes.Wrapper}>
-			{canEdit && (
+			{canEdit && !ranOutOfHours && (
 				<ButtonsBar>
 					<Button
 						color="secondary"

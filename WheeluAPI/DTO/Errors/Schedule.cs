@@ -34,6 +34,7 @@ public enum CreateRideErrors
     DBError,
     RideAssigned,
     VehicleUnavailable,
+    InsufficientHoursLeft,
 }
 
 public enum ChangeRideVehicleErrors

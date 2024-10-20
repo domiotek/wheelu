@@ -13,16 +13,28 @@ import { RideStatus } from "../../../modules/enums";
 import { AppContext } from "../../../App";
 import RideDetailsModal from "../../../modals/RideDetailsModal/RideDetailsModal";
 import ScheduleRideModal from "../../../modals/ScheduleRideModal/ScheduleRideModal";
+import { useNavigate } from "react-router-dom";
 
 interface IProps {
 	course: App.Models.ICourse;
 	canEdit: boolean;
 	role: "student" | "instructor" | "other";
+	ranOutOfHours: boolean;
+	internalExamPassed: boolean;
+	filledCourseProgress: boolean;
 }
 
-export default function AlertPanel({ course, canEdit, role }: IProps) {
+export default function AlertPanel({
+	course,
+	canEdit,
+	role,
+	ranOutOfHours,
+	filledCourseProgress,
+	internalExamPassed,
+}: IProps) {
 	const { setModalContent } = useContext(AppContext);
 	const qClient = useQueryClient();
+	const navigate = useNavigate();
 
 	const setRideStateMutation = useMutation<
 		null,
@@ -75,6 +87,56 @@ export default function AlertPanel({ course, canEdit, role }: IProps) {
 		const t = CourseService.getCourseAlertText;
 
 		switch (true) {
+			case ranOutOfHours && !internalExamPassed:
+				alertDef.title = t("hoursRanOut_title", role);
+				alertDef.content = t("hoursRanOut_content", role);
+				alertDef.variant = "warning";
+				if (role == "student")
+					alertDef.action = (
+						<Button
+							color="inherit"
+							variant="outlined"
+							onClick={() =>
+								navigate(`/courses/${course.id}/manage`)
+							}
+						>
+							Dokup godziny
+						</Button>
+					);
+				break;
+			case !ranOutOfHours && internalExamPassed:
+				alertDef.title = t("complete_hours_left_title", role);
+				alertDef.content = t("complete_hours_left_content", role);
+				alertDef.variant = "success";
+				if (role == "student")
+					alertDef.action = (
+						<Button color="inherit" variant="outlined">
+							Wypełnij ankietę
+						</Button>
+					);
+				break;
+			case ranOutOfHours && internalExamPassed:
+				alertDef.title = t("complete_title", role);
+				alertDef.content = t("complete_content", role);
+				alertDef.variant = "success";
+				if (role == "student")
+					alertDef.action = (
+						<Button color="inherit" variant="outlined">
+							Wypełnij ankietę
+						</Button>
+					);
+				break;
+			case !internalExamPassed && filledCourseProgress:
+				alertDef.title = t("examAvailable_title", role);
+				alertDef.content = t("examAvailable_content", role);
+				alertDef.variant = "info";
+				if (canEdit)
+					alertDef.action = (
+						<Button color="inherit" variant="outlined">
+							Zaplanuj egzamin
+						</Button>
+					);
+				break;
 			case course.ongoingRide != undefined:
 				const orStartTime = DateTime.fromISO(
 					course.ongoingRide.startTime

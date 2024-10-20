@@ -37,6 +37,7 @@ interface ICoursePageContext {
 	baseQuery: QueryKey;
 	role: "instructor" | "student" | "other";
 	canEdit: boolean;
+	ranOutOfHours: boolean;
 }
 
 export const CoursePageContext = React.createContext<ICoursePageContext>({
@@ -44,6 +45,7 @@ export const CoursePageContext = React.createContext<ICoursePageContext>({
 	baseQuery: [],
 	role: "other",
 	canEdit: false,
+	ranOutOfHours: false,
 });
 
 export default function CoursePage() {
@@ -182,6 +184,23 @@ export default function CoursePage() {
 		return Math.round((passable / total) * 100);
 	}, [data]);
 
+	const ranOutOfHours = useMemo(() => {
+		if (!data) return false;
+
+		return data.usedHours >= data.hoursCount;
+	}, [data]);
+
+	const passedInternalExam = useMemo(() => {
+		return false;
+	}, [data]);
+
+	const hoursRingColor = useMemo(() => {
+		if (!ranOutOfHours) return "secondary";
+
+		if (courseProgress == 100 && passedInternalExam) return "success";
+		else return "warning";
+	}, [ranOutOfHours, passedInternalExam, courseProgress]);
+
 	if (isPending) return <LoadingScreen />;
 
 	if (!data) return;
@@ -195,7 +214,7 @@ export default function CoursePage() {
 					className={classes.HoursIndicator}
 					value={(data.usedHours / data.hoursCount) * 100}
 					caption={`${data.usedHours}/${data.hoursCount} godzin`}
-					color="secondary"
+					color={hoursRingColor}
 				/>
 				<List className={classes.PropList}>
 					<ListItem divider>
@@ -241,6 +260,11 @@ export default function CoursePage() {
 							<ProgressRingWithText
 								value={courseProgress}
 								caption={`${courseProgress}%`}
+								color={
+									courseProgress == 100
+										? "success"
+										: "primary"
+								}
 							/>
 							<Button
 								variant="outlined"
@@ -253,7 +277,14 @@ export default function CoursePage() {
 					</ListItem>
 				</List>
 			</section>
-			<AlertPanel course={data} role={role} canEdit={canEdit} />
+			<AlertPanel
+				course={data}
+				role={role}
+				canEdit={canEdit}
+				ranOutOfHours={ranOutOfHours}
+				internalExamPassed={passedInternalExam}
+				filledCourseProgress={courseProgress == 100}
+			/>
 			<Tabs
 				className={classes.Tabs}
 				orientation="horizontal"
@@ -274,6 +305,7 @@ export default function CoursePage() {
 					baseQuery: queryKey,
 					role,
 					canEdit,
+					ranOutOfHours,
 				}}
 			>
 				<Suspense fallback={<LoadingScreen />}>

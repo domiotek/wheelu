@@ -64,6 +64,74 @@ export default class CourseService {
 					case "other":
 						return `Rozpoczęta - ${params[0]}. Planowe zakończenie - ${params[1]}.`;
 				}
+			case "hoursRanOut_title":
+				switch (role) {
+					case "student":
+						return "Skończyły Ci się godziny 😕";
+					default:
+						return "Brak dostępnych godzin";
+				}
+			case "hoursRanOut_content":
+				switch (role) {
+					case "student":
+						return "Nadal możesz się wiele nauczyć - mimo, że już teraz możesz przystąpić do oficjalnego egzaminu, być może warto dokupić kilka godzin? Egzamin wewnętrzny jest świetną okazją by zaznajomić się z formą egzaminu przed przystąpieniem do państwowego.";
+					default:
+						return "Aby kontynuować, kursant musi dokupić godziny.";
+				}
+			case "examAvailable_title":
+				switch (role) {
+					case "student":
+						return "Możesz przystąpić do egzaminu wewnętrznego";
+					case "instructor":
+						return "Kursant może przystąpić do egzaminu wewnętrznego";
+					case "other":
+						return "Dostępny egzamin wewnętrzny";
+				}
+			case "examAvailable_content":
+				switch (role) {
+					case "student":
+						return "Egzamin wewnętrzny jest idealną okazją, by zobaczyć jak wygląda państwowy egzamin na prawo jazdy. Potrzebujesz jeszcze trochę poćwiczyć? Nie ma problemu, dalej możesz zaplanować jazdy 😉";
+					case "instructor":
+						return "Egzamin wewnętrzny może pomóc oswoić się z egzaminem państwowym.";
+					case "other":
+						return "Egzamin jest już dostępny, lecz nie został jeszcze zaplanowany.";
+				}
+			case "complete_hours_left_title":
+				switch (role) {
+					case "student":
+						return "Możesz przystąpić do egzaminu państwowego!";
+					case "instructor":
+						return "Wszystko gotowe?";
+					case "other":
+						return "Założenia kursu spełnione";
+				}
+			case "complete_hours_left_content":
+				switch (role) {
+					case "student":
+						return "Ukończyłeś/aś wszystkie kroki w tym kursie, lecz nadal masz dostępne godziny - nadal możesz poćwiczyć jeśli chcesz. Już po egzaminie? Wypełnij ankietę.";
+					case "instructor":
+						return "Wszystkie kroki zostały ukończone, lecz w kursie nadal są dostępne godziny. Może się przydadzą?";
+					case "other":
+						return "Kursant opanował umiejętności wymagane do kierowania pojazdem oraz zdał egzamin wewnętrzny.";
+				}
+			case "complete_title":
+				switch (role) {
+					case "student":
+						return "Powodzenia na egzaminie!";
+					case "instructor":
+						return "Wszystko gotowe";
+					case "other":
+						return "Założenia kursu spełnione";
+				}
+			case "complete_content":
+				switch (role) {
+					case "student":
+						return "Ukończyłeś/aś wszystkie kroki w tym kursie i jesteś gotowy/a na egzamin państwowy. Już po egzaminie? Wypełnij ankietę.";
+					case "instructor":
+						return "Wszystkie kroki zostały ukończone. Nie zapomnij pożyczyć powodzenia 😉";
+					case "other":
+						return "Kursant opanował umiejętności wymagane do kierowania pojazdem oraz zdał egzamin wewnętrzny.";
+				}
 		}
 
 		return "";

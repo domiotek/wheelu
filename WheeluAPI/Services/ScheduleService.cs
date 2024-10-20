@@ -221,6 +221,16 @@ public class ScheduleService(ApplicationDbContext dbContext) : BaseService
 
         using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
         {
+            var hoursLeft = course.HoursCount - course.UsedHours;
+            var slotTime = (slot.EndTime - slot.StartTime).TotalHours;
+
+            if (slotTime >= hoursLeft)
+            {
+                result.ErrorCode = CreateRideErrors.InsufficientHoursLeft;
+                result.Details = ["There is not enough hours left in course to plan this ride."];
+                return result;
+            }
+
             if (!CheckVehicleAvailability(vehicle, slot.StartTime, slot.EndTime))
             {
                 result.ErrorCode = CreateRideErrors.VehicleUnavailable;
