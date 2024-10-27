@@ -22,7 +22,6 @@ import Logo from "./assets/logo.png";
 import { API } from "./types/api";
 import { callAPI, c, OutsideContextNotifier } from "./modules/utils";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { App as AppNm } from "./types/app";
 import { AccessLevel } from "./modules/enums.ts";
 import { Bounce, ToastContainer } from "react-toastify";
 import ModalContainer from "./components/ModalContainer/ModalContainer.tsx";
@@ -56,7 +55,7 @@ const darkTheme = createTheme(
 	plPLx
 );
 
-export const AppContext = createContext<AppNm.IAppContext>({
+export const AppContext = createContext<App.IAppContext>({
 	lightTheme,
 	darkTheme,
 	activeThemeName: "" as any,

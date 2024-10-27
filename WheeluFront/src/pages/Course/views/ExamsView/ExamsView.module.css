@@ -1,0 +1,21 @@
+.Wrapper {
+	display: flex;
+	flex-direction: column;
+	margin-top: 2em;
+	max-width: 900px;
+	gap: 0.5em;
+}
+
+.Alert {
+	margin: 1em 0;
+}
+
+.ExamList {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5em;
+}
+
+.ExamList li {
+	padding: 1em;
+}

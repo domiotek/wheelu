@@ -67,6 +67,20 @@ export enum RideStatus {
 	Canceled,
 }
 
+export enum ExamState {
+	Planned,
+	Ongoing,
+	Canceled,
+	Passed,
+	Failed,
+}
+
+export enum ExamCriteriumState {
+	FailedOnce,
+	FailedTwice,
+	Passed,
+}
+
 export enum RequestStatus {
 	Pending,
 	Resolved,
@@ -84,4 +98,9 @@ export enum SkillLevel {
 	Medium,
 	Good,
 	Excelent,
+}
+
+export enum ExamCriteriaScope {
+	ManeuverCriteria,
+	DrivingCriteria,
 }

@@ -1,0 +1,48 @@
+.FilterBox {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1em;
+	margin: 1em 0;
+}
+
+.ScrollBox {
+	height: calc(100% - 42px - 2em);
+	container-type: size;
+}
+
+.ScrollBox :global(.simplebar-content) {
+	height: auto !important;
+}
+
+.GroupHeader {
+	position: sticky;
+	top: 0;
+	pointer-events: none;
+	background: var(--local-bg-color);
+	z-index: 1;
+}
+
+.NoResultsMessage {
+	justify-content: center;
+}
+
+.ItemList {
+	display: flex;
+	flex-direction: column;
+}
+
+.Item {
+	justify-content: space-between;
+	gap: 0.75em;
+	flex-wrap: wrap;
+}
+
+.FlaggedItem {
+	order: -1;
+}
+
+@container (min-width: 600px) {
+	.Item {
+		flex-wrap: nowrap;
+	}
+}

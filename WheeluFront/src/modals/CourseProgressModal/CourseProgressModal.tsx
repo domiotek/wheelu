@@ -5,7 +5,6 @@ import {
 	TextField,
 	Typography,
 } from "@mui/material";
-import { App } from "../../types/app";
 import {
 	useCallback,
 	useContext,

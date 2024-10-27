@@ -6,6 +6,7 @@ namespace WheeluAPI.Mappers;
 public class CourseMapper(SchoolMapper schoolMapper, IServiceProvider serviceProvider)
 {
     private ScheduleMapper? _scheduleMapper;
+    private ExamMapper? _examMapper;
 
     public ShortCourseResponse GetShortDTO(Course source)
     {
@@ -38,6 +39,7 @@ public class CourseMapper(SchoolMapper schoolMapper, IServiceProvider servicePro
     public CourseResponse GetDTO(Course source)
     {
         _scheduleMapper ??= serviceProvider.GetRequiredService<ScheduleMapper>();
+        _examMapper ??= serviceProvider.GetRequiredService<ExamMapper>();
 
         return new CourseResponse
         {
@@ -57,8 +59,10 @@ public class CourseMapper(SchoolMapper schoolMapper, IServiceProvider servicePro
                 source.OngoingRide != null
                     ? _scheduleMapper.GetShortRideDTO(source.OngoingRide)
                     : null,
+            NextExam = source.NextExam != null ? _examMapper.GetShortDTO(source.NextExam) : null,
             CourseProgress = source.CourseProgress,
             CreatedAt = source.CreatedAt,
+            PassedInternalExam = source.PassedInternalExam,
             Archived = source.Archived,
         };
     }

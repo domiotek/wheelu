@@ -6,9 +6,12 @@ namespace WheeluAPI.Mappers;
 public class ScheduleMapper(
     SchoolInstructorDTOMapper instructorMapper,
     CourseMapper courseMapper,
-    VehicleMapper vehicleMapper
+    VehicleMapper vehicleMapper,
+    IServiceProvider serviceProvider
 )
 {
+    private ExamMapper? _examMapper;
+
     public ShortRideSlotResponse GetShortSlotDTO(RideSlot source)
     {
         return new ShortRideSlotResponse
@@ -43,11 +46,14 @@ public class ScheduleMapper(
             EndTime = source.EndTime,
             Course = courseMapper.GetShortDTO(source.Course),
             HoursCount = source.HoursCount,
+            ExamId = source.Exam?.Id,
         };
     }
 
     public RideResponse GetRideDTO(Ride source)
     {
+        _examMapper ??= serviceProvider.GetRequiredService<ExamMapper>();
+
         return new RideResponse
         {
             Id = source.Id,
@@ -58,11 +64,13 @@ public class ScheduleMapper(
             HoursCount = source.HoursCount,
             Slot = GetShortSlotDTO(source.Slot),
             Vehicle = vehicleMapper.GetShortDTO(source.Vehicle),
+            Exam = source.Exam != null ? _examMapper.GetShortDTO(source.Exam) : null,
         };
     }
 
     public RideResponse GetRideDTO(CanceledRide source)
     {
+        _examMapper ??= serviceProvider.GetRequiredService<ExamMapper>();
         return new RideResponse
         {
             Id = source.Id,
@@ -73,6 +81,7 @@ public class ScheduleMapper(
             HoursCount = source.HoursCount,
             Slot = null,
             Vehicle = vehicleMapper.GetShortDTO(source.Vehicle),
+            Exam = source.Exam != null ? _examMapper.GetShortDTO(source.Exam) : null,
         };
     }
 

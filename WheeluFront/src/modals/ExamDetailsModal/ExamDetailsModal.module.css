@@ -1,0 +1,25 @@
+.Modal {
+	min-width: 320px;
+	width: 100%;
+	max-width: 790px;
+	height: 800px;
+}
+
+.Host, .Content {
+	display: flex;
+	flex-direction: column;
+}
+
+.Host {
+	height: 100%;
+}
+
+.Content {
+	flex: 1;
+	overflow: hidden;
+}
+
+.ResultHolder {
+	margin: 1em 0;
+	flex: 1;
+}

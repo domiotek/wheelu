@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using WheeluAPI.helpers;
 using WheeluAPI.Helpers;
+using WheeluAPI.Hubs;
 using WheeluAPI.Mappers;
 using WheeluAPI.Middlewares;
 using WheeluAPI.models;
@@ -36,6 +37,8 @@ builder
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
@@ -72,6 +75,22 @@ builder
             ValidIssuer = builder.Configuration["JWT:Issuer"],
             IssuerSigningKey = new SymmetricSecurityKey(key),
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/v1"))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            },
+        };
     });
 
 builder.Services.AddScoped<IJwtHandler, JwtHandler>();
@@ -92,6 +111,7 @@ builder.Services.AddScoped<TransactionService>();
 builder.Services.AddScoped<TPayService>();
 builder.Services.AddScoped<ScheduleService>();
 builder.Services.AddScoped<InstructorChangeRequestService>();
+builder.Services.AddScoped<ExamService>();
 
 builder.Services.AddScoped<SchoolMapper>();
 builder.Services.AddScoped<CourseOfferDTOMapper>();
@@ -103,6 +123,7 @@ builder.Services.AddScoped<CourseMapper>();
 builder.Services.AddScoped<TransactionMapper>();
 builder.Services.AddScoped<ScheduleMapper>();
 builder.Services.AddScoped<InstructorChangeRequestMapper>();
+builder.Services.AddScoped<ExamMapper>();
 builder.Services.AddHttpClient();
 
 builder.Services.AddCors(options =>
@@ -155,5 +176,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.MapControllers();
+
+app.MapHub<ExamHub>("/hubs/v1/exams");
 
 app.Run();

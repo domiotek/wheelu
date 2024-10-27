@@ -19,6 +19,8 @@ public class ShortRideResponse
     public DateTime? EndTime { get; set; }
 
     public required double HoursCount { get; set; }
+
+    public int? ExamId { get; set; }
 }
 
 public class RideResponse
@@ -38,4 +40,6 @@ public class RideResponse
     public required ShortVehicleResponse Vehicle { get; set; }
 
     public required double HoursCount { get; set; }
+
+    public ShortExamResponse? Exam { get; set; }
 }

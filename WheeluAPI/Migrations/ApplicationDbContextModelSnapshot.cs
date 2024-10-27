@@ -440,6 +440,34 @@ namespace WheeluAPI.Migrations
                     b.ToTable("EmploymentRecord");
                 });
 
+            modelBuilder.Entity("WheeluAPI.Models.Exam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ExamResultJSON")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("RideId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("State")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("Exams");
+                });
+
             modelBuilder.Entity("WheeluAPI.Models.HoursPackage", b =>
                 {
                     b.Property<int>("Id")
@@ -993,7 +1021,7 @@ namespace WheeluAPI.Migrations
                         {
                             Id = 1,
                             FileName = "placeholder.png",
-                            UploadDate = new DateTime(2024, 10, 19, 11, 58, 8, 132, DateTimeKind.Utc).AddTicks(6668)
+                            UploadDate = new DateTime(2024, 10, 26, 10, 2, 0, 221, DateTimeKind.Utc).AddTicks(8181)
                         });
                 });
 
@@ -1435,6 +1463,17 @@ namespace WheeluAPI.Migrations
                     b.Navigation("Instructor");
                 });
 
+            modelBuilder.Entity("WheeluAPI.Models.Exam", b =>
+                {
+                    b.HasOne("WheeluAPI.Models.Course", "Course")
+                        .WithMany("Exams")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
             modelBuilder.Entity("WheeluAPI.Models.HoursPackage", b =>
                 {
                     b.HasOne("WheeluAPI.Models.Course", "Course")
@@ -1702,6 +1741,8 @@ namespace WheeluAPI.Migrations
                     b.Navigation("BoughtHoursPackages");
 
                     b.Navigation("CanceledRides");
+
+                    b.Navigation("Exams");
 
                     b.Navigation("Rides");
 

@@ -14,7 +14,8 @@ public class CourseService(
     ApplicationDbContext dbContext,
     IMailService mailService,
     UrlResolver urlHelper,
-    TransactionService transactionService
+    TransactionService transactionService,
+    ISchoolService schoolService
 ) : BaseService
 {
     private async void SendInstructorChangedEmailsAsync(
@@ -64,6 +65,22 @@ public class CourseService(
                 [receipient.Email]
             );
         }
+    }
+
+    public async Task<bool> ValidateCourseAccess(Course course, User user)
+    {
+        var hasSchoolAccess = await schoolService.ValidateSchoolManagementAccess(
+            course.School,
+            user,
+            SchoolManagementAccessMode.All
+        );
+
+        var isTargetStudent = course.Student.Id == user!.Id;
+
+        if (!isTargetStudent && !hasSchoolAccess)
+            return false;
+
+        return true;
     }
 
     public Task<List<Course>> GetCoursesAsync(School? school = null)

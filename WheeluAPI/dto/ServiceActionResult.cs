@@ -15,3 +15,19 @@ public class ServiceActionWithDataResult<T, D>
 
     public List<string> Details { get; set; } = [];
 }
+
+public class ServiceActionResultEx<T> : ServiceActionResult<T>
+{
+    public string? Error
+    {
+        get { return ErrorCode?.ToString(); }
+    }
+}
+
+public class ServiceActionWithDataResultEx<T, D> : ServiceActionWithDataResult<T, D>
+{
+    public string? Error
+    {
+        get { return ErrorCode?.ToString(); }
+    }
+}

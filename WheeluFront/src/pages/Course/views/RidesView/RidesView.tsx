@@ -15,7 +15,6 @@ import { callAPI } from "../../../../modules/utils";
 import { useCallback, useContext } from "react";
 import { CoursePageContext } from "../../CoursePage";
 import { ScheduleService } from "../../../../services/Schedule";
-import { App } from "../../../../types/app";
 import LoadingScreen from "../../../../components/LoadingScreen/LoadingScreen";
 import MessagePanel from "../../../../components/MessagePanel/MessagePanel";
 import { AppContext } from "../../../../App";
@@ -55,7 +54,7 @@ export default function RidesView() {
 
 	const openSchedulerModal = useCallback(() => {
 		if (!course) return;
-		setModalContent(<ScheduleRideModal course={course} />);
+		setModalContent(<ScheduleRideModal course={course} type="ride" />);
 	}, [course]);
 
 	const openRideModal = useCallback(

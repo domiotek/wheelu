@@ -20,7 +20,6 @@ import {
 	TextField,
 	Typography,
 } from "@mui/material";
-import { App } from "../../types/app";
 import ButtonsBar from "../../components/ButtonsBar/ButtonsBar";
 import InlineDot from "../../components/InlineDot/InlineDot";
 import ScheduleModal from "../ScheduleModal/ScheduleModal";
@@ -33,9 +32,10 @@ import { API } from "../../types/api";
 
 interface IProps {
 	course: App.Models.ICourse;
+	type: "ride" | "exam";
 }
 
-export default function ScheduleRideModal({ course }: IProps) {
+export default function ScheduleRideModal({ course, type }: IProps) {
 	const [modalOpen, setModalOpen] = useState(false);
 	const [slot, setSlot] = useState<App.Models.IScheduleSlot | null>(null);
 	const [vehicleID, setVehicleID] = useState<number | "">("");
@@ -74,7 +74,14 @@ export default function ScheduleRideModal({ course }: IProps) {
 		enabled: slot != undefined,
 	});
 
-	const saveChanges = useMutation<
+	const successCallback = useCallback(() => {
+		closeModal();
+		qClient.invalidateQueries({
+			queryKey: ["Courses", "#", course.id],
+		});
+	}, []);
+
+	const createRide = useMutation<
 		null,
 		API.Courses.CreateRide.IEndpoint["error"],
 		API.Courses.CreateRide.IRequest
@@ -90,21 +97,38 @@ export default function ScheduleRideModal({ course }: IProps) {
 				{ courseID: course.id }
 			);
 		},
-		onSuccess: () => {
-			closeModal();
-			qClient.invalidateQueries({
-				queryKey: ["Courses", "#", course.id],
-			});
+		onSuccess: successCallback,
+	});
+
+	const createExam = useMutation<
+		null,
+		API.Courses.CreateExam.IEndpoint["error"],
+		API.Courses.CreateExam.IRequest
+	>({
+		mutationFn: (data) => {
+			return callAPI<API.Courses.CreateExam.IEndpoint>(
+				"POST",
+				"/api/v1/courses/:courseID/exams",
+				{
+					slotID: data.slotID,
+					vehicleID: data.vehicleID,
+				},
+				{ courseID: course.id }
+			);
 		},
+		onSuccess: successCallback,
 	});
 
 	const executeMutation = useCallback(() => {
 		if (!slot || vehicleID == "") return;
 
-		saveChanges.mutate({
+		const request = {
 			slotID: slot.id,
 			vehicleID,
-		});
+		};
+
+		if (type == "ride") createRide.mutate(request);
+		else createExam.mutate(request);
 	}, [slot, vehicleID]);
 
 	useLayoutEffect(() => {
@@ -113,7 +137,9 @@ export default function ScheduleRideModal({ course }: IProps) {
 
 	return (
 		<div className={classes.Content}>
-			<Typography variant="h4">Zaplanuj jazdę</Typography>
+			<Typography variant="h4">
+				Zaplanuj {type == "ride" ? "jazdę" : "egzamin"}
+			</Typography>
 
 			<div className={classes.Form}>
 				<List dense>
@@ -139,17 +165,17 @@ export default function ScheduleRideModal({ course }: IProps) {
 								<>
 									Kategoria {categoryName}
 									<InlineDot color="secondary" />
-									{0}/{course.hoursCount} godzin
-									{formatPolishWordSuffix(course.hoursCount, [
-										"a",
-										"y",
-									])}
+									{course.usedHours}/{course.hoursCount}{" "}
+									godzin
 								</>
 							}
 						/>
 					</ListItem>
 					<ListItem>
-						<ListItemText primary="Rodzaj" secondary="Jazda" />
+						<ListItemText
+							primary="Rodzaj"
+							secondary={type == "ride" ? "Jazda" : "Egzamin"}
+						/>
 					</ListItem>
 				</List>
 
@@ -222,7 +248,7 @@ export default function ScheduleRideModal({ course }: IProps) {
 						variant="contained"
 						onClick={executeMutation}
 						disabled={
-							saveChanges.isPending ||
+							createRide.isPending ||
 							vehicleID == "" ||
 							slot == null
 						}

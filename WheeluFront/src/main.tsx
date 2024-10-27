@@ -36,6 +36,7 @@ const PaymentSuccessPortal = React.lazy(
 const PaymentFailurePortal = React.lazy(
 	() => import("./portals/PaymentFailurePortal.tsx")
 );
+const ExamPortal = React.lazy(() => import("./portals/ExamPortalWrapper.tsx"));
 
 /** Pages */
 
@@ -144,6 +145,9 @@ const PublicSchoolContactView = React.lazy(
 /** Course sub-views */
 const CourseRidesView = React.lazy(
 	() => import("./pages/Course/views/RidesView/RidesView.tsx")
+);
+const CourseExamsView = React.lazy(
+	() => import("./pages/Course/views/ExamsView/ExamsView.tsx")
 );
 const CourseManageView = React.lazy(
 	() => import("./pages/Course/views/ManageView/ManageView.tsx")
@@ -277,6 +281,10 @@ root.render(
 							>
 								<Route path="*" element={<CourseRidesView />} />
 								<Route
+									path="exams"
+									element={<CourseExamsView />}
+								/>
+								<Route
 									path="manage"
 									element={<CourseManageView />}
 								/>
@@ -314,6 +322,10 @@ root.render(
 							<Route
 								path="payment-failure"
 								element={<PaymentFailurePortal />}
+							/>
+							<Route
+								path="exam/:examID"
+								element={<ExamPortal />}
 							/>
 						</Route>
 					</Route>

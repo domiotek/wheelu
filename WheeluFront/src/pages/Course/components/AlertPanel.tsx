@@ -1,6 +1,5 @@
 import { Alert, AlertTitle, Button } from "@mui/material";
 import classes from "../CoursePage.module.css";
-import { App } from "../../../types/app";
 import { useCallback, useContext, useMemo } from "react";
 import CourseService from "../../../services/Course";
 import { DateTime } from "luxon";
@@ -74,7 +73,7 @@ export default function AlertPanel({
 	}, []);
 
 	const showSchedulerModal = useCallback(() => {
-		setModalContent(<ScheduleRideModal course={course} />);
+		setModalContent(<ScheduleRideModal course={course} type="ride" />);
 	}, []);
 
 	const alertPanel = useMemo(() => {
@@ -145,11 +144,15 @@ export default function AlertPanel({
 					course.ongoingRide.slot!.endTime
 				).toFormat("HH:mm");
 
-				alertDef.title = t("ongoingRide_title");
-				alertDef.content = t("ongoingRide_content", role, [
-					orStartTime,
-					orEndTime,
-				]);
+				const isExam = course.ongoingRide.examId != undefined;
+				alertDef.title = t(
+					isExam ? "ongoingExam_title" : "ongoingRide_title"
+				);
+				alertDef.content = t(
+					`ongoing${isExam ? "RideExam" : "Ride"}_content`,
+					role,
+					[orStartTime, orEndTime]
+				);
 
 				if (canEdit && role == "instructor")
 					alertDef.action = (
@@ -157,14 +160,18 @@ export default function AlertPanel({
 							color="inherit"
 							variant="outlined"
 							disabled={setRideStateMutation.isPending}
-							onClick={() =>
-								setRideStateMutation.mutate({
-									status: RideStatus.Finished,
-									rideID: course.ongoingRide!.id,
-								})
-							}
+							onClick={() => {
+								isExam
+									? navigate(
+											`/exam/${course.ongoingRide?.examId}`
+									  )
+									: setRideStateMutation.mutate({
+											status: RideStatus.Finished,
+											rideID: course.ongoingRide!.id,
+									  });
+							}}
 						>
-							Zakończ
+							{isExam ? "Kontynuuj" : "Zakończ"}
 						</Button>
 					);
 				break;
@@ -176,13 +183,20 @@ export default function AlertPanel({
 				const formatted =
 					DateTimeFormatter.formatAdaptiveFriendly(startTime) +
 					startTime.toFormat(" 'o' HH:mm");
+				const isNextRideAnExam = course.nextRide.examId != undefined;
 
-				alertDef.title = t("plannedRide_title");
+				const rideType = isNextRideAnExam ? "Exam" : "Ride";
+
+				alertDef.title = t(
+					`planned${rideType}${isNextRideAnExam ? "_alt" : ""}_title`
+				);
 
 				if (startTime > DateTime.now()) {
-					alertDef.content = t("plannedRide_future_content", role, [
-						formatted,
-					]);
+					alertDef.content = t(
+						`planned${rideType}_future_content`,
+						role,
+						[formatted]
+					);
 
 					alertDef.action = (
 						<Button
@@ -194,27 +208,40 @@ export default function AlertPanel({
 						</Button>
 					);
 				} else if (DateTime.now() < endTime) {
-					alertDef.content = t("plannedRide_start_now_content", role);
+					alertDef.content = t(
+						`planned${rideType}_start_now_content`,
+						role
+					);
 					if (canEdit && role == "instructor")
 						alertDef.action = (
 							<Button
 								color="inherit"
 								variant="outlined"
-								onClick={() =>
-									setRideStateMutation.mutate({
+								onClick={async () => {
+									await setRideStateMutation.mutateAsync({
 										status: RideStatus.Ongoing,
 										rideID: course.nextRide!.id,
-									})
-								}
+									});
+
+									if (
+										isNextRideAnExam &&
+										!setRideStateMutation.isError
+									)
+										navigate(
+											`/exam/${course.nextExam?.id}`
+										);
+								}}
 								disabled={setRideStateMutation.isPending}
 							>
 								Rozpocznij
 							</Button>
 						);
 				} else {
-					alertDef.content = t("plannedRide_past_content", role, [
-						formatted,
-					]);
+					alertDef.content = t(
+						`planned${rideType}_past_content`,
+						role,
+						[formatted]
+					);
 
 					if (canEdit)
 						alertDef.action = (

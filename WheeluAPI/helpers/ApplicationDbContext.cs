@@ -54,6 +54,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public DbSet<HoursPackage> HoursPackages { get; set; }
 
+    public DbSet<Exam> Exams { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

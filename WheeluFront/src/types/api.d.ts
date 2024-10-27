@@ -5,7 +5,6 @@ import {
 	RideStatus,
 	SortingType,
 } from "../modules/enums";
-import { App } from "./app";
 
 export namespace API {
 	namespace _ {
@@ -1040,6 +1039,56 @@ export namespace API {
 				"VehicleUnavailable" | "InvalidRideStatus",
 				IRequest,
 				IParams
+			>;
+		}
+
+		namespace GetCourseExams {
+			type IResponse = App.Models.IShortExam[];
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/courses/:courseID/exams",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				null,
+				ICourseBaseParams
+			>;
+		}
+
+		namespace GetCourseExam {
+			type IResponse = App.Models.IExam;
+
+			interface IParams extends ICourseBaseParams {
+				examID: number;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/courses/:courseID/exams/:examID",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				null,
+				IParams
+			>;
+		}
+
+		namespace CreateExam {
+			interface IRequest extends Record<string, number> {
+				slotID: number;
+				vehicleID: number;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"POST",
+				"/api/v1/courses/:courseID/exams",
+				null,
+				| "RideAssigned"
+				| "VehicleUnavailable"
+				| "InsufficientHoursLeft"
+				| "ExamAlreadyPassed"
+				| "AlreadyScheduled",
+				IRequest,
+				ICourseBaseParams
 			>;
 		}
 

@@ -27,7 +27,6 @@ import { API } from "../../types/api";
 import { callAPI } from "../../modules/utils";
 import { CourseCategoriesMapping } from "../../modules/constants";
 import AuthService from "../../services/Auth";
-import { App } from "../../types/app";
 import { AppContext } from "../../App";
 import AlertPanel from "./components/AlertPanel";
 import CourseProgressModal from "../../modals/CourseProgressModal/CourseProgressModal";
@@ -38,6 +37,8 @@ interface ICoursePageContext {
 	role: "instructor" | "student" | "other";
 	canEdit: boolean;
 	ranOutOfHours: boolean;
+	passedExam: boolean;
+	filledProgress: boolean;
 }
 
 export const CoursePageContext = React.createContext<ICoursePageContext>({
@@ -46,6 +47,8 @@ export const CoursePageContext = React.createContext<ICoursePageContext>({
 	role: "other",
 	canEdit: false,
 	ranOutOfHours: false,
+	passedExam: false,
+	filledProgress: false,
 });
 
 export default function CoursePage() {
@@ -191,7 +194,7 @@ export default function CoursePage() {
 	}, [data]);
 
 	const passedInternalExam = useMemo(() => {
-		return false;
+		return data?.passedInternalExam ?? false;
 	}, [data]);
 
 	const hoursRingColor = useMemo(() => {
@@ -306,6 +309,8 @@ export default function CoursePage() {
 					role,
 					canEdit,
 					ranOutOfHours,
+					passedExam: passedInternalExam,
+					filledProgress: courseProgress == 100,
 				}}
 			>
 				<Suspense fallback={<LoadingScreen />}>

@@ -24,6 +24,8 @@ public class Course
 
     public virtual required List<CanceledRide> CanceledRides { get; set; }
 
+    public virtual List<Exam> Exams { get; set; } = [];
+
     [NotMapped]
     public double UsedHours
     {
@@ -66,11 +68,18 @@ public class Course
     }
 
     [NotMapped]
+    public bool PassedInternalExam
+    {
+        get { return Exams.Any(e => e.State == ExamState.Passed); }
+    }
+
+    [NotMapped]
     public bool Archived
     {
         get { return false; }
     }
 
+    [NotMapped]
     public Ride? OngoingRide
     {
         get { return Rides.Where(r => r.Status == RideStatus.Ongoing).FirstOrDefault(); }
@@ -86,5 +95,11 @@ public class Course
                 .OrderBy(r => r.StartTime)
                 .FirstOrDefault();
         }
+    }
+
+    [NotMapped]
+    public Exam? NextExam
+    {
+        get { return Exams.Where(e => e.State == ExamState.Planned).FirstOrDefault(); }
     }
 }

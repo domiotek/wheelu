@@ -1,14 +1,11 @@
 using System.Security.Claims;
 using System.Transactions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WheeluAPI.DTO.Course;
-using WheeluAPI.DTO.Course.InstructorChangeRequest;
 using WheeluAPI.DTO.Errors;
 using WheeluAPI.DTO.Schedule;
-using WheeluAPI.DTO.Transaction;
 using WheeluAPI.helpers;
 using WheeluAPI.Helpers;
 using WheeluAPI.Mappers;
@@ -19,50 +16,40 @@ namespace WheeluAPI.Controllers;
 
 [ApiController]
 [Route("/api/v1/courses/{courseID}")]
-public class CourseController(
-    ICourseOfferService offerService,
-    ISchoolService schoolService,
-    ISchoolInstructorService instructorService,
-    IUserService userService,
-    CourseService courseService,
-    CourseMapper mapper,
-    ScheduleService scheduleService,
-    ScheduleMapper scheduleMapper,
-    VehicleService vehicleService
-) : BaseAPIController
+public class CourseController : BaseCourseController
 {
-    private async Task<RequestorValidationResult> ValidateAccess(int courseID)
+    private readonly ICourseOfferService offerService;
+    private readonly ISchoolService schoolService;
+    private readonly ISchoolInstructorService instructorService;
+    private readonly CourseMapper mapper;
+    private readonly ScheduleService scheduleService;
+    private readonly ScheduleMapper scheduleMapper;
+    private readonly VehicleService vehicleService;
+    private readonly ExamService examService;
+
+    public CourseController(
+        ICourseOfferService offerService,
+        ISchoolService schoolService,
+        ISchoolInstructorService instructorService,
+        IUserService userService,
+        CourseService courseService,
+        CourseMapper mapper,
+        ScheduleService scheduleService,
+        ScheduleMapper scheduleMapper,
+        VehicleService vehicleService,
+        ExamService examService
+    )
+        : base(userService, courseService)
     {
-        var result = new RequestorValidationResult();
-        var requestorEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var requestor = await userService.GetUserByEmailAsync(requestorEmail ?? "");
-
-        var course = await courseService.GetCourseByIDAsync(courseID);
-
-        if (course == null)
-        {
-            result.ActionResult = NotFound(new APIError { Code = APIErrorCode.EntityNotFound });
-            return result;
-        }
-
-        var hasSchoolAccess = await schoolService.ValidateSchoolManagementAccess(
-            course.School,
-            requestorEmail!,
-            SchoolManagementAccessMode.All
-        );
-
-        var isTargetStudent = course.Student.Id == requestor!.Id;
-
-        if (!isTargetStudent && !hasSchoolAccess)
-        {
-            result.ActionResult = BadRequest(new APIError { Code = APIErrorCode.AccessDenied });
-            return result;
-        }
-
-        result.Requestor = requestor;
-        result.Course = course;
-        result.IsTargetStudent = isTargetStudent;
-        return result;
+        this.offerService = offerService;
+        this.schoolService = schoolService;
+        this.instructorService = instructorService;
+        this.courseService = courseService;
+        this.mapper = mapper;
+        this.scheduleService = scheduleService;
+        this.scheduleMapper = scheduleMapper;
+        this.vehicleService = vehicleService;
+        this.examService = examService;
     }
 
     private IRide? FindRideInCourse(Course course, int rideID)
@@ -414,28 +401,54 @@ public class CourseController(
                     }
                 );
 
-            ServiceActionResult<ChangeRideStateErrors> result;
+            ServiceActionResult<ChangeRideStateErrors> result = new();
 
-            switch (request.NewStatus)
+            if (ride.Exam != null)
             {
-                case RideStatus.Ongoing:
-                    result = await scheduleService.StartRide(ride);
-                    break;
-                case RideStatus.Finished:
-                    result = await scheduleService.EndRide(ride);
-                    break;
-                case RideStatus.Canceled:
-                    result = await scheduleService.CancelRide(ride, validationResult.Requestor!);
-                    break;
-                default:
-                    return BadRequest(
-                        new APIError<ChangeRideStateErrors>
-                        {
-                            Code = ChangeRideStateErrors.InvalidRideStatus,
-                        }
-                    );
-            }
+                bool examStateChangeResult = false;
+                switch (request.NewStatus)
+                {
+                    case RideStatus.Ongoing:
+                        examStateChangeResult = await examService.StartExamAsync(ride.Exam);
+                        break;
+                    case RideStatus.Canceled:
+                        examStateChangeResult = await examService.CancelExamAsync(
+                            ride.Exam,
+                            validationResult.Requestor!
+                        );
+                        break;
+                }
 
+                if (!examStateChangeResult)
+                    result.ErrorCode = ChangeRideStateErrors.DBError;
+                else
+                    result.IsSuccess = true;
+            }
+            else
+            {
+                switch (request.NewStatus)
+                {
+                    case RideStatus.Ongoing:
+                        result = await scheduleService.StartRide(ride);
+                        break;
+                    case RideStatus.Finished:
+                        result = await scheduleService.EndRide(ride);
+                        break;
+                    case RideStatus.Canceled:
+                        result = await scheduleService.CancelRide(
+                            ride,
+                            validationResult.Requestor!
+                        );
+                        break;
+                    default:
+                        return BadRequest(
+                            new APIError<ChangeRideStateErrors>
+                            {
+                                Code = ChangeRideStateErrors.InvalidRideStatus,
+                            }
+                        );
+                }
+            }
             if (!result.IsSuccess)
                 return BadRequest(
                     new APIError<ChangeRideStateErrors>

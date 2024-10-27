@@ -19,7 +19,6 @@ import {
 	Typography,
 } from "@mui/material";
 import ButtonsBar from "../../components/ButtonsBar/ButtonsBar";
-import { App } from "../../types/app";
 import { ScheduleService } from "../../services/Schedule";
 import AuthService from "../../services/Auth";
 import { DateTime } from "luxon";
@@ -76,7 +75,6 @@ export default function RideDetailsModal({
 	});
 
 	useEffect(() => {
-		console.log(incomingRide);
 		if (failureCount == 1) {
 			toast.error("Nie udało się pobrać informacji o jeździe");
 		}
@@ -128,7 +126,7 @@ export default function RideDetailsModal({
 		onSuccess: () => {
 			closeModal();
 			qClient.invalidateQueries({
-				queryKey: ["Courses", "#", ride!.course.id, "Rides"],
+				queryKey: ["Courses", "#", ride!.course.id],
 			});
 			toast.success("Pomyślnie zmieniono status jazdy.");
 		},
@@ -261,6 +259,12 @@ export default function RideDetailsModal({
 						secondary={AuthService.getUserFullName(
 							ride.course.student
 						)}
+					/>
+				</ListItem>
+				<ListItem divider>
+					<ListItemText
+						primary="Typ"
+						secondary={ride.exam ? "Egzamin" : "Jazda"}
 					/>
 				</ListItem>
 				<ListItem divider>

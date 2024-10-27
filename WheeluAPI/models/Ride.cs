@@ -32,6 +32,8 @@ public interface IRide
     public Vehicle.Vehicle Vehicle { get; set; }
 
     public double HoursCount { get; }
+
+    public Exam? Exam { get; }
 }
 
 public class Ride : IRide
@@ -69,6 +71,11 @@ public class Ride : IRide
             return Math.Round(diff * 2) / 2;
         }
     }
+
+    public Exam? Exam
+    {
+        get { return Course.Exams.Find(e => e.RideId == Id); }
+    }
 }
 
 public class CanceledRide : IRide
@@ -101,5 +108,10 @@ public class CanceledRide : IRide
     public double HoursCount
     {
         get { return 0; }
+    }
+
+    public Exam? Exam
+    {
+        get { return Course.Exams.Find(e => e.RideId == Id); }
     }
 }

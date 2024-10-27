@@ -255,7 +255,19 @@ public class Schoolervice(
     {
         var user = await userService.GetUserByEmailAsync(email);
 
-        var ownsSchool = school.Owner.Email == email;
+        if (user == null)
+            return false;
+
+        return await ValidateSchoolManagementAccess(school, user, mode);
+    }
+
+    public async Task<bool> ValidateSchoolManagementAccess(
+        School school,
+        User user,
+        SchoolManagementAccessMode mode = SchoolManagementAccessMode.OwnerOnly
+    )
+    {
+        var ownsSchool = school.Owner.Email == user.Email;
 
         if (ownsSchool)
             return true;
@@ -334,6 +346,12 @@ public interface ISchoolService
     Task<bool> ValidateSchoolManagementAccess(
         School school,
         string email,
+        SchoolManagementAccessMode mode = SchoolManagementAccessMode.OwnerOnly
+    );
+
+    Task<bool> ValidateSchoolManagementAccess(
+        School school,
+        User user,
         SchoolManagementAccessMode mode = SchoolManagementAccessMode.OwnerOnly
     );
 

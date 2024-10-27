@@ -1,5 +1,4 @@
 import { requestorType, RequestStatus, SkillLevel } from "../modules/enums";
-import { App } from "../types/app";
 
 export default class CourseService {
 	public static readonly skillColorMapping = {
@@ -49,7 +48,7 @@ export default class CourseService {
 					case "student":
 						return `Wybierz dogodny dla Ciebie termin z tych udostępnionych przez instruktora.`;
 					case "instructor":
-						return `Kursant nie zaplanował jeszcze jazdy. Pamiętaj, że w ostateczności możesz zrobić to za niego.`;
+						return `Kursant nie zaplanował jeszcze jazdy. Pamiętaj, że zawsze możesz zrobić to za niego.`;
 					case "other":
 						return `Następna jazda w tym kursie nie została jeszcze zaplanowana.`;
 				}
@@ -63,6 +62,16 @@ export default class CourseService {
 						return `Pamiętaj o zmianie stanu po zakończeniu jazdy 😉 Jazda planowo powinna zakończyć się o ${params[1]}.`;
 					case "other":
 						return `Rozpoczęta - ${params[0]}. Planowe zakończenie - ${params[1]}.`;
+				}
+
+			case "ongoingRideExam_content":
+				switch (role) {
+					case "student":
+						return "Powodzenia!";
+					case "instructor":
+						return `Pamiętaj o zmianie stanu egzaminu. Możesz to robić w trakcie, lub po jego zakończeniu 😉 Egazmin planowo powinien zakończyć się o ${params[1]}.`;
+					case "other":
+						return `Rozpoczęty - ${params[0]}. Planowe zakończenie - ${params[1]}.`;
 				}
 			case "hoursRanOut_title":
 				switch (role) {
@@ -131,6 +140,60 @@ export default class CourseService {
 						return "Wszystkie kroki zostały ukończone. Nie zapomnij pożyczyć powodzenia 😉";
 					case "other":
 						return "Kursant opanował umiejętności wymagane do kierowania pojazdem oraz zdał egzamin wewnętrzny.";
+				}
+
+			case "examSoftBlock_title":
+				switch (role) {
+					case "student":
+						return "Jeszcze nie dostępny";
+					case "other":
+					case "instructor":
+						return "Jeszcze nie wskazany";
+				}
+			case "examSoftBlock_content":
+				switch (role) {
+					case "student":
+						return "Przed Tobą jeszcze trochę ćwiczeń, nim będziesz gotowa/-y na egzamin.";
+					case "instructor":
+						return "Egzamin nie jest zalecany, ponieważ nie wszystkie umiejętności zostały jeszcze opanowane. Mimo to, możesz zaplanować egzamin.";
+					case "other":
+						return "Kursant nie opanował jeszcze wszystkich umiejętności.";
+				}
+			case "plannedExam_title":
+				return "Egzamin zaplanowany";
+			case "plannedExam_content":
+				return `Egzamin został zaplanowany na ${params[0]}`;
+
+			case "ongoingExam_title":
+				return "Egzamin w trakcie";
+			case "ongoingExam_content":
+				return "Właśnie trwa egzamin wewnętrzny.";
+			case "plannedExam_alt_title":
+				return "Zaplanowany egzamin";
+			case "plannedExam_future_content":
+				switch (role) {
+					case "student":
+						return `Masz zaplanowany egzamin - ${params[0]}.`;
+					default:
+						return `Następna zaplanowana jazda (egzamin) - ${params[0]}.`;
+				}
+			case "plannedExam_start_now_content":
+				switch (role) {
+					case "student":
+						return "Czas na Twój egzamin. Powodzenia!";
+					case "instructor":
+						return "Czas na zaplanowany egzamin. Rozpocznij go klikając w przycisk obok.";
+					default:
+						return "Zaplanowany egzamin powinien odbyć się lada chwila.";
+				}
+			case "plannedExam_past_content":
+				switch (role) {
+					case "student":
+						return `Miałeś/aś zaplanowany egzamin (${params[0]}), lecz się on nie odbył (a przynajmniej my nic o tym nie wiemy).`;
+					case "instructor":
+						return `Ostatni zaplanowany egzamin (${params[0]}) nie odbył się. Anuluj go przyciskiem obok.`;
+					default:
+						return `Ostatni zaplanowany egzamin (${params[0]}) nie odbył się.`;
 				}
 		}
 

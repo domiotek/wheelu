@@ -1,0 +1,30 @@
+.Host {
+	width: 1000px;
+	max-width: 90vw;
+	height: 90vh;
+}
+
+.Content {
+	max-width: 800px;
+	margin: auto;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.DisconnectedMessage {
+	display: inline-flex;
+	align-items: unset;
+	gap: 0.5em;
+	margin-left: 1.5em;
+}
+
+.DisconnectedMessage span {
+	line-height: 2.2em;
+}
+
+.ItemList {
+	margin: 1em 0;
+	flex: 1;
+	overflow: hidden;
+}

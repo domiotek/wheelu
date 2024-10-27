@@ -60,11 +60,15 @@ public class CourseResponse
 
     public ShortRideResponse? OngoingRide { get; set; }
 
+    public ShortExamResponse? NextExam { get; set; }
+
     public required CourseProgress CourseProgress { get; set; }
 
     public required decimal PricePerHour { get; set; }
 
     public required DateTime CreatedAt { get; set; }
+
+    public required bool PassedInternalExam { get; set; }
 
     public required bool Archived { get; set; }
 }
