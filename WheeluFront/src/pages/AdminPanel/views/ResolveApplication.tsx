@@ -2,14 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { API } from "../../../types/api";
 import { callAPI } from "../../../modules/utils";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import {
-	Alert,
-	Fab,
-	Paper,
-	Snackbar,
-	SwipeableDrawer,
-	useMediaQuery,
-} from "@mui/material";
+import { Fab, Paper, SwipeableDrawer, useMediaQuery } from "@mui/material";
 
 import classes from "./ResolveApplication.module.css";
 import { AppContext } from "../../../App";
@@ -22,13 +15,10 @@ import { CheckOutlined } from "@mui/icons-material";
 import LoadingScreen from "../../../components/LoadingScreen/LoadingScreen";
 import SchoolApplicationService from "../../../services/SchoolApplication";
 import EntityNotFound from "../components/EntityNotFound/EntityNotFound";
+import { toast } from "react-toastify";
 
 export default function ResolveApplication() {
 	const [drawerOpen, setDrawerOpen] = useState(false);
-	const [snackBarOpened, setSnackBarOpened] = useState(false);
-	const [submitError, setSubmitError] =
-		useState<API.Application.ResolveErrorCodes | null>(null);
-
 	const [formState, setFormState] =
 		useState<API.Application.Accept.IRequestData | null>(null);
 	const [isFormSafe, setIsFormSafe] = useState(false);
@@ -96,8 +86,11 @@ export default function ResolveApplication() {
 		},
 		onError: (err) => {
 			setDrawerOpen(false);
-			setSubmitError(err.code);
-			setSnackBarOpened(true);
+			toast.error(
+				`Nie mogliśmy przetworzyć tego żądania. ${SchoolApplicationService.translateApplicationResolveErrorCode(
+					err.code
+				)}`
+			);
 		},
 	});
 
@@ -119,8 +112,11 @@ export default function ResolveApplication() {
 		},
 		onError: (err) => {
 			setDrawerOpen(false);
-			setSnackBarOpened(true);
-			setSubmitError(err.code);
+			toast.error(
+				`Nie mogliśmy przetworzyć tego żądania. ${SchoolApplicationService.translateApplicationResolveErrorCode(
+					err.code
+				)}`
+			);
 		},
 	});
 
@@ -192,10 +188,6 @@ export default function ResolveApplication() {
 		};
 	}, [formState, applicationData, isFormSafe]);
 
-	useEffect(() => {
-		if (error && error.status != 404) setSnackBarOpened(true);
-	}, [error]);
-
 	if (error?.status == 404) return <EntityNotFound />;
 
 	return (
@@ -239,19 +231,6 @@ export default function ResolveApplication() {
 			>
 				<CheckOutlined />
 			</Fab>
-			<Snackbar
-				open={snackBarOpened}
-				autoHideDuration={4000}
-				anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-				onClose={() => setSnackBarOpened(false)}
-			>
-				<Alert severity="error" variant="filled" sx={{ width: "100%" }}>
-					Nie mogliśmy przetworzyć tego żądania.{" "}
-					{SchoolApplicationService.translateApplicationResolveErrorCode(
-						submitError ?? "InternalError"
-					)}
-				</Alert>
-			</Snackbar>
 		</section>
 	);
 }
