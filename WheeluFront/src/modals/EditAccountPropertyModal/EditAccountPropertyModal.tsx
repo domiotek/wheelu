@@ -53,7 +53,7 @@ export default function EditAccountPropertyModal({
 			),
 		onSuccess: () => {
 			qClient.invalidateQueries({
-				queryKey: ["Users", userID],
+				queryKey: ["Users", "#", userID],
 			});
 			closeModal();
 		},

@@ -69,7 +69,7 @@ export default function DataSection({
 			),
 		onSuccess: async () => {
 			qClient.invalidateQueries({
-				queryKey: ["Schools", "#", params["id"]],
+				queryKey: ["Schools", "#", parseInt(params["id"]!)],
 			});
 
 			toast.success("Pomyślnie zapisano zmiany.");

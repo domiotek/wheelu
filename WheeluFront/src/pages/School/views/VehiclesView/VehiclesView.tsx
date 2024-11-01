@@ -38,7 +38,7 @@ export default function VehiclesView() {
 			callAPI<API.Vehicles.GetAllOfSchool.IEndpoint>(
 				"GET",
 				"/api/v1/schools/:schoolID/vehicles",
-				null,
+				{},
 				{ schoolID }
 			),
 		retry: true,

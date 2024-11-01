@@ -6,7 +6,7 @@ import {
 	Typography,
 } from "@mui/material";
 import ButtonsBar from "../../components/ButtonsBar/ButtonsBar";
-import { useContext, useEffect, useLayoutEffect, useMemo } from "react";
+import { useContext, useLayoutEffect, useMemo } from "react";
 import { ModalContext } from "../../components/ModalContainer/ModalContainer";
 import classes from "./ExamDetailsModal.module.css";
 import ExamItemList from "../../components/ExamItemList/ExamItemList";
@@ -16,7 +16,7 @@ import { callAPI } from "../../modules/utils";
 import LoadingScreen from "../../components/LoadingScreen/LoadingScreen";
 import AuthService from "../../services/Auth";
 import { DateTimeFormatter } from "../../modules/formatters";
-import { ExamCriteriumState, ExamState } from "../../modules/enums";
+import { ExamState } from "../../modules/enums";
 import { ExamService } from "../../services/Exam";
 
 interface IProps {

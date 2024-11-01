@@ -284,6 +284,7 @@ export default function RideDetailsModal({
 											schoolID={ride.course.schoolId}
 											baseQuery={[
 												"Schools",
+												"#",
 												ride.course.schoolId,
 												"Vehicles",
 											]}

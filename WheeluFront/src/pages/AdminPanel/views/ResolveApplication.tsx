@@ -34,7 +34,7 @@ export default function ResolveApplication() {
 		API.Application.Get.IResponse,
 		API.Application.Get.IEndpoint["error"]
 	>({
-		queryKey: ["Applications", "#", params["id"]],
+		queryKey: ["Applications", "#", parseInt(params["id"]!)],
 		queryFn: () =>
 			callAPI<API.Application.Get.IEndpoint>(
 				"GET",

@@ -33,7 +33,7 @@ export default function InstructorsSchoolView() {
 	);
 	const invalidateQuery = useCallback(() => {
 		qClient.invalidateQueries({
-			queryKey: queryKey,
+			queryKey,
 		});
 	}, [queryKey]);
 

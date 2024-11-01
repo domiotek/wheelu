@@ -52,7 +52,7 @@ export default function VehicleModal({
 		API.Vehicles.GetOne.IResponse,
 		API.Vehicles.GetOne.IEndpoint["error"]
 	>({
-		queryKey: baseQuery.concat([vehicleID]),
+		queryKey: baseQuery.concat(["#", vehicleID]),
 		queryFn: () =>
 			callAPI<API.Vehicles.GetOne.IEndpoint>(
 				"GET",

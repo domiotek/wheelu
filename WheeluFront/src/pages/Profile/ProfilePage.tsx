@@ -33,7 +33,7 @@ export default function ProfilePage() {
 		API.User.Get.IResponse,
 		API.User.Get.IEndpoint["error"]
 	>({
-		queryKey: ["Users", userDetails?.userId],
+		queryKey: ["Users", "#", userDetails?.userId],
 		queryFn: () =>
 			callAPI<API.User.Get.IEndpoint>(
 				"GET",
@@ -257,6 +257,7 @@ export default function ProfilePage() {
 						<EmploymentHistoryTable
 							queryKey={[
 								"Instructors",
+								"#",
 								userDetails.instructorProfile?.id,
 							]}
 							instructorProfileID={

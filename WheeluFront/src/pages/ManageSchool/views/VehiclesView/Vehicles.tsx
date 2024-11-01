@@ -34,7 +34,7 @@ export default function VehiclesSchoolView() {
 	);
 	const invalidateQuery = useCallback(() => {
 		qClient.invalidateQueries({
-			queryKey: queryKey,
+			queryKey,
 		});
 	}, [queryKey]);
 

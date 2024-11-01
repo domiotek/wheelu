@@ -28,7 +28,7 @@ export default function CoursesView() {
 		API.Offers.Courses.GetAllOfSchool.IResponse,
 		API.Offers.Courses.GetAllOfSchool.IEndpoint["error"]
 	>({
-		queryKey: ["Schools", "#", parseInt("3"), "Offers"],
+		queryKey: ["Schools", "#", schoolID, "Offers"],
 		queryFn: () =>
 			callAPI<API.Offers.Courses.GetAllOfSchool.IEndpoint>(
 				"GET",

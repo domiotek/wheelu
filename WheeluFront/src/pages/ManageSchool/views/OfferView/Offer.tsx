@@ -33,7 +33,7 @@ export default function OfferSchoolView() {
 	);
 	const invalidateQuery = useCallback(() => {
 		qClient.invalidateQueries({
-			queryKey: queryKey,
+			queryKey,
 		});
 	}, [queryKey]);
 

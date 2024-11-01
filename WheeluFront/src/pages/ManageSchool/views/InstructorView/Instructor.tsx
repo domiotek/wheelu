@@ -67,8 +67,10 @@ export default function Instructor() {
 	const queryKey = useMemo(
 		() => [
 			"Schools",
+			"#",
 			schoolData?.id,
 			"Instructors",
+			"#",
 			parseInt(params["instructorId"] ?? ""),
 		],
 		[schoolData, params]

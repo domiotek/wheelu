@@ -1,12 +1,9 @@
 import ViewWrapper from "../Wrapper";
 import CourseTable from "./components/InstructorCourseTable";
 import { useParams } from "react-router-dom";
-import React, { useCallback, useContext, useMemo, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { useContext, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { callAPI, OutsideContextNotifier } from "../../../../modules/utils";
-import classes from "../common.module.css";
-import { Button } from "@mui/material";
-import { FilterAlt } from "@mui/icons-material";
 import { API } from "../../../../types/api";
 import { SchoolPageContext } from "../../ManageSchoolPage";
 import LoadingScreen from "../../../../components/LoadingScreen/LoadingScreen";
@@ -30,8 +27,10 @@ export default function CoursesSchoolView() {
 	const queryKey = useMemo(
 		() => [
 			"Schools",
+			"#",
 			schoolData?.id,
 			"Instructors",
+			"#",
 			parseInt(params["instructorId"] ?? ""),
 		],
 		[schoolData, params]

@@ -37,7 +37,7 @@ export default function ScheduleModal({
 	}, []);
 
 	const queryKey = useMemo(() => {
-		return ["Instructors", instructorID, "Schedule"];
+		return ["Instructors", "#", instructorID, "Schedule"];
 	}, []);
 
 	const { data } = useQuery<
