@@ -68,7 +68,7 @@ public class InstructorInviteController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetSchoolInvite(string tokenID)
     {
-        var token = await inviteService.GetInviteTokenByIdAsync(tokenID);
+        var token = await inviteService.GetInviteTokenAsync(tokenID);
 
         if (token == null)
             return NotFound();

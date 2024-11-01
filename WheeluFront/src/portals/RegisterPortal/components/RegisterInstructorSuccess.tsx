@@ -22,7 +22,7 @@ export default function RegisterInstructorSuccess() {
 
 				<Typography className={classes.SuccessMessageText}>
 					Twoje konto zostało utworzone i połączone ze szkołą, która
-					Cię zaprosiła. Teraz pozostało tylko sie już zalogować.
+					Cię zaprosiła. Teraz pozostało już tylko się zalogować.
 				</Typography>
 
 				<Button variant="contained" onClick={() => navigate("/login")}>
