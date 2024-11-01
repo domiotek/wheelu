@@ -1,6 +1,5 @@
 import { useContext, useLayoutEffect, useMemo } from "react";
 import { ModalContext } from "../../components/ModalContainer/ModalContainer";
-import { App } from "../../types/app";
 import {
 	Button,
 	List,

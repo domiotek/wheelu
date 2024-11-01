@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { API } from "../../../../types/api";
 import { callAPI } from "../../../../modules/utils";
-import { App } from "../../../../types/app";
 import { useNavigate } from "react-router-dom";
 
 interface IProps {

@@ -9,7 +9,6 @@ import {
 	School,
 	Settings,
 } from "@mui/icons-material";
-import { App } from "../../../types/app";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ButtonBase, Paper, Typography } from "@mui/material";
 

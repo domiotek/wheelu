@@ -13,7 +13,6 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { API } from "../../types/api";
 import { callAPI, formatPolishWordSuffix } from "../../modules/utils";
-import { App } from "../../types/app";
 import InlineDot from "../../components/InlineDot/InlineDot";
 import MessagePanel from "../../components/MessagePanel/MessagePanel";
 import ButtonsBar from "../../components/ButtonsBar/ButtonsBar";

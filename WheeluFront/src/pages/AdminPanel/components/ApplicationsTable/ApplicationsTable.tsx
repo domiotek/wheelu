@@ -3,7 +3,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { API } from "../../../../types/api";
 import { callAPI, formatAddress } from "../../../../modules/utils";
-import { App } from "../../../../types/app";
 import SchoolApplicationService from "../../../../services/SchoolApplication";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";

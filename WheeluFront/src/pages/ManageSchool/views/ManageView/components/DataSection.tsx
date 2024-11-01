@@ -9,7 +9,6 @@ import {
 	prepareFieldErrorMessage,
 } from "../../../../../modules/utils";
 import NearbyCitiesEditWidget from "../../../../../components/NearbyCitiesEditWidget/NearbyCitiesEditWidget";
-import { App } from "../../../../../types/app";
 import classes from "../Manage.module.css";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { API } from "../../../../../types/api";

@@ -19,7 +19,6 @@ import MessagePanel from "../../components/MessagePanel/MessagePanel";
 import { useNavigate } from "react-router-dom";
 import { AuthorizabledAccountActions } from "../../modules/enums";
 import EditAccountPropertyModal from "../../modals/EditAccountPropertyModal/EditAccountPropertyModal";
-import { App } from "../../types/app";
 import TransactionsTable from "../../components/TransactionsTable/TransactionsTable";
 import EmploymentHistoryTable from "./components/EmploymentHistoryTable";
 import { toast } from "react-toastify";

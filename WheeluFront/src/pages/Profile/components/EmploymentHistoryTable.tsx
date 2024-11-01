@@ -3,7 +3,6 @@ import { QueryKey, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { API } from "../../../types/api";
 import { callAPI } from "../../../modules/utils";
-import { App } from "../../../types/app";
 import {
 	DEFAULT_TABLE_PAGE_SIZE,
 	TABLE_PAGE_SIZE_OPTIONS,

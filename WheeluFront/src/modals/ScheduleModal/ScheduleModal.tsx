@@ -6,7 +6,6 @@ import Calendar from "./components/Calendar/Calendar";
 import { QueryKey, useQuery } from "@tanstack/react-query";
 import { API } from "../../types/api";
 import { callAPI } from "../../modules/utils";
-import { App } from "../../types/app";
 
 interface IProps {
 	instructorID: number;

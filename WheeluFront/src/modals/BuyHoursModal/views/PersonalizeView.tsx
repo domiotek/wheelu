@@ -5,7 +5,6 @@ import {
 	TextField,
 	Typography,
 } from "@mui/material";
-import { App } from "../../../types/app";
 import classes from "./PersonalizeView.module.css";
 import { CurrencyFormatter } from "../../../modules/formatters";
 interface IProps {

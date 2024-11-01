@@ -25,7 +25,6 @@ import { AppContext } from "../../../../App";
 import { PublicSchooPageContext } from "../../SchoolPage";
 import { useQuery } from "@tanstack/react-query";
 import { API } from "../../../../types/api";
-import { App } from "../../../../types/app";
 import { CurrencyFormatter } from "../../../../modules/formatters";
 import LoadingScreen from "../../../../components/LoadingScreen/LoadingScreen";
 import { initialsAvatarProps } from "../../../../modules/features";

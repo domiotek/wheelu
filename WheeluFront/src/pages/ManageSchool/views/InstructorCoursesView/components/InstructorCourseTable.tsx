@@ -1,6 +1,5 @@
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useMemo, useState } from "react";
-import { App } from "../../../../../types/app";
 import {
 	DEFAULT_TABLE_PAGE_SIZE,
 	TABLE_PAGE_SIZE_OPTIONS,

@@ -23,7 +23,6 @@ import {
 } from "../../../../modules/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ScheduleContext } from "../../ScheduleModal";
-import { App } from "../../../../types/app";
 import { Delete } from "@mui/icons-material";
 import MessagePanel from "../../../../components/MessagePanel/MessagePanel";
 import AuthService from "../../../../services/Auth";

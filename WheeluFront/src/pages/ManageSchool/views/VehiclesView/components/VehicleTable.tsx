@@ -3,7 +3,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback, useContext, useMemo } from "react";
 import { API } from "../../../../../types/api";
 import { callAPI } from "../../../../../modules/utils";
-import { App } from "../../../../../types/app";
 import { TABLE_PAGE_SIZE_OPTIONS } from "../../../../constants";
 import { AppContext } from "../../../../../App";
 import { VehicleContext } from "../Vehicles";

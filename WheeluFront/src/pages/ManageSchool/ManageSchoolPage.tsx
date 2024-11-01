@@ -31,7 +31,6 @@ import {
 } from "react";
 import { AppContext } from "../../App";
 import { AccessLevel } from "../../modules/enums";
-import { App } from "../../types/app";
 import LazyBackendImage from "../../components/LazyBackendImage/LazyBackendImage";
 
 interface IProps {

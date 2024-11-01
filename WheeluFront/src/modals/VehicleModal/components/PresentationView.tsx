@@ -3,7 +3,6 @@ import CategoriesWidget from "../../../components/CategoriesWidget/CategoriesWid
 import { Button, List, ListItem, ListItemText } from "@mui/material";
 import classes from "../VehicleModal.module.css";
 import { DateTime } from "luxon";
-import { App } from "../../../types/app";
 import { useContext, useMemo } from "react";
 import VehicleService from "../../../services/Vehicle.tsx";
 import { c } from "../../../modules/utils.tsx";

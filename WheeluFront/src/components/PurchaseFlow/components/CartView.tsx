@@ -5,7 +5,6 @@ import {
 	ListItemText,
 	Typography,
 } from "@mui/material";
-import { App } from "../../../types/app";
 import { CurrencyFormatter } from "../../../modules/formatters";
 import classes from "./CartView.module.css";
 import commonClasses from "../PurchaseFlow.module.css";

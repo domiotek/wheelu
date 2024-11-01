@@ -3,7 +3,6 @@ import { translateGenericErrorCodes } from "../modules/utils";
 import { API } from "../types/api";
 import { Link } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
-import { App } from "../types/app";
 
 export default class AuthService {
 	public static translateSignInErrorCode(

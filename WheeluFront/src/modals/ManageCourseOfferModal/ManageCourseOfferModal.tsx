@@ -10,7 +10,6 @@ import {
 	useForm,
 } from "react-hook-form-mui";
 import { callAPI, prepareFieldErrorMessage } from "../../modules/utils";
-import { App } from "../../types/app";
 import { useMutation } from "@tanstack/react-query";
 import { API } from "../../types/api";
 import { CourseCategoriesMapping } from "../../modules/constants";

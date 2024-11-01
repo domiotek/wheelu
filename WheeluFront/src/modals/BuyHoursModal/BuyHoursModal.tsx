@@ -1,6 +1,5 @@
 import { useState } from "react";
 import PurchaseFlow from "../../components/PurchaseFlow/PurchaseFlow";
-import { App } from "../../types/app";
 import PersonalizeView from "./views/PersonalizeView";
 import classes from "./BuyHoursModal.module.css";
 import { useMutation } from "@tanstack/react-query";

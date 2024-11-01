@@ -24,7 +24,6 @@ import FolderIcon from "@mui/icons-material/Folder";
 import ClassIcon from "@mui/icons-material/Class";
 
 import classes from "./Drawer.module.css";
-import { App } from "../../types/app";
 import { Business, CalendarMonth, Security } from "@mui/icons-material";
 import { AccessLevel } from "../../modules/enums";
 import ScheduleModal from "../../modals/ScheduleModal/ScheduleModal";

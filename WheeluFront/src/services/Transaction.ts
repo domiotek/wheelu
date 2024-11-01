@@ -1,5 +1,3 @@
-import { App } from "../types/app";
-
 export default class TransactionService {
 	public static translateTransactionStatus(
 		state: App.Models.TransactionState

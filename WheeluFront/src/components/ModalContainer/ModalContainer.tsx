@@ -11,7 +11,6 @@ import {
 import SimpleBar from "simplebar-react";
 import classes from "./ModalContainer.module.css";
 import useBodyScrollBlocker from "../../hooks/useBodyScrollBlocker";
-import { App } from "../../types/app";
 import { OutsideContextNotifier as ctxNotify } from "../../modules/utils";
 import { Card, CardContent } from "@mui/material";
 

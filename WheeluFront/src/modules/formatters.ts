@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import { App } from "../types/app";
 
 export const CurrencyFormatter = new Intl.NumberFormat("pl-PL", {
 	style: "currency",
@@ -39,8 +38,7 @@ export const DateTimeFormatter = {
 		const today = DateTime.now();
 
 		return time.toFormat(
-			`EEEE, dd${time.month != today.month ? "/LL" : ""}${
-				time.year != today.year ? "/yyyy" : ""
+			`EEEE, dd${time.month != today.month ? "/LL" : ""}${time.year != today.year ? "/yyyy" : ""
 			}`
 		);
 	},

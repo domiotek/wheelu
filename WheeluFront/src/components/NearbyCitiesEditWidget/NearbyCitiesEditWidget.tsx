@@ -9,7 +9,6 @@ import {
 import classes from "./NearbyCitiesEditWidget.module.css";
 import { Close } from "@mui/icons-material";
 import { useCallback } from "react";
-import { App } from "../../types/app";
 import { c } from "../../modules/utils";
 
 interface IProps {

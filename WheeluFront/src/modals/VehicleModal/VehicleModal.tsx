@@ -2,7 +2,6 @@ import { useContext, useLayoutEffect, useMemo, useState } from "react";
 import { ModalContext } from "../../components/ModalContainer/ModalContainer";
 import classes from "./VehicleModal.module.css";
 import { Button, Toolbar, Typography } from "@mui/material";
-import { App } from "../../types/app";
 import { AppContext } from "../../App";
 import ElevatedHeader from "../../components/ElevatedHeader/ElevatedHeader";
 import PresentationView from "./components/PresentationView";

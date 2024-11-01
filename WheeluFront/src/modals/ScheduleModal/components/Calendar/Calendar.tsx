@@ -9,7 +9,6 @@ import CalendarToolbar from "./components/Toolbar";
 import { Box, useMediaQuery } from "@mui/material";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { AppContext } from "../../../../App";
-import { App } from "../../../../types/app";
 import AuthService from "../../../../services/Auth";
 import LoadingScreen from "../../../../components/LoadingScreen/LoadingScreen";
 import { Event } from "react-big-calendar";

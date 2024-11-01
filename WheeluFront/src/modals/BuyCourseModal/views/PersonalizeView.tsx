@@ -13,7 +13,6 @@ import MessagePanel from "../../../components/MessagePanel/MessagePanel";
 import { Fragment } from "react/jsx-runtime";
 import { initialsAvatarProps } from "../../../modules/features";
 import InlineDot from "../../../components/InlineDot/InlineDot";
-import { App } from "../../../types/app";
 import commonClasses from "../BuyCourseModal.module.css";
 import { formatPolishWordSuffix } from "../../../modules/utils";
 

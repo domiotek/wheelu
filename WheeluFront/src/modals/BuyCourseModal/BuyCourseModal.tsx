@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import classes from "./BuyCourseModal.module.css";
 import PersonalizeView from "./views/PersonalizeView";
-import { App } from "../../types/app";
 import { useMutation } from "@tanstack/react-query";
 import { callAPI } from "../../modules/utils";
 import { API } from "../../types/api";

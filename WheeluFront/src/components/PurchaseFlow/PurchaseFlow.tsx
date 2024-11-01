@@ -24,7 +24,6 @@ import {
 
 import classes from "./PurchaseFlow.module.css";
 import ElevatedHeader from "../ElevatedHeader/ElevatedHeader";
-import { App } from "../../types/app";
 import CartView from "./components/CartView";
 import ButtonsBar from "../ButtonsBar/ButtonsBar";
 import { Id, toast } from "react-toastify";

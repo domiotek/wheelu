@@ -16,7 +16,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { API } from "../../types/api";
 import { callAPI, formatPolishWordSuffix } from "../../modules/utils";
 import InlineDot from "../../components/InlineDot/InlineDot";
-import { App } from "../../types/app";
 import { toast } from "react-toastify";
 
 interface IProps {

@@ -10,7 +10,6 @@ import {
 import classes from "./GalleryModal.module.css";
 import { ModalContext } from "../../components/ModalContainer/ModalContainer";
 import SimpleBar from "simplebar-react";
-import { App } from "../../types/app";
 import { Button, CircularProgress, IconButton } from "@mui/material";
 import { c } from "../../modules/utils";
 import { ChevronLeft, ChevronRight, Close } from "@mui/icons-material";
