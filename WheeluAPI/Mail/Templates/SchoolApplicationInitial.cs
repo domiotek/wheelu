@@ -1,7 +1,7 @@
 namespace WheeluAPI.Mail.Templates;
 
 public class SchoolApplicationInitialTemplate: ITemplate<SchoolApplicationInitialTemplateVariables> {
-	public string Uuid { get;} = "950faa0a-7520-46dd-9c8e-0b517ce74b7b";
+	public string Uuid { get;} = "33990023-3bb2-4ce7-ab58-ef844f56cd88";
 
 	public PopulatedTemplate Populate(SchoolApplicationInitialTemplateVariables variables) {
 
