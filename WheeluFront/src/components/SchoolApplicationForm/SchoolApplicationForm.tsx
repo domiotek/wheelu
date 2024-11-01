@@ -1,4 +1,4 @@
-import { Alert, Autocomplete, Button, Chip, createFilterOptions, Snackbar, TextField } from "@mui/material";
+import { Autocomplete, Button, Chip, createFilterOptions, TextField } from "@mui/material";
 
 import classes from "./SchoolApplicationForm.module.css";
 import { c, callAPI, prepareFieldErrorMessage } from "../../modules/utils";
@@ -7,6 +7,7 @@ import { Controller, FormContainer, SelectElement, TextFieldElement, useForm } f
 import { API } from "../../types/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import SchoolApplicationService from "../../services/SchoolApplication";
+import { toast } from "react-toastify";
 
 const filter = createFilterOptions<string>();
 
@@ -16,14 +17,12 @@ interface IProps {
 
 export default function SchoolApplicationForm({onSuccess}: IProps) {
 	const [citySelectOpened, setCitySelectOpened] = useState(false);
-	const [snackBarOpened, setSnackBarOpened] = useState(false);
-	const [submitError, setSubmitError] = useState<API.Application.PostNew.IEndpoint["errCodes"] | null>(null);
 	const [nearbyCitiesList, setNearbyCitiesList] = useState<string[]>([]);
 	const formContext = useForm<API.Application.PostNew.IRequestData>();
 
 	const {data: cityOptions, isFetching: fetchingOptions} = useQuery<API.City.GetAll.IResponse, API.City.GetAll.IEndpoint["error"]>({
         queryKey: ["Cities"],
-        queryFn: ()=>callAPI<API.City.GetAll.IEndpoint>("GET","/api/v1/cities"),
+        queryFn: ()=>callAPI<API.City.GetAll.IEndpoint>("GET","/api/v1/cities", null, null, true),
         retry: true,
 		staleTime: 60000,
 		enabled: citySelectOpened
@@ -31,7 +30,7 @@ export default function SchoolApplicationForm({onSuccess}: IProps) {
 
 	const {data: stateOptions} = useQuery<API.State.GetAll.IResponse, API.State.GetAll.IEndpoint["error"]>({
         queryKey: ["States"],
-        queryFn: ()=>callAPI<API.State.GetAll.IEndpoint>("GET","/api/v1/states"),
+        queryFn: ()=>callAPI<API.State.GetAll.IEndpoint>("GET","/api/v1/states", null, null, true),
         retry: true,
 		staleTime: Infinity
     });
@@ -40,15 +39,13 @@ export default function SchoolApplicationForm({onSuccess}: IProps) {
         mutationFn: data=>callAPI<API.Application.PostNew.IEndpoint>("POST","/api/v1/applications",data, null, true),
         onSuccess: async ()=>onSuccess(),
 		onError: (err=>{
-			setSnackBarOpened(true);
-			setSubmitError(err.code);
+			toast.error(`Nie mogliśmy zarejestrować Twojego wniosku. ${SchoolApplicationService.translateApplicationSubmitErrorCode(err.code ?? "DbError")}`);
 		})
     });
 
 	const onSubmit = useCallback((value: API.Application.PostNew.IRequestData)=>{
 		value = Object.assign(value,{nearbyCities: nearbyCitiesList});
-		setSnackBarOpened(false);
-		submitMutation.mutate(value);
+			submitMutation.mutate(value);
 	},[nearbyCitiesList]);
 
 	return ( 
@@ -296,16 +293,6 @@ export default function SchoolApplicationForm({onSuccess}: IProps) {
 			</div>
 			
 			<Button className={classes.SubmitButton} variant="contained" type="submit" disabled={submitMutation.isPending}>Wyślij</Button>
-			
-			<Snackbar open={snackBarOpened} autoHideDuration={4000} anchorOrigin={{vertical: "bottom", horizontal: "right"}} onClose={()=>setSnackBarOpened(false)}>
-				<Alert
-					severity="error"
-					variant="filled"
-					sx={{ width: '100%' }}
-				>
-					Nie mogliśmy zarejestrować Twojego wniosku. {SchoolApplicationService.translateApplicationSubmitErrorCode(submitError ?? "InternalError")}
-				</Alert>
-			</Snackbar>
 		</FormContainer>
 	)
 }

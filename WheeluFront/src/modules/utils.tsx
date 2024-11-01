@@ -1,7 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { API } from "../types/api";
 import { FieldError } from "react-hook-form";
-import { App } from "../types/app";
 import { DateTime } from "luxon";
 
 const API_SERVER_HOST = "localhost:9090";
@@ -21,6 +20,7 @@ export function callAPI<T extends API._.IBaseAPIEndpoint>(
 
 		if (!optimisticTokenCheck && token == null) {
 			rej(new AxiosError("Not signed in", "Unauthorized"));
+			printAPIFailure(endpointURL, "Unauthorized");
 			return;
 		}
 

@@ -1,6 +1,5 @@
 import { translateGenericErrorCodes } from "../modules/utils";
 import { API } from "../types/api";
-import { App } from "../types/app";
 
 export default class SchoolApplicationService {
 	public static translateApplicationSubmitErrorCode(
