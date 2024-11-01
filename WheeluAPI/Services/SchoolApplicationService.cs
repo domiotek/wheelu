@@ -253,7 +253,7 @@ public class SchoolApplicationService(
 		var templateData = new SchoolApplicationAcceptationTemplateVariables {
 			ApplicationID = application.Id.ToString(),
 			FirstName = application.OwnerName,
-			Link = $"http://localhost:5173/reset-password?token={token?.Id}"
+			Link = $"http://localhost:5173/reset-password?token={token?.Token}"
 		};
 
 		if(await mailService.SendEmail("applications",template.Populate(templateData), [application.Email]) == false)

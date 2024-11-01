@@ -145,7 +145,11 @@ export default function App({ useSplash }: IProps) {
 				return;
 			}
 
-			if (error == null || unauthenticatedRoutes.includes(currentURL))
+			if (
+				error == null ||
+				unauthenticatedRoutes.includes(currentURL) ||
+				anonymousRoutes.includes(currentURL)
+			)
 				setTimeout(() => setSplashHidden(true), 400);
 		}
 	}, [data, error, location]);
