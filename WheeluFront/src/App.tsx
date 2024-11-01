@@ -115,7 +115,7 @@ export default function App({ useSplash }: IProps) {
 			const currentURL = location.pathname;
 			const anonymousRoutes = [
 				"/",
-				"/register-school",
+				"/apply",
 				"/logout",
 				"/join",
 				"/reset-password",
