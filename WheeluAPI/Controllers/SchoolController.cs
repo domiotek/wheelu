@@ -166,13 +166,15 @@ public class SchoolController(
                 }
             );
 
-        var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var user = await userService.GetUserByEmailAsync(userID ?? "");
+        var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        var ownsSchool = school.Owner.Id == userID;
-        var isAdmin = await userService.HasRole(user!, UserRole.Administrator);
+        var hasAccess = await service.ValidateSchoolManagementAccess(
+            school,
+            userEmail!,
+            Helpers.SchoolManagementAccessMode.AllPrivileged
+        );
 
-        if (!ownsSchool && !isAdmin)
+        if (!hasAccess)
             return Unauthorized(
                 new APIError<ChangeSchoolStateErrors>
                 {
