@@ -66,6 +66,10 @@ public class ScheduleController(
     }
 
     [HttpGet]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetSlotsOfInstructor(
         int instructorID,
         [FromQuery] GetScheduleSlotsRequest request

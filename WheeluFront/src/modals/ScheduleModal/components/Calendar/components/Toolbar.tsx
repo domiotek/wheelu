@@ -17,7 +17,6 @@ import WeekPicker from "./WeekPicker";
 
 export default function CalendarToolbar({
 	onNavigate,
-	label,
 	date,
 }: ToolbarProps<Event>) {
 	const [popoverOpen, setPopoverOpen] = useState(false);
@@ -27,6 +26,16 @@ export default function CalendarToolbar({
 	const dateTime = useMemo(() => DateTime.fromJSDate(date), [date]);
 
 	const popoverAnchorRef = useRef<HTMLDivElement>(null);
+
+	const label = useMemo(() => {
+		const dateTime = DateTime.fromJSDate(date);
+
+		if (!isDesktop) return dateTime.toFormat("dd LLLL");
+
+		const first = dateTime.startOf("week");
+		const last = first.plus({ day: 6 });
+		return `${first.toFormat("dd LLLL")} - ${last.toFormat("dd LLLL")}`;
+	}, [date, isDesktop]);
 
 	return (
 		<Paper className={classes.Container}>

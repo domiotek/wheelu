@@ -10,20 +10,22 @@ import { Box, useMediaQuery } from "@mui/material";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { AppContext } from "../../../../App";
 import AuthService from "../../../../services/Auth";
-import LoadingScreen from "../../../../components/LoadingScreen/LoadingScreen";
 import { Event } from "react-big-calendar";
 import ModalContainer from "../../../../components/ModalContainer/ModalContainer";
 import CreateSlotModal from "../CreateSlotModal/CreateSlotModal";
 import classes from "./Calendar.module.css";
 import SlotDetailsModal from "../SlotDetailsModal/SlotDetailsModal";
+import LoadingCover from "./components/LoadingCover";
 
-const localizer = luxonLocalizer(DateTime);
+const localizer = luxonLocalizer(DateTime, { firstDayOfWeek: 1 });
 
 interface IProps {
 	slots: App.Models.IScheduleSlot[] | null;
 	allowAlter: boolean;
 	isPickMode?: boolean;
 	onSlotPick?: (slot: App.Models.IScheduleSlot) => void;
+	onDateChange?: (date: DateTime) => void;
+	loading: boolean;
 }
 
 export default function Calendar({
@@ -31,6 +33,8 @@ export default function Calendar({
 	allowAlter,
 	isPickMode,
 	onSlotPick,
+	onDateChange,
+	loading,
 }: IProps) {
 	const [view, setView] = useState<View>("day");
 	const [modalContent, setModalContent] = useState<JSX.Element | null>(null);
@@ -107,10 +111,8 @@ export default function Calendar({
 		[slots, isPickMode]
 	);
 
-	if (slots == null) return <LoadingScreen />;
-
 	return (
-		<Box sx={{ ...styling }}>
+		<Box className={classes.Wrapper} sx={{ ...styling }}>
 			<BigCalendar<Event>
 				localizer={localizer}
 				views={["week", "day"]}
@@ -121,7 +123,7 @@ export default function Calendar({
 				}}
 				timeslots={2}
 				step={15}
-				events={slots.map((slot) => ({
+				events={slots?.map((slot) => ({
 					start: DateTime.fromISO(slot.startTime).toJSDate(),
 					end: DateTime.fromISO(slot.endTime).toJSDate(),
 					title: slot.ride
@@ -153,6 +155,14 @@ export default function Calendar({
 						: {};
 				}}
 				onSelectEvent={slotSelect}
+				onRangeChange={(arg) =>
+					onDateChange &&
+					onDateChange(
+						DateTime.fromJSDate(
+							Array.isArray(arg) ? arg[0] : arg.start
+						)
+					)
+				}
 			/>
 			<ModalContainer
 				show={modalContent != null}
@@ -160,6 +170,7 @@ export default function Calendar({
 			>
 				{modalContent}
 			</ModalContainer>
+			{loading && <LoadingCover />}
 		</Box>
 	);
 }

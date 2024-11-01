@@ -7,6 +7,9 @@ import MainLayout from "./layouts/MainLayout.tsx";
 import PortalLayout from "./layouts/PortalLayout.tsx";
 import AnonymousLayout from "./layouts/AnonymousLayout.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Settings } from "luxon";
+
+Settings.defaultLocale = "pl-PL";
 
 /** Portals */
 

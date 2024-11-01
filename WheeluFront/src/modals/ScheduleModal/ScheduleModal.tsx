@@ -1,4 +1,4 @@
-import React, { useContext, useLayoutEffect, useMemo } from "react";
+import React, { useContext, useLayoutEffect, useMemo, useState } from "react";
 import { ModalContext } from "../../components/ModalContainer/ModalContainer";
 import classes from "./ScheduleModal.module.css";
 import { Typography } from "@mui/material";
@@ -6,6 +6,9 @@ import Calendar from "./components/Calendar/Calendar";
 import { QueryKey, useQuery } from "@tanstack/react-query";
 import { API } from "../../types/api";
 import { callAPI } from "../../modules/utils";
+import { DateTime } from "luxon";
+import { AppContext } from "../../App";
+import UnavailableCover from "./components/Calendar/components/UnavailableCover";
 
 interface IProps {
 	instructorID: number;
@@ -30,17 +33,37 @@ export default function ScheduleModal({
 	mode = "view",
 	onPick,
 }: IProps) {
+	const [selectedDay, setSelectedDay] = useState<DateTime>(DateTime.now());
+
+	const { userDetails } = useContext(AppContext);
 	const { setHostClassName, closeModal } = useContext(ModalContext);
 
 	useLayoutEffect(() => {
 		setHostClassName(classes.Modal);
 	}, []);
 
-	const queryKey = useMemo(() => {
-		return ["Instructors", "#", instructorID, "Schedule"];
-	}, []);
+	const weekBoundaries = useMemo(() => {
+		const first = selectedDay.startOf("week");
+		return [first, first.plus({ day: 7 })];
+	}, [selectedDay]);
 
-	const { data } = useQuery<
+	const queryKey = useMemo(() => {
+		return [
+			"Instructors",
+			"#",
+			instructorID,
+			"Schedule",
+			weekBoundaries[0].toISODate(),
+			"-",
+			weekBoundaries[1].toISODate(),
+		];
+	}, [weekBoundaries]);
+
+	const isEmployed = useMemo(() => {
+		return userDetails?.instructorProfile?.activeEmployment != undefined;
+	}, [userDetails]);
+
+	const { data, isFetching } = useQuery<
 		API.Schedule.GetSlotsOfInstructor.IResponse,
 		API.Schedule.GetSlotsOfInstructor.IEndpoint["error"]
 	>({
@@ -49,11 +72,15 @@ export default function ScheduleModal({
 			callAPI<API.Schedule.GetSlotsOfInstructor.IEndpoint>(
 				"GET",
 				"/api/v1/instructors/:instructorID/schedule",
-				{},
+				{
+					after: weekBoundaries[0].toISODate()!,
+					before: weekBoundaries[1].toISODate()!,
+				},
 				{ instructorID }
 			),
 		retry: true,
 		staleTime: 60000,
+		enabled: isEmployed,
 	});
 
 	return (
@@ -75,8 +102,12 @@ export default function ScheduleModal({
 						onPick && onPick(slot);
 						closeModal();
 					}}
+					onDateChange={setSelectedDay}
+					loading={isFetching}
 				/>
 			</ScheduleContext.Provider>
+
+			{!isEmployed && <UnavailableCover />}
 		</div>
 	);
 }

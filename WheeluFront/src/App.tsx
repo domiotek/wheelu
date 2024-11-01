@@ -167,7 +167,7 @@ export default function App({ useSplash }: IProps) {
 				setModalContent: modalContentSetter,
 			}}
 		>
-			<LocalizationProvider dateAdapter={AdapterLuxon}>
+			<LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale="pl">
 				<ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
 					<CssBaseline>
 						<Outlet />
