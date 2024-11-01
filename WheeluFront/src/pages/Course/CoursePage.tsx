@@ -153,7 +153,7 @@ export default function CoursePage() {
 			default:
 				return "other";
 		}
-	}, []);
+	}, [userDetails]);
 
 	const canEdit = useMemo(() => {
 		if (!data || !userDetails) return false;

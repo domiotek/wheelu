@@ -151,29 +151,30 @@ export default function ManageView() {
 
 	const disableChangeInstructorAction = useMemo(() => {
 		return (
-			(course?.nextRide != undefined &&
-				(role != "other" ||
-					course.nextRide.status == RideStatus.Ongoing)) ||
-			(icRequest && icRequest.status == RequestStatus.Pending)
+			(course?.nextRide != undefined && role != "other") ||
+			course?.nextRide?.status == RideStatus.Ongoing ||
+			icRequest?.status == RequestStatus.Pending
 		);
-	}, [course]);
+	}, [course, icRequest]);
 
 	return (
 		<div className={classes.Wrapper}>
 			<section>
 				<Typography variant="h6">Dokupione godziny</Typography>
-				<ButtonsBar>
-					<Typography>
-						{CurrencyFormatter.format(course?.pricePerHour!)}
-					</Typography>
-					<Button
-						variant="outlined"
-						color="secondary"
-						onClick={openHoursBuyingModal}
-					>
-						Dokup
-					</Button>
-				</ButtonsBar>
+				{role == "student" && (
+					<ButtonsBar>
+						<Typography>
+							{CurrencyFormatter.format(course?.pricePerHour!)}
+						</Typography>
+						<Button
+							variant="outlined"
+							color="secondary"
+							onClick={openHoursBuyingModal}
+						>
+							Dokup
+						</Button>
+					</ButtonsBar>
+				)}
 
 				<List className={classes.List}>
 					{hourPackages?.map((hPackage) => (
@@ -208,7 +209,7 @@ export default function ManageView() {
 						<MessagePanel
 							className={classes.NoHoursPackagesMessage}
 							image="/no-results.svg"
-							caption="Brak pakietów"
+							caption="Brak zakupionych pakietów"
 						/>
 					)}
 				</List>
