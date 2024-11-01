@@ -177,7 +177,7 @@ public class CourseService(
 
         if (!transactionResult.IsSuccess)
         {
-            result.ErrorCode = (CoursePurchaseErrors)transactionResult.ErrorCode;
+            result.ErrorCode = (CoursePurchaseErrors)transactionResult.ErrorCode + 3;
             result.Details = result.Details;
             return result;
         }
@@ -208,7 +208,7 @@ public class CourseService(
             new()
             {
                 Type = TransactionItemType.AdditionalHour,
-                Name = $"Dodatkowa godzina jazdy",
+                Name = "Dodatkowa godzina jazdy",
                 Quantity = request.HoursCount,
                 Total = request.HoursCount * course.PricePerHour,
                 RelatedId = package.Id,
