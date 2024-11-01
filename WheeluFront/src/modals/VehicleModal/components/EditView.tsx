@@ -24,7 +24,6 @@ import ModalContainer from "../../../components/ModalContainer/ModalContainer";
 import UploadImageModal, {
 	IFileData,
 } from "../../UploadImageModal/UploadImageModal";
-import { App } from "../../../types/app";
 import { DateTime } from "luxon";
 import { API } from "../../../types/api";
 import { useMutation } from "@tanstack/react-query";
@@ -331,7 +330,7 @@ export default function EditView({
 							name="mileage"
 							type="number"
 							rules={{ min: 0 }}
-							label="Przebieg"
+							label="Przebieg (km)"
 							size="small"
 							color="secondary"
 							parseError={prepareFieldErrorMessage}

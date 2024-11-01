@@ -1,6 +1,5 @@
 import InlineDot from "../components/InlineDot/InlineDot";
 import { TransmissionType, VehiclePartType } from "../modules/enums";
-import { App } from "../types/app";
 
 interface IEngineProps {
 	displacement?: number;
@@ -28,8 +27,8 @@ export default class VehicleService {
 		}${power ? power + "KM " : ""}${displacement && power ? ") " : ""}${
 			speedCount ? speedCount + "-biegowa" : ""
 		}${speedCount && type != undefined ? ", " : ""}${
-			type != undefined ? typeText + " " : ""
-		}${type != undefined || speedCount ? "skrzynia" : ""}`;
+			type != undefined ? typeText : ""
+		} ${type != undefined || speedCount ? "skrzynia" : ""}`;
 	}
 
 	public static getPartProps(partID: VehiclePartType) {
