@@ -16,6 +16,7 @@ import CreateSlotModal from "../CreateSlotModal/CreateSlotModal";
 import classes from "./Calendar.module.css";
 import SlotDetailsModal from "../SlotDetailsModal/SlotDetailsModal";
 import LoadingCover from "./components/LoadingCover";
+import { CourseCategoryFormatter } from "../../../../modules/formatters";
 
 const localizer = luxonLocalizer(DateTime, { firstDayOfWeek: 1 });
 
@@ -26,6 +27,7 @@ interface IProps {
 	onSlotPick?: (slot: App.Models.IScheduleSlot) => void;
 	onDateChange?: (date: DateTime) => void;
 	loading: boolean;
+	slotTitleFactory?: (slot: App.Models.IScheduleSlot) => string;
 }
 
 export default function Calendar({
@@ -35,6 +37,7 @@ export default function Calendar({
 	onSlotPick,
 	onDateChange,
 	loading,
+	slotTitleFactory,
 }: IProps) {
 	const [view, setView] = useState<View>("day");
 	const [modalContent, setModalContent] = useState<JSX.Element | null>(null);
@@ -111,6 +114,21 @@ export default function Calendar({
 		[slots, isPickMode]
 	);
 
+	const defaultSlotTitleFactory = useCallback(
+		(slot: App.Models.IScheduleSlot) => {
+			return slot.ride
+				? `${
+						slot.ride.examId ? "Egzamin" : "Jazda"
+				  } - kategoria ${CourseCategoryFormatter.format(
+						slot.ride.course.category
+				  )} - ${AuthService.getUserInitials(slot.ride.course.student)}`
+				: DateTime.fromISO(slot.startTime) < DateTime.now()
+				? "Przeszły"
+				: "Wolny";
+		},
+		[]
+	);
+
 	return (
 		<Box className={classes.Wrapper} sx={{ ...styling }}>
 			<BigCalendar<Event>
@@ -126,13 +144,7 @@ export default function Calendar({
 				events={slots?.map((slot) => ({
 					start: DateTime.fromISO(slot.startTime).toJSDate(),
 					end: DateTime.fromISO(slot.endTime).toJSDate(),
-					title: slot.ride
-						? `${AuthService.getUserFullName(
-								slot.ride.course.student
-						  )}`
-						: DateTime.fromISO(slot.startTime) < DateTime.now()
-						? "Przeszły"
-						: "Wolny",
+					title: (slotTitleFactory ?? defaultSlotTitleFactory)(slot),
 				}))}
 				onSelectSlot={openNewSlotModal}
 				selectable={!isPickMode}

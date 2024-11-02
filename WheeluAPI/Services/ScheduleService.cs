@@ -32,6 +32,22 @@ public class ScheduleService(ApplicationDbContext dbContext) : BaseService
         return query.ToListAsync();
     }
 
+    public Task<List<RideSlot>> GetStudentSlotsAsync(
+        User student,
+        GetScheduleSlotsRequest? request = null
+    )
+    {
+        var query = PrepareQuery().Where(s => s.Ride != null && s.Ride.Student.Id == student.Id);
+
+        if (request?.After != null)
+            query = query.Where(s => s.StartTime > request.After);
+
+        if (request?.Before != null)
+            query = query.Where(s => s.EndTime < request.Before);
+
+        return query.ToListAsync();
+    }
+
     public IQueryable<RideSlot> PrepareQuery()
     {
         return dbContext.RideSlots.AsQueryable();

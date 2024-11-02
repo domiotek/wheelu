@@ -22,11 +22,11 @@ import {
 } from "@mui/material";
 import ButtonsBar from "../../components/ButtonsBar/ButtonsBar";
 import InlineDot from "../../components/InlineDot/InlineDot";
-import ScheduleModal from "../ScheduleModal/ScheduleModal";
+import InstructorScheduleModal from "../ScheduleModal/InstructorScheduleModal";
 import { DateTimeFormatter } from "../../modules/formatters";
 import AuthService from "../../services/Auth";
 import { CourseCategoriesMapping } from "../../modules/constants";
-import { callAPI, formatPolishWordSuffix } from "../../modules/utils";
+import { callAPI } from "../../modules/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { API } from "../../types/api";
 
@@ -261,7 +261,7 @@ export default function ScheduleRideModal({ course, type }: IProps) {
 				show={modalOpen}
 				onClose={() => setModalOpen(false)}
 			>
-				<ScheduleModal
+				<InstructorScheduleModal
 					instructorID={course.instructorId}
 					allowAlter={false}
 					mode="pick"

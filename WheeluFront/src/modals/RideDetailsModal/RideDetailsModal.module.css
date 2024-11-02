@@ -1,10 +1,10 @@
 .Modal {
 	min-width: 320px;
-	width: 60%;
+	width: 100%;
 	max-width: 790px;
 	height: 660px;
+	container-type: inline-size;
 }
-
 
 .Content {
 	display: flex;
@@ -27,20 +27,20 @@
 	gap: 1em;
 }
 
-.ChangingVehicleForm>*:nth-child(1) {
+.ChangingVehicleForm > *:nth-child(1) {
 	width: 270px;
 }
 
-.ChangingVehicleForm>*:nth-child(2) {
+.ChangingVehicleForm > *:nth-child(2) {
 	margin-left: auto;
 }
 
-@media (min-width: 769px) {
+@container (min-width: 769px) {
 	.Content {
 		padding: 0 2em;
 	}
 
-	.Content>h5 {
+	.Content > h5 {
 		margin-left: -1em;
 	}
 }

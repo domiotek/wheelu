@@ -1,5 +1,7 @@
-import { useContext, useLayoutEffect, useMemo } from "react";
-import { ModalContext } from "../../../../components/ModalContainer/ModalContainer";
+import { useContext, useLayoutEffect, useMemo, useState } from "react";
+import ModalContainer, {
+	ModalContext,
+} from "../../../../components/ModalContainer/ModalContainer";
 import classes from "./SlotDetailsModal.module.css";
 import {
 	Alert,
@@ -22,12 +24,13 @@ import {
 	roundMinutesToQuarters,
 } from "../../../../modules/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ScheduleContext } from "../../ScheduleModal";
+import { ScheduleContext } from "../../InstructorScheduleModal";
 import { Delete } from "@mui/icons-material";
 import MessagePanel from "../../../../components/MessagePanel/MessagePanel";
 import AuthService from "../../../../services/Auth";
 import { CourseCategoriesMapping } from "../../../../modules/constants";
 import { ScheduleService } from "../../../../services/Schedule";
+import RideDetailsModal from "../../../RideDetailsModal/RideDetailsModal";
 
 interface IProps {
 	slot: App.Models.IScheduleSlot;
@@ -35,6 +38,8 @@ interface IProps {
 }
 
 export default function SlotDetailsModal({ slot, allowEdit }: IProps) {
+	const [showRideDetails, setShowRideDetails] = useState<boolean>(false);
+
 	const { setHostClassName, closeModal } = useContext(ModalContext);
 	const { instructorID, baseQuery } = useContext(ScheduleContext);
 
@@ -275,7 +280,11 @@ export default function SlotDetailsModal({ slot, allowEdit }: IProps) {
 			<Typography variant="body1">
 				Przypisana jazda
 				{slot.ride && (
-					<Button size="small" disabled={actionInProgress}>
+					<Button
+						size="small"
+						disabled={actionInProgress}
+						onClick={() => setShowRideDetails(true)}
+					>
 						Zobacz
 					</Button>
 				)}
@@ -326,6 +335,17 @@ export default function SlotDetailsModal({ slot, allowEdit }: IProps) {
 					Ok
 				</Button>
 			</ButtonsBar>
+			<ModalContainer
+				show={showRideDetails}
+				onClose={() => setShowRideDetails(false)}
+			>
+				<RideDetailsModal
+					rideID={slot.ride?.id!}
+					courseID={slot.ride?.course.id!}
+					canAlterState={false}
+					canChangeVehicle={false}
+				/>
+			</ModalContainer>
 		</div>
 	);
 }

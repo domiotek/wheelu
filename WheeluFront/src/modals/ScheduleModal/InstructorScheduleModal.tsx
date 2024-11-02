@@ -27,7 +27,7 @@ export const ScheduleContext = React.createContext<IContext>({
 	baseQuery: null as any,
 });
 
-export default function ScheduleModal({
+export default function InstructorScheduleModal({
 	instructorID,
 	allowAlter,
 	mode = "view",

@@ -1306,6 +1306,29 @@ export namespace API {
 			>;
 		}
 
+		namespace GetSlotsOfStudent {
+			type IResponse = App.Models.IScheduleSlot[];
+
+			interface IRequestData
+				extends Record<string, number | string | undefined> {
+				before?: string;
+				after?: string;
+			}
+
+			interface IParams extends Record<string, string> {
+				userID: string
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/users/:userID/schedule",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				IRequestData,
+				IParams
+			>;
+		}
+
 		interface IManageSlotRequest extends Record<string, string> {
 			startTime: string;
 			endTime: string;

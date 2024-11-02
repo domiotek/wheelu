@@ -101,6 +101,36 @@ public class ScheduleController(
         );
     }
 
+    [HttpGet("/api/v1/users/{userID}/schedule")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(APIError), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetSlotsOfStudent(
+        string userID,
+        [FromQuery] GetScheduleSlotsRequest request
+    )
+    {
+        var requestorEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var requestor = await userService.GetUserByEmailAsync(requestorEmail!);
+        var isAdmin = await userService.HasRole(requestor!, UserRole.Administrator);
+
+        if (requestor!.Id != userID && !isAdmin)
+            return BadRequest(new APIError { Code = APIErrorCode.AccessDenied });
+
+        var targetUser = requestor;
+
+        if (requestor.Id != userID)
+            targetUser = await userService.GetUserByIDAsync(userID);
+
+        if (targetUser == null)
+            return NotFound(
+                new APIError { Code = APIErrorCode.EntityNotFound, Details = ["User not found"] }
+            );
+
+        return Ok(mapper.MapToSlotDTO(await service.GetStudentSlotsAsync(targetUser, request)));
+    }
+
     [HttpPost]
     [Authorize(Roles = "Instructor")]
     [ProducesResponseType(StatusCodes.Status201Created)]

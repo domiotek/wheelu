@@ -12,7 +12,7 @@ import {
 	roundMinutesToQuarters,
 } from "../../../../modules/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ScheduleContext } from "../../ScheduleModal";
+import { ScheduleContext } from "../../InstructorScheduleModal";
 import { ScheduleService } from "../../../../services/Schedule";
 
 interface IProps {

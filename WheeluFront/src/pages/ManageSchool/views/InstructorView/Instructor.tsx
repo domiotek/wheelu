@@ -40,7 +40,7 @@ import { AppContext } from "../../../../App";
 import { DateTime } from "luxon";
 import { CourseCategory } from "../../../../modules/enums";
 import InstructorService from "../../../../services/Instructor";
-import ScheduleModal from "../../../../modals/ScheduleModal/ScheduleModal";
+import InstructorScheduleModal from "../../../../modals/ScheduleModal/InstructorScheduleModal";
 import { toast } from "react-toastify";
 
 export default function Instructor() {
@@ -194,7 +194,7 @@ export default function Instructor() {
 
 	const showScheduleModal = useCallback(() => {
 		setModalContent(
-			<ScheduleModal
+			<InstructorScheduleModal
 				instructorID={data?.instructor.id!}
 				allowAlter={
 					access == "instructor" &&

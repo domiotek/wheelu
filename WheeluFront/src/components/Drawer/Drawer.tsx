@@ -26,11 +26,12 @@ import ClassIcon from "@mui/icons-material/Class";
 import classes from "./Drawer.module.css";
 import { Business, CalendarMonth, Security } from "@mui/icons-material";
 import { AccessLevel } from "../../modules/enums";
-import ScheduleModal from "../../modals/ScheduleModal/ScheduleModal";
+import InstructorScheduleModal from "../../modals/ScheduleModal/InstructorScheduleModal";
 import { useQuery } from "@tanstack/react-query";
 import { API } from "../../types/api";
 import AuthService from "../../services/Auth";
 import { CourseCategoryFormatter } from "../../modules/formatters";
+import StudentScheduleModal from "../../modals/ScheduleModal/StudentScheduleModal";
 
 interface IProps {
 	open: boolean;
@@ -162,11 +163,24 @@ export default function Drawer({ open, setOpen }: IProps) {
 					link: ``,
 					action: () =>
 						setModalContent(
-							<ScheduleModal
+							<InstructorScheduleModal
 								instructorID={
 									userDetails?.instructorProfile?.id!
 								}
 								allowAlter={true}
+							/>
+						),
+				});
+				break;
+			case AccessLevel.Student:
+				result.push({
+					icon: <CalendarMonth />,
+					name: "Moje jazdy",
+					link: ``,
+					action: () =>
+						setModalContent(
+							<StudentScheduleModal
+								studentID={userDetails?.userId!}
 							/>
 						),
 				});
