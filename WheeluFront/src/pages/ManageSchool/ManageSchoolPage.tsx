@@ -63,10 +63,9 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 
 	const { accessLevel, userDetails } = useContext(AppContext);
 
-	const queryKey = useMemo(
-		() => ["Schools", "#", parseInt(params["id"] ?? "")],
-		[params]
-	);
+	const schoolID = useMemo(() => parseInt(params["id"] ?? ""), []);
+
+	const queryKey = useMemo(() => ["Schools", "#", schoolID], [params]);
 
 	const {
 		data: schoolData,
@@ -80,7 +79,7 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 				"GET",
 				"/api/v1/schools/:id",
 				null,
-				{ id: params["id"] ?? "" }
+				{ id: schoolID.toString() }
 			),
 		retry: false,
 		staleTime: 60000,
@@ -117,7 +116,8 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 	}, [schoolData]);
 
 	if (isPending) return <LoadingScreen />;
-	if (error?.status == 404) return <EntityNotFound />;
+	if (error?.status == 404 || Number.isNaN(schoolID))
+		return <EntityNotFound />;
 
 	return (
 		<div className={classes.Wrapper}>

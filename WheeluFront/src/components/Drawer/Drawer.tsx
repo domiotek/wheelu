@@ -14,7 +14,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import SchoolIcon from "@mui/icons-material/School";
 import AccountPanel from "../AccountPanel/AccountPanel";
-import { useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import { AppContext } from "../../App";
 import { c, callAPI } from "../../modules/utils";
 
@@ -132,10 +132,10 @@ export default function Drawer({ open, setOpen }: IProps) {
 		this.setValue(!this.value);
 	}
 
-	const handleAccountMenu = (state: boolean) => {
-		if (state == true && !open) setOpen(true);
+	const handleAccountMenu = useCallback((state: boolean) => {
+		if (state) setOpen(true);
 		setAccountSectionOpen(state);
-	};
+	}, []);
 
 	const dynamicNavOptions = useMemo(() => {
 		const result: App.UI.Navigation.INavOptionDef[] = [];
@@ -171,6 +171,12 @@ export default function Drawer({ open, setOpen }: IProps) {
 							/>
 						),
 				});
+				if (userDetails?.instructorProfile?.activeEmployment)
+					result.push({
+						icon: <Business />,
+						name: "Szkoła jazdy",
+						link: `/schools/${userDetails.instructorProfile.activeEmployment.schoolId}/manage`,
+					});
 				break;
 			case AccessLevel.Student:
 				result.push({

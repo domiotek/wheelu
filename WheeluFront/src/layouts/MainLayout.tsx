@@ -24,7 +24,11 @@ export default function MainLayout() {
 		<Box sx={{ display: "flex", position: "relative" }}>
 			<Drawer open={drawerOpen} setOpen={setDrawerOpen} />
 
-			<Box component="main" sx={{ flexGrow: 1, p: 3, minWidth: 0 }}>
+			<Box
+				component="main"
+				className={classes.Main}
+				sx={{ flexGrow: 1, p: 3, minWidth: 0 }}
+			>
 				<ElevatedHeader
 					sx={{ background: theme.palette.background.default }}
 				>
