@@ -27,6 +27,7 @@ public class CourseMapper(SchoolMapper schoolMapper, IServiceProvider servicePro
             Id = source.Id,
             Category = source.Category,
             SchoolId = source.School.Id,
+            SchoolName = source.School.Name,
             Student = source.Student.GetShortDTO(),
             Instructor = source.Instructor.Instructor.User.GetShortDTO(),
             HoursCount = source.HoursCount,

@@ -16,7 +16,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import AccountPanel from "../AccountPanel/AccountPanel";
 import { useContext, useMemo, useState } from "react";
 import { AppContext } from "../../App";
-import { c } from "../../modules/utils";
+import { c, callAPI } from "../../modules/utils";
 
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -27,6 +27,10 @@ import classes from "./Drawer.module.css";
 import { Business, CalendarMonth, Security } from "@mui/icons-material";
 import { AccessLevel } from "../../modules/enums";
 import ScheduleModal from "../../modals/ScheduleModal/ScheduleModal";
+import { useQuery } from "@tanstack/react-query";
+import { API } from "../../types/api";
+import AuthService from "../../services/Auth";
+import { CourseCategoryFormatter } from "../../modules/formatters";
 
 interface IProps {
 	open: boolean;
@@ -77,6 +81,8 @@ const StyledDrawer = styled(MuiDrawer)(({ theme, open }) => ({
 
 export default function Drawer({ open, setOpen }: IProps) {
 	const [offerSectionOpen, setOfferSectionOpen] = useState<boolean>(false);
+	const [coursesSectionOpen, setCoursesSectionOpen] =
+		useState<boolean>(false);
 	const [accountSectionOpen, setAccountSectionOpen] =
 		useState<boolean>(false);
 
@@ -86,6 +92,25 @@ export default function Drawer({ open, setOpen }: IProps) {
 	const isDesktop = useMediaQuery(darkTheme.breakpoints.up("sm"));
 
 	const navigate = useNavigate();
+
+	const { data: userActiveCourses } = useQuery<
+		API.Courses.GetManyOfUser.IResponse,
+		API.Courses.GetManyOfUser.IEndpoint["error"]
+	>({
+		queryKey: ["User", "#", userDetails?.userId, "Courses"],
+		queryFn: () =>
+			callAPI<API.Courses.GetManyOfUser.IEndpoint>(
+				"GET",
+				"/api/v1/users/:userID/courses",
+				null,
+				{
+					userID: userDetails!.userId,
+				}
+			),
+		retry: true,
+		staleTime: 60000,
+		enabled: userDetails != undefined,
+	});
 
 	const handleDrawer = () => {
 		if (open) {
@@ -151,6 +176,51 @@ export default function Drawer({ open, setOpen }: IProps) {
 		return result;
 	}, [accessLevel]);
 
+	const userCoursesSection = useMemo(() => {
+		if (
+			userDetails?.role == "Administrator" ||
+			userDetails?.role == "SchoolManager"
+		)
+			return <></>;
+
+		return (
+			<>
+				<ListItemButton
+					onClick={handleSection.bind({
+						value: coursesSectionOpen,
+						setValue: setCoursesSectionOpen,
+					})}
+					sx={{ pl: 3 }}
+				>
+					<ListItemIcon>
+						<SchoolIcon />
+					</ListItemIcon>
+					<ListItemText>Moje kursy</ListItemText>
+				</ListItemButton>
+				<Collapse in={coursesSectionOpen} timeout="auto" unmountOnExit>
+					<List component="div" disablePadding>
+						{userActiveCourses?.map((c) => (
+							<ListItemButton
+								key={c.id}
+								sx={{ pl: 4 }}
+								onClick={() => navigate(`/courses/${c.id}`)}
+							>
+								<ListItemIcon className={classes.CourseIcon}>
+									{CourseCategoryFormatter.format(c.category)}
+								</ListItemIcon>
+								<ListItemText>
+									{userDetails?.role == "Instructor"
+										? AuthService.getUserFullName(c.student)
+										: c.schoolName}
+								</ListItemText>
+							</ListItemButton>
+						))}
+					</List>
+				</Collapse>
+			</>
+		);
+	}, [userDetails, userActiveCourses, coursesSectionOpen]);
+
 	return (
 		<ThemeProvider theme={darkTheme}>
 			<StyledDrawer
@@ -214,6 +284,7 @@ export default function Drawer({ open, setOpen }: IProps) {
 							</ListItemButton>
 						</List>
 					</Collapse>
+					{userCoursesSection}
 					{dynamicNavOptions.map((opt) => (
 						<ListItemButton
 							key={opt.name}

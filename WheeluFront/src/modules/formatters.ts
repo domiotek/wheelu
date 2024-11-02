@@ -1,4 +1,6 @@
 import { DateTime } from "luxon";
+import { CourseCategory } from "./enums";
+import { CourseCategoriesMapping } from "./constants";
 
 export const CurrencyFormatter = new Intl.NumberFormat("pl-PL", {
 	style: "currency",
@@ -43,3 +45,9 @@ export const DateTimeFormatter = {
 		);
 	},
 };
+
+export const CourseCategoryFormatter = {
+	format: (category: CourseCategory) => {
+		return CourseCategoriesMapping[category].name;
+	}
+}

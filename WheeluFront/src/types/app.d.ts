@@ -337,6 +337,7 @@ declare global {
 				id: number;
 				category: CourseCategory;
 				schoolId: number;
+				schoolName: string;
 				student: IShortUser;
 				instructor: IShortUser;
 				hoursCount: number;
@@ -472,14 +473,14 @@ declare global {
 				T extends "link" | "action" = "link" | "action"
 			> =
 				| (T extends "link"
-						? IInteractiveTileBaseDef & { type: T; link: string }
-						: never)
+					? IInteractiveTileBaseDef & { type: T; link: string }
+					: never)
 				| (T extends "action"
-						? IInteractiveTileBaseDef & {
-								type: T;
-								action: () => void;
-						  }
-						: never);
+					? IInteractiveTileBaseDef & {
+						type: T;
+						action: () => void;
+					}
+					: never);
 
 			interface IVehiclePartDef {
 				[key: number]: {

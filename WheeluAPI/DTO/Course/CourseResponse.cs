@@ -23,6 +23,8 @@ public class LimitedCourseResponse
 
     public required int SchoolId { get; set; }
 
+    public required string SchoolName { get; set; }
+
     public required ShortUserResponse Student { get; set; }
 
     public required ShortUserResponse Instructor { get; set; }

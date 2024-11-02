@@ -94,6 +94,15 @@ public class CourseService(
             .ToListAsync();
     }
 
+    public IQueryable<Course> GetCourses(User user)
+    {
+        return dbContext
+            .Courses.Where(c =>
+                c.Instructor.Instructor.User.Id == user.Id || c.Student.Id == user.Id
+            )
+            .Where(c => c.TransactionComplete);
+    }
+
     public IQueryable<Course> GetCoursesPageAsync(PagingMetadata meta, out int appliedPageSize)
     {
         var results = ApplyPaging(

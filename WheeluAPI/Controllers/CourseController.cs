@@ -123,6 +123,36 @@ public class CourseController : BaseCourseController
         );
     }
 
+    [HttpGet("/api/v1/users/{userID}/courses")]
+    [Authorize]
+    [ProducesResponseType(typeof(List<LimitedCourseResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetUserCoursesAsync(string userID)
+    {
+        var requestorEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var requestor = await userService.GetUserByEmailAsync(requestorEmail!);
+        var isAdmin = await userService.HasRole(requestor!, UserRole.Administrator);
+
+        if (requestor!.Id != userID && !isAdmin)
+            return BadRequest(new APIError { Code = APIErrorCode.AccessDenied });
+
+        var targetUser = requestor;
+
+        if (requestor!.Id != userID)
+            targetUser = await userService.GetUserByIDAsync(userID);
+
+        if (targetUser == null)
+            return NotFound(new APIError { Code = APIErrorCode.EntityNotFound });
+
+        var courses = await courseService
+            .GetCourses(targetUser)
+            // .Where(c => !c.Archived) [TODO]
+            .ToListAsync();
+
+        return Ok(mapper.MapToLimitedDTO(courses));
+    }
+
     [HttpGet]
     [Authorize]
     [ProducesResponseType(typeof(List<CourseResponse>), StatusCodes.Status200OK)]

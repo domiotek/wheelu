@@ -27,8 +27,8 @@ export namespace API {
 			returnData: any;
 			errCodes: TCommonServerErrorCodes | string;
 			returnPacket:
-				| this["returnData"]
-				| IFailureResponse<this["errCodes"]>;
+			| this["returnData"]
+			| IFailureResponse<this["errCodes"]>;
 			requestData: Record<
 				string,
 				string | number | string[] | object[] | undefined | boolean
@@ -283,7 +283,7 @@ export namespace API {
 		namespace PostNew {
 			interface IRequestData
 				extends App.Models.IApplication,
-					Record<string, string> {}
+				Record<string, string> { }
 
 			type IEndpoint = _.IBuildAPIEndpoint<
 				"POST",
@@ -444,7 +444,7 @@ export namespace API {
 
 			interface IRequest
 				extends _.IPagingRequest,
-					Record<string, string | number> {
+				Record<string, string | number> {
 				query?: string;
 				SortingTarget: number;
 				SortingType: SortingType;
@@ -462,7 +462,7 @@ export namespace API {
 		namespace Update {
 			interface IRequestData
 				extends Record<string, string>,
-					App.Models.IAddress {
+				App.Models.IAddress {
 				name: string;
 				nip: string;
 				phoneNumber: string;
@@ -547,7 +547,7 @@ export namespace API {
 
 				interface IRequest
 					extends _.IPagingRequest,
-						Record<string, string | number> {
+					Record<string, string | number> {
 					CategoryType?: CourseCategory;
 					SortingTarget: number;
 					SortingType: SortingType;
@@ -924,6 +924,23 @@ export namespace API {
 				_.TCommonServerErrorCodes,
 				Partial<_.IPagingRequest>,
 				IBaseParams
+			>;
+		}
+
+		namespace GetManyOfUser {
+			type IResponse = App.Models.ILimitedCourse[];
+
+			interface IParams extends Record<string, string> {
+				userID: string
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/users/:userID/courses",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				null,
+				IParams
 			>;
 		}
 
