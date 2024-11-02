@@ -7,6 +7,7 @@ import {
 	List,
 	ListItem,
 	ListItemText,
+	Tooltip,
 	Typography,
 } from "@mui/material";
 import classes from "./ManageView.module.css";
@@ -294,15 +295,29 @@ export default function ManageView() {
 								</Card>
 							)}
 
-							<Button
-								className={classes.SectionButton}
-								variant="contained"
-								color="secondary"
-								onClick={handleChangeInstructorModal}
-								disabled={disableChangeInstructorAction}
+							<Tooltip
+								title="Nie można zażądać zmiany, gdyż jest zaplanowana jazda."
+								disableHoverListener={
+									course?.nextRide == undefined ||
+									role == "other"
+								}
+								disableFocusListener={
+									course?.nextRide == undefined ||
+									role == "other"
+								}
 							>
-								{changeInstructorTexts.action}
-							</Button>
+								<span className={classes.SectionButtonWrapper}>
+									<Button
+										className={classes.SectionButton}
+										variant="contained"
+										color="secondary"
+										onClick={handleChangeInstructorModal}
+										disabled={disableChangeInstructorAction}
+									>
+										{changeInstructorTexts.action}
+									</Button>
+								</span>
+							</Tooltip>
 						</>
 					)}
 				</section>

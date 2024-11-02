@@ -52,7 +52,7 @@ export default function AlertPanel({
 			case !filledCourseProgress:
 				alertDef.title = t("examSoftBlock_title", role);
 				alertDef.content = t("examSoftBlock_content", role);
-				if (canEdit)
+				if (canEdit && role == "instructor")
 					alertDef.action = (
 						<Button
 							color="inherit"

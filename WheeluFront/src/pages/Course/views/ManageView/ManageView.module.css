@@ -18,8 +18,12 @@
 	padding: 0 0.5em;
 }
 
+.SectionButtonWrapper {
+	display: inline-block;
+	height: fit-content;
+}
+
 .SectionButton {
-	margin-top: 1.5em;
 	width: fit-content;
 }
 
