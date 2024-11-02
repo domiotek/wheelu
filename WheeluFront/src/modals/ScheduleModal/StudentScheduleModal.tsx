@@ -45,7 +45,7 @@ export default function StudentScheduleModal({ studentID }: IProps) {
 
 	const queryKey = useMemo(() => {
 		return [
-			"Instructors",
+			"Users",
 			"#",
 			studentID,
 			"Schedule",
@@ -53,7 +53,7 @@ export default function StudentScheduleModal({ studentID }: IProps) {
 			"-",
 			weekBoundaries[1].toISODate(),
 		];
-	}, [weekBoundaries]);
+	}, [weekBoundaries, studentID]);
 
 	const { data, isFetching } = useQuery<
 		API.Schedule.GetSlotsOfStudent.IResponse,

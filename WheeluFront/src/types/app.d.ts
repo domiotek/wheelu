@@ -546,6 +546,7 @@ declare global {
 			userDetails: Models.IIdentityUser | null;
 			accessLevel: AccessLevel;
 			setModalContent: (content: JSX.Element) => void;
+			destroySession: () => void
 		}
 
 		type TModalClosingListener = (() => boolean) | null;

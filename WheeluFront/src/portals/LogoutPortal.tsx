@@ -1,15 +1,13 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { useLayoutEffect } from "react";
+import { useContext, useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { AppContext } from "../App";
 
 export default function LogoutPortal() {
-	const queryClient = useQueryClient();
+	const { destroySession } = useContext(AppContext);
 	const navigate = useNavigate();
 
 	useLayoutEffect(() => {
-		queryClient.invalidateQueries();
-		localStorage.removeItem("token");
-
+		destroySession();
 		navigate("/login");
 	}, []);
 

@@ -27,6 +27,13 @@ export function callAPI<T extends API._.IBaseAPIEndpoint>(
 		if (urlParams) {
 			for (const paramName in urlParams) {
 				const value = urlParams[paramName];
+				if (value === undefined) {
+					console.error(
+						`Param '${paramName}' declared but not given.`
+					);
+					rej(new AxiosError("URL param not given"));
+					return;
+				}
 				endpointURL = endpointURL.replace(
 					":" + paramName,
 					value.toString() ?? ""

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	createContext,
 	useCallback,
@@ -64,9 +64,13 @@ export const AppContext = createContext<App.IAppContext>({
 	userDetails: null,
 	accessLevel: AccessLevel.Anonymous,
 	setModalContent: OutsideContextNotifier,
+	destroySession: OutsideContextNotifier,
 });
 
 export default function App({ useSplash }: IProps) {
+	const [userDetails, setUserDetails] =
+		useState<App.Models.IIdentityUser | null>(null);
+
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [modalContent, setModalContent] = useState<JSX.Element | null>(null);
 
@@ -75,6 +79,7 @@ export default function App({ useSplash }: IProps) {
 
 	const navigate = useNavigate();
 	const location = useLocation();
+	const queryClient = useQueryClient();
 
 	const { error, data, isFetching } = useQuery<
 		API.Auth.Identify.IResponseData,
@@ -151,8 +156,17 @@ export default function App({ useSplash }: IProps) {
 				anonymousRoutes.includes(currentURL)
 			)
 				setTimeout(() => setSplashHidden(true), 400);
+
+			setUserDetails(data ?? null);
 		}
 	}, [data, error, location]);
+
+	const destroySession = useCallback(() => {
+		queryClient.invalidateQueries();
+		queryClient.clear();
+		localStorage.removeItem("token");
+		setUserDetails(null);
+	}, []);
 
 	return (
 		<AppContext.Provider
@@ -162,9 +176,10 @@ export default function App({ useSplash }: IProps) {
 				activeThemeName: darkMode ? "dark" : "light",
 				activeTheme: darkMode ? darkTheme : lightTheme,
 				setTheme: (theme) => setDarkMode(theme == "dark"),
-				userDetails: data ?? null,
+				userDetails,
 				accessLevel,
 				setModalContent: modalContentSetter,
+				destroySession,
 			}}
 		>
 			<LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale="pl">

@@ -195,7 +195,7 @@ export default function Drawer({ open, setOpen }: IProps) {
 		}
 
 		return result;
-	}, [accessLevel]);
+	}, [accessLevel, userDetails]);
 
 	const userCoursesSection = useMemo(() => {
 		if (
