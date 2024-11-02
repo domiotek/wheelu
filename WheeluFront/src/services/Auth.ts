@@ -36,6 +36,6 @@ export default class AuthService {
 	}
 
 	public static getUserInitials(user: App.Models.IShortUser) {
-		return `${user.name[0].toUpperCase()} ${user.surname[0].toUpperCase()}`;
+		return `${user.name[0].toUpperCase()}${user.surname[0].toUpperCase()}`;
 	}
 }

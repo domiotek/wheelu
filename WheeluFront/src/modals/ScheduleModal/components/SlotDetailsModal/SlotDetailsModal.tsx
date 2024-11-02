@@ -339,12 +339,14 @@ export default function SlotDetailsModal({ slot, allowEdit }: IProps) {
 				show={showRideDetails}
 				onClose={() => setShowRideDetails(false)}
 			>
-				<RideDetailsModal
-					rideID={slot.ride?.id!}
-					courseID={slot.ride?.course.id!}
-					canAlterState={false}
-					canChangeVehicle={false}
-				/>
+				{slot.ride && (
+					<RideDetailsModal
+						rideID={slot.ride?.id!}
+						courseID={slot.ride?.course.id!}
+						canAlterState={false}
+						canChangeVehicle={false}
+					/>
+				)}
 			</ModalContainer>
 		</div>
 	);

@@ -116,6 +116,7 @@ export default function Drawer({ open, setOpen }: IProps) {
 	const handleDrawer = () => {
 		if (open) {
 			setOfferSectionOpen(false);
+			setCoursesSectionOpen(false);
 			setAccountSectionOpen(false);
 		}
 		setOpen(!open);

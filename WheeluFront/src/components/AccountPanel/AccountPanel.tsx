@@ -52,8 +52,8 @@ export default function AccountPanel({ open, setOpen }: IProps) {
 	}, [open]);
 
 	return (
-		<Card sx={{ m: 1, p: 1 }} onClick={menuOpenHandler}>
-			<Stack ref={anchorRef} direction="row" sx={{ cursor: "pointer" }}>
+		<Card sx={{ m: 1, p: 1, cursor: "pointer" }} onClick={menuOpenHandler}>
+			<Stack ref={anchorRef} direction="row">
 				<Avatar />
 				<Stack sx={{ ml: 2 }}>
 					<Typography variant="body1">
