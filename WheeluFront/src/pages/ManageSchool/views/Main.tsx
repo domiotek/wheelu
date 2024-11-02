@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import classes from "../ManageSchoolPage.module.css";
 import {
 	CarRental,
@@ -11,8 +11,11 @@ import {
 } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ButtonBase, Paper, Typography } from "@mui/material";
+import { SchoolPageContext } from "../ManageSchoolPage";
 
 export default function MainSchoolView() {
+	const { access } = useContext(SchoolPageContext);
+
 	const location = useLocation();
 	const navigate = useNavigate();
 
@@ -47,26 +50,28 @@ export default function MainSchoolView() {
 			link: location.pathname + "/offer",
 		});
 
-		uiTiles.push({
-			caption: "Transakcje",
-			type: "link",
-			icon: ReceiptLong,
-			link: location.pathname + "/transactions",
-		});
+		if (access != "instructor") {
+			uiTiles.push({
+				caption: "Transakcje",
+				type: "link",
+				icon: ReceiptLong,
+				link: location.pathname + "/transactions",
+			});
 
-		uiTiles.push({
-			caption: "Wnioski",
-			type: "link",
-			icon: Grading,
-			link: location.pathname + "/requests",
-		});
+			uiTiles.push({
+				caption: "Wnioski",
+				type: "link",
+				icon: Grading,
+				link: location.pathname + "/requests",
+			});
 
-		uiTiles.push({
-			caption: "Zarządzaj",
-			type: "link",
-			icon: Settings,
-			link: location.pathname + "/manage",
-		});
+			uiTiles.push({
+				caption: "Zarządzaj",
+				type: "link",
+				icon: Settings,
+				link: location.pathname + "/manage",
+			});
+		}
 
 		return uiTiles;
 	}, []);
