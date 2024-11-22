@@ -58,6 +58,8 @@ public class Course
 
     public string CourseProgressJSON { get; set; } = "{}";
 
+    public virtual List<Review> Reviews { get; set; } = [];
+
     [NotMapped]
     public CourseProgress CourseProgress
     {

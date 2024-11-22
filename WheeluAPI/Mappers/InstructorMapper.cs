@@ -12,6 +12,8 @@ public class InstructorDTOMapper(SchoolInstructorDTOMapper instructorMapper)
             Id = source.Id,
             User = source.User.GetShortDTO(),
             EmploymentHistory = instructorMapper.MapToDTO(source.EmploymentHistory),
+            Grade = source.Grade,
+            ReviewCount = source.Reviews.Count,
         };
     }
 

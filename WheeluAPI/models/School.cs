@@ -63,4 +63,12 @@ public class School
     {
         get { return Courses.Where(c => !c.Archived && c.TransactionComplete).ToList(); }
     }
+
+    public virtual List<Review> Reviews { get; set; } = [];
+
+    [NotMapped]
+    public decimal Grade
+    {
+        get { return Reviews.Count > 0 ? Reviews.Average(r => r.Grade) : 0; }
+    }
 }

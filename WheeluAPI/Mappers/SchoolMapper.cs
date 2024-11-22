@@ -44,6 +44,8 @@ public class SchoolMapper(IImageService imageService, ILocationService locationS
                 source.Vehicles.Count > 0 ? source.Vehicles.Min(v => v.ManufacturingYear) : null,
             CoursesCount = source.Courses.Count,
             ActiveCoursesCount = source.ActiveCourses.Count,
+            Grade = source.Grade,
+            ReviewCount = source.Reviews.Count,
         };
     }
 

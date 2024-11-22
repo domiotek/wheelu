@@ -301,6 +301,7 @@ public class CourseService(
             Transactions = [],
             Rides = [],
             CanceledRides = [],
+            Reviews = [],
         };
 
         dbContext.Courses.Add(course);

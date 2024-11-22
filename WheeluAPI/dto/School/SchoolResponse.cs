@@ -60,4 +60,8 @@ public class SchoolResponse
     public required int CoursesCount { get; set; }
 
     public required int ActiveCoursesCount { get; set; }
+
+    public required decimal Grade { get; set; }
+
+    public required int ReviewCount { get; set; }
 }

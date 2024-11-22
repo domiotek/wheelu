@@ -16,4 +16,8 @@ public class InstructorResponse
     public required ShortUserResponse User { get; set; }
 
     public virtual required List<SchoolInstructorResponse> EmploymentHistory { get; set; } = [];
+
+    public required decimal Grade { get; set; }
+
+    public required int ReviewCount { get; set; }
 }
