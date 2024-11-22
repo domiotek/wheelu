@@ -26,7 +26,6 @@ import {
 	List,
 	ListItem,
 	ListItemText,
-	Rating,
 	Switch,
 	Tooltip,
 	Typography,
@@ -42,6 +41,7 @@ import { CourseCategory } from "../../../../modules/enums";
 import InstructorService from "../../../../services/Instructor";
 import InstructorScheduleModal from "../../../../modals/ScheduleModal/InstructorScheduleModal";
 import { toast } from "react-toastify";
+import RatingWidget from "../../../../components/RatingWidget/RatingWidget";
 
 export default function Instructor() {
 	const [visibilityState, setVisibilityState] = useState<boolean>(false);
@@ -310,14 +310,21 @@ export default function Instructor() {
 							)}
 						</ListItem>
 						<ListItem className={classes.RatingItem}>
-							<div>
-								<Rating />
-								<Typography variant="body2">
-									4.0 (14 ocen)
-								</Typography>
-							</div>
+							<RatingWidget
+								grade={data.instructor.grade}
+								reviewCount={data.instructor.reviewCount}
+								readonly
+							/>
 
-							<Button variant="outlined" color="secondary">
+							<Button
+								variant="outlined"
+								color="secondary"
+								onClick={() =>
+									navigate(
+										`../instructors/${data.instructor.id}/reviews`
+									)
+								}
+							>
 								Zobacz
 							</Button>
 						</ListItem>

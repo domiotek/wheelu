@@ -126,6 +126,15 @@ const SchoolManagementTransactionsView = React.lazy(
 const SchoolManagementRequestsView = React.lazy(
 	() => import("./pages/ManageSchool/views/RequestsView/RequestsView.tsx")
 );
+const SchoolManagementReviewsView = React.lazy(
+	() => import("./pages/ManageSchool/views/ReviewsView/ReviewsView.tsx")
+);
+const SchoolManagementInstructorReviewsView = React.lazy(
+	() =>
+		import(
+			"./pages/ManageSchool/views/InstructorReviewsView/InstructorReviewsView.tsx"
+		)
+);
 
 /** Public School sub-views */
 
@@ -135,8 +144,17 @@ const PublicSchoolCoursesView = React.lazy(
 const PublicSchoolCourseView = React.lazy(
 	() => import("./pages/School/views/CourseView/CourseView.tsx")
 );
+const PublicSchoolReviewView = React.lazy(
+	() => import("./pages/School/views/ReviewsView/ReviewsView.tsx")
+);
 const PublicSchoolInstructorsView = React.lazy(
 	() => import("./pages/School/views/InstructorsView/InstructorsView.tsx")
+);
+const PublicSchoolInstructorReviewView = React.lazy(
+	() =>
+		import(
+			"./pages/School/views/InstructorReviewsView/InstructorReviewsView.tsx"
+		)
 );
 const PublicSchoolVehiclesView = React.lazy(
 	() => import("./pages/School/views/VehiclesView/VehiclesView.tsx")
@@ -190,6 +208,11 @@ const schoolManagementViews = (
 			element={<SchoolManagementTransactionsView />}
 		/>
 		<Route path="requests" element={<SchoolManagementRequestsView />} />
+		<Route path="reviews" element={<SchoolManagementReviewsView />} />
+		<Route
+			path="instructors/:instructorId/reviews"
+			element={<SchoolManagementInstructorReviewsView />}
+		/>
 	</>
 );
 
@@ -256,9 +279,19 @@ root.render(
 										element={<PublicSchoolCourseView />}
 									/>
 									<Route
+										path="reviews"
+										element={<PublicSchoolReviewView />}
+									/>
+									<Route
 										path="instructors"
 										element={
 											<PublicSchoolInstructorsView />
+										}
+									/>
+									<Route
+										path="instructors/:instructorId/reviews"
+										element={
+											<PublicSchoolInstructorReviewView />
 										}
 									/>
 									<Route

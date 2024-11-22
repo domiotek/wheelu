@@ -6,6 +6,7 @@ import {
 	Grading,
 	People,
 	ReceiptLong,
+	Reviews,
 	School,
 	Settings,
 } from "@mui/icons-material";
@@ -48,6 +49,13 @@ export default function MainSchoolView() {
 			type: "link",
 			icon: Folder,
 			link: location.pathname + "/offer",
+		});
+
+		uiTiles.push({
+			caption: "Opinie",
+			type: "link",
+			icon: Reviews,
+			link: location.pathname + "/reviews",
 		});
 
 		if (access != "instructor") {

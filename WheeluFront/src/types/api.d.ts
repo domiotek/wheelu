@@ -2,6 +2,7 @@ import {
 	AuthorizabledAccountActions,
 	CourseCategory,
 	RequestStatus,
+	ReviewTargetType,
 	RideStatus,
 	SortingType,
 } from "../modules/enums";
@@ -27,8 +28,8 @@ export namespace API {
 			returnData: any;
 			errCodes: TCommonServerErrorCodes | string;
 			returnPacket:
-			| this["returnData"]
-			| IFailureResponse<this["errCodes"]>;
+				| this["returnData"]
+				| IFailureResponse<this["errCodes"]>;
 			requestData: Record<
 				string,
 				string | number | string[] | object[] | undefined | boolean
@@ -283,7 +284,7 @@ export namespace API {
 		namespace PostNew {
 			interface IRequestData
 				extends App.Models.IApplication,
-				Record<string, string> { }
+					Record<string, string> {}
 
 			type IEndpoint = _.IBuildAPIEndpoint<
 				"POST",
@@ -444,7 +445,7 @@ export namespace API {
 
 			interface IRequest
 				extends _.IPagingRequest,
-				Record<string, string | number> {
+					Record<string, string | number> {
 				query?: string;
 				SortingTarget: number;
 				SortingType: SortingType;
@@ -462,7 +463,7 @@ export namespace API {
 		namespace Update {
 			interface IRequestData
 				extends Record<string, string>,
-				App.Models.IAddress {
+					App.Models.IAddress {
 				name: string;
 				nip: string;
 				phoneNumber: string;
@@ -547,7 +548,7 @@ export namespace API {
 
 				interface IRequest
 					extends _.IPagingRequest,
-					Record<string, string | number> {
+						Record<string, string | number> {
 					CategoryType?: CourseCategory;
 					SortingTarget: number;
 					SortingType: SortingType;
@@ -931,7 +932,7 @@ export namespace API {
 			type IResponse = App.Models.ILimitedCourse[];
 
 			interface IParams extends Record<string, string> {
-				userID: string
+				userID: string;
 			}
 
 			type IEndpoint = _.IBuildAPIEndpoint<
@@ -1316,7 +1317,7 @@ export namespace API {
 			}
 
 			interface IParams extends Record<string, string> {
-				userID: string
+				userID: string;
 			}
 
 			type IEndpoint = _.IBuildAPIEndpoint<
@@ -1382,6 +1383,84 @@ export namespace API {
 				"InstructorNotEmployed" | "RideAssigned",
 				IRequestData,
 				IManageParams
+			>;
+		}
+	}
+
+	namespace Reviews {
+		namespace GetReviewsOfSchool {
+			type IResponse = App.Models.IReview[];
+
+			interface IParams extends Record<string, number> {
+				schoolID: number;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/schools/:schoolID/reviews",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				null,
+				IParams
+			>;
+		}
+
+		namespace GetReviewsOfInstructor {
+			type IResponse = App.Models.IReview[];
+
+			interface IParams extends Record<string, number> {
+				instructorID: number;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/instructors/:instructorID/reviews",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				null,
+				IParams
+			>;
+		}
+
+		namespace GetReviewsOfCourse {
+			type IResponse = {
+				school?: App.Models.IReview;
+				instructor?: App.Models.IReview;
+			};
+
+			interface IParams extends Record<string, number> {
+				courseID: number;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"GET",
+				"/api/v1/courses/:courseID/reviews",
+				IResponse,
+				_.TCommonServerErrorCodes,
+				null,
+				IParams
+			>;
+		}
+
+		namespace PostReview {
+			interface IRequest
+				extends Record<string, string | number | undefined> {
+				grade: number;
+				message?: string;
+				targetType: ReviewTargetType;
+			}
+
+			interface IParams extends Record<string, number> {
+				courseID: number;
+			}
+
+			type IEndpoint = _.IBuildAPIEndpoint<
+				"POST",
+				"/api/v1/courses/:courseID/review",
+				null,
+				"InvalidGrade",
+				IRequest,
+				IParams
 			>;
 		}
 	}

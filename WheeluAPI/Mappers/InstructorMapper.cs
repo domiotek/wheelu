@@ -24,7 +24,13 @@ public class InstructorDTOMapper(SchoolInstructorDTOMapper instructorMapper)
 
     public ShortInstructorResponse GetShortDTO(Instructor source)
     {
-        return new ShortInstructorResponse { Id = source.Id, User = source.User.GetShortDTO() };
+        return new ShortInstructorResponse
+        {
+            Id = source.Id,
+            User = source.User.GetShortDTO(),
+            Grade = source.Grade,
+            ReviewCount = source.Reviews.Count,
+        };
     }
 
     public List<ShortInstructorResponse> MapToShortDTO(List<Instructor> source)

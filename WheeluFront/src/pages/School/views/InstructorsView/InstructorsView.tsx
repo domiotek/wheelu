@@ -1,31 +1,19 @@
-import {
-	Avatar,
-	Button,
-	Divider,
-	List,
-	ListItem,
-	ListItemAvatar,
-	ListItemText,
-	Paper,
-	Typography,
-} from "@mui/material";
-import classes from "./InstructorsView.module.css";
+import { Button, Divider, List, Typography } from "@mui/material";
 import commonClasses from "../Common.module.css";
 import { useQuery } from "@tanstack/react-query";
 import { API } from "../../../../types/api";
-import { callAPI, formatPolishWordSuffix } from "../../../../modules/utils";
+import { callAPI } from "../../../../modules/utils";
 import { useContext } from "react";
 import { PublicSchooPageContext } from "../../SchoolPage";
 import LoadingScreen from "../../../../components/LoadingScreen/LoadingScreen";
-import InlineDot from "../../../../components/InlineDot/InlineDot";
 import MessagePanel from "../../../../components/MessagePanel/MessagePanel";
-import {
-	initialsAvatarProps,
-	renderCategoryChips,
-} from "../../../../modules/features";
+import InstructorPanel from "../../../../components/InstructorPanel/InstructorPanel";
+import { useNavigate } from "react-router-dom";
 
 export default function InstructorsView() {
 	const { schoolID } = useContext(PublicSchooPageContext);
+
+	const navigate = useNavigate();
 
 	const { data, isFetching } = useQuery<
 		API.Instructors.GetAllOfSchool.IResponse,
@@ -61,67 +49,24 @@ export default function InstructorsView() {
 			) : (
 				<List>
 					{data?.map((instructor) => {
-						const activeCoursesCount =
-							instructor.assignedCourses.filter(
-								(c) => !c.archived
-							).length;
-
 						return (
-							<Paper
+							<InstructorPanel
 								key={instructor.id}
-								className={classes.InstructorPanel}
-								component={ListItem}
-							>
-								<div className={classes.Content}>
-									<ListItemAvatar>
-										<Avatar
-											{...initialsAvatarProps(
-												`${instructor.instructor.user.name} ${instructor.instructor.user.surname}`
-											)}
-										/>
-									</ListItemAvatar>
-									<ListItemText
-										className={classes.Text}
-										primary={
-											<>
-												{
-													instructor.instructor.user
-														.name
-												}{" "}
-												{
-													instructor.instructor.user
-														.surname
-												}
-												<br />
-												{renderCategoryChips(
-													instructor.allowedCategories
-												)}
-											</>
+								instructor={instructor}
+								action={
+									<Button
+										variant="outlined"
+										color="secondary"
+										onClick={() =>
+											navigate(
+												`${instructor.instructor.id}/reviews`
+											)
 										}
-										secondary={
-											<>
-												{
-													instructor.assignedCourses
-														.length
-												}{" "}
-												kursów ({activeCoursesCount}{" "}
-												aktywn
-												{formatPolishWordSuffix(
-													activeCoursesCount,
-													["y", "e", "ych"]
-												)}
-												)
-												<InlineDot color="secondary" />
-												4.65
-											</>
-										}
-									/>
-								</div>
-
-								<Button variant="outlined" color="secondary">
-									Recenzje
-								</Button>
-							</Paper>
+									>
+										Recenzje
+									</Button>
+								}
+							/>
 						);
 					})}
 				</List>

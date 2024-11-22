@@ -129,6 +129,8 @@ declare global {
 				oldestVehicleYear?: number;
 				coursesCount: number;
 				activeCoursesCount: number;
+				grade: number;
+				reviewCount: number;
 			}
 
 			interface ICityMatching {
@@ -176,10 +178,14 @@ declare global {
 			interface IShortInstructorProfile {
 				id: number;
 				user: IShortUser;
+				grade: number;
+				reviewCount: number;
 			}
 
 			interface IInstructorProfile extends IShortInstructorProfile {
 				employmentHistory: IEmployedInstructor[];
+				grade: number;
+				reviewCount: number;
 			}
 
 			interface IEmploymentRecord {
@@ -444,6 +450,18 @@ declare global {
 				requestedAt: string;
 				lastStatusChange: string;
 			}
+
+			interface IReview {
+				id: number;
+				school: IShortSchool;
+				instructor: IShortInstructorProfile;
+				student: IShortUser;
+				grade: number;
+				edited: boolean;
+				message?: string;
+				created: string;
+				updated: string;
+			}
 		}
 
 		namespace UI {
@@ -473,14 +491,14 @@ declare global {
 				T extends "link" | "action" = "link" | "action"
 			> =
 				| (T extends "link"
-					? IInteractiveTileBaseDef & { type: T; link: string }
-					: never)
+						? IInteractiveTileBaseDef & { type: T; link: string }
+						: never)
 				| (T extends "action"
-					? IInteractiveTileBaseDef & {
-						type: T;
-						action: () => void;
-					}
-					: never);
+						? IInteractiveTileBaseDef & {
+								type: T;
+								action: () => void;
+						  }
+						: never);
 
 			interface IVehiclePartDef {
 				[key: number]: {
@@ -546,7 +564,7 @@ declare global {
 			userDetails: Models.IIdentityUser | null;
 			accessLevel: AccessLevel;
 			setModalContent: (content: JSX.Element) => void;
-			destroySession: () => void
+			destroySession: () => void;
 		}
 
 		type TModalClosingListener = (() => boolean) | null;

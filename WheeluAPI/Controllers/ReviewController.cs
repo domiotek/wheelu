@@ -11,11 +11,11 @@ namespace WheeluAPI.Controllers;
 
 [ApiController]
 [Route("/api/v1")]
-public class ReviewsController(
+public class ReviewController(
     ReviewMapper mapper,
     ISchoolService schoolService,
-    InstructorService instructorService,
-    UserService userService,
+    IInstructorService instructorService,
+    IUserService userService,
     CourseService courseService,
     ReviewService service
 ) : BaseCourseController(userService, courseService)
@@ -60,7 +60,7 @@ public class ReviewsController(
 
     [HttpGet("courses/{courseID}/reviews")]
     [Authorize]
-    [ProducesResponseType(typeof(List<ReviewResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(CourseReviewsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetCourseReviewsAsync(int courseID)
@@ -72,7 +72,15 @@ public class ReviewsController(
                 new APIError { Code = APIErrorCode.EntityNotFound, Details = ["Course not found."] }
             );
 
-        return Ok(mapper.MapToDTO(course.Reviews));
+        var reviews = course.Reviews;
+
+        return Ok(
+            new CourseReviewsResponse
+            {
+                School = mapper.GetDTO(reviews.Find(r => r.Instructor is null)),
+                Instructor = mapper.GetDTO(reviews.Find(r => r.Instructor is not null)),
+            }
+        );
     }
 
     [HttpPost("courses/{courseID}/review")]

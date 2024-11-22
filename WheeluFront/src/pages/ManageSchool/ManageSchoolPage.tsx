@@ -6,8 +6,6 @@ import {
 	List,
 	ListItem,
 	ListItemText,
-	Rating,
-	Typography,
 } from "@mui/material";
 import classes from "./ManageSchoolPage.module.css";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
@@ -32,6 +30,7 @@ import {
 import { AppContext } from "../../App";
 import { AccessLevel } from "../../modules/enums";
 import LazyBackendImage from "../../components/LazyBackendImage/LazyBackendImage";
+import RatingWidget from "../../components/RatingWidget/RatingWidget";
 
 interface IProps {
 	viewPoint: "admin" | "others";
@@ -184,8 +183,11 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 					</ListItem>
 					<Divider />
 					<ListItem className={classes.RatingListItem}>
-						<Rating defaultValue={2.5} precision={0.5} readOnly />
-						<Typography variant="body2">4.0 (12 ocen)</Typography>
+						<RatingWidget
+							grade={schoolData?.grade ?? 0}
+							reviewCount={schoolData?.reviewCount ?? 0}
+							readonly
+						/>
 					</ListItem>
 				</List>
 				{coverPhotoPreview ? (

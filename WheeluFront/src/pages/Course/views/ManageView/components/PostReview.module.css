@@ -1,0 +1,12 @@
+.Wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+	max-width: 500px;
+	padding: 1.5em;
+	width: 100%;
+}
+
+.Wrapper button {
+	align-self: flex-end;
+}

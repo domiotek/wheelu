@@ -1,0 +1,9 @@
+.Avatar {
+	align-self: flex-start;
+}
+
+.DetailsWrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15em;
+}

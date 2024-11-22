@@ -14,6 +14,8 @@ public class SchoolInstructorDTOMapper(CourseMapper courseMapper, SchoolMapper s
             {
                 Id = source.Instructor.Id,
                 User = source.Instructor.User.GetShortDTO(),
+                Grade = source.Instructor.Grade,
+                ReviewCount = source.Instructor.Reviews.Count,
             },
             School = schoolMapper.GetShortDTO(source.School),
             Detached = source.Detached,
@@ -42,6 +44,8 @@ public class SchoolInstructorDTOMapper(CourseMapper courseMapper, SchoolMapper s
             {
                 Id = source.Instructor.Id,
                 User = source.Instructor.User.GetShortDTO(),
+                Grade = source.Instructor.Grade,
+                ReviewCount = source.Instructor.Reviews.Count,
             },
             SchoolId = source.School.Id,
             AssignedCoursesCount = source.AssignedCourses.Count,
@@ -60,6 +64,8 @@ public class SchoolInstructorDTOMapper(CourseMapper courseMapper, SchoolMapper s
             {
                 Id = source.Instructor.Id,
                 User = source.Instructor.User.GetShortDTO(),
+                Grade = source.Instructor.Grade,
+                ReviewCount = source.Instructor.Reviews.Count,
             },
             SchoolId = source.School.Id,
         };

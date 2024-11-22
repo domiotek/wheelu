@@ -32,7 +32,7 @@ public class ReviewService(ApplicationDbContext dbContext) : BaseService
         if (!ValidateGrade(reviewData.Grade))
         {
             result.ErrorCode = PostReviewErrors.InvalidGrade;
-            result.Details = ["Grade must be between 0 and 5, with step 0.5."];
+            result.Details = ["Grade must be between 1 and 5, with step 0.5."];
             return result;
         }
 
@@ -45,12 +45,17 @@ public class ReviewService(ApplicationDbContext dbContext) : BaseService
                 School = course.School,
                 Course = course,
                 Student = course.Student,
+                Instructor =
+                    reviewData.TargetType is ReviewTargetType.Instructor
+                        ? course.Instructor.Instructor
+                        : null,
                 Grade = reviewData.Grade,
                 Message = reviewData.Message,
                 Edited = false,
                 Created = DateTime.UtcNow,
                 Updated = DateTime.UtcNow,
             };
+            dbContext.Reviews.Add(review);
         }
         else
         {
@@ -58,9 +63,8 @@ public class ReviewService(ApplicationDbContext dbContext) : BaseService
             review.Edited = true;
             review.Grade = reviewData.Grade;
             review.Message = reviewData.Message;
+            dbContext.Reviews.Update(review);
         }
-
-        dbContext.Reviews.Add(review);
 
         if (await dbContext.SaveChangesAsync() == 0)
         {
@@ -85,7 +89,7 @@ public class ReviewService(ApplicationDbContext dbContext) : BaseService
 
     private bool ValidateGrade(decimal value)
     {
-        if (value < 0 || value > 5)
+        if (value < 1 || value > 5)
             return false;
 
         return value * 10 % 5 == 0;

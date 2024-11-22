@@ -5,8 +5,11 @@ namespace WheeluAPI.Mappers;
 
 public class ReviewMapper(SchoolMapper schoolMapper, InstructorDTOMapper instructorMapper)
 {
-    public ReviewResponse GetDTO(Review source)
+    public ReviewResponse? GetDTO(Review? source)
     {
+        if (source is null)
+            return null;
+
         return new ReviewResponse
         {
             Id = source.Id,
@@ -23,7 +26,7 @@ public class ReviewMapper(SchoolMapper schoolMapper, InstructorDTOMapper instruc
         };
     }
 
-    public List<ReviewResponse> MapToDTO(List<Review> reviews)
+    public List<ReviewResponse?> MapToDTO(List<Review> reviews)
     {
         return reviews.Select(GetDTO).ToList();
     }

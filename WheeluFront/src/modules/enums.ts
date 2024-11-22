@@ -8,7 +8,6 @@ export enum AccessLevel {
 
 export enum SchoolPageTab {
 	Courses,
-	Services,
 	Reviews,
 	Instructors,
 	Vehicles,
@@ -103,4 +102,9 @@ export enum SkillLevel {
 export enum ExamCriteriaScope {
 	ManeuverCriteria,
 	DrivingCriteria,
+}
+
+export enum ReviewTargetType {
+	School,
+	Instructor,
 }

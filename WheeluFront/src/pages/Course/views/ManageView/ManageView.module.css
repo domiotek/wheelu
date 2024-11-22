@@ -39,3 +39,28 @@
 .NoHoursPackagesMessage img {
 	max-width: 100px;
 }
+
+.ReviewSection {
+	display: flex;
+	flex-direction: column;
+	margin: 2em 0;
+}
+
+.ReviewPresentationWrapper {
+	margin-left: 1em;
+}
+
+@media (min-width: 1024px) {
+	.ReviewSection {
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+
+	.ReviewSection>h6 {
+		width: 100%;
+	}
+
+	.ReviewSection>div {
+		width: 50%;
+	}
+}

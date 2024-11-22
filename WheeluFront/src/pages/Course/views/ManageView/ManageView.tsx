@@ -19,7 +19,11 @@ import {
 } from "../../../../modules/formatters";
 import { AppContext } from "../../../../App";
 import NewInstructorChangeRequestModal from "../../../../modals/NewInstructorChangeRequestModal/NewInstructorChangeRequestModal";
-import { RequestStatus, RideStatus } from "../../../../modules/enums";
+import {
+	RequestStatus,
+	ReviewTargetType,
+	RideStatus,
+} from "../../../../modules/enums";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { API } from "../../../../types/api";
 import { callAPI, formatPolishWordSuffix } from "../../../../modules/utils";
@@ -34,6 +38,8 @@ import ChangeCourseInstructorModal from "../../../../modals/ChangeCourseInstruct
 import BuyHoursModal from "../../../../modals/BuyHoursModal/BuyHoursModal";
 import TransactionService from "../../../../services/Transaction";
 import MessagePanel from "../../../../components/MessagePanel/MessagePanel";
+import ReviewPresentation from "./components/ReviewPresentation";
+import PostReview from "./components/PostReview";
 
 export default function ManageView() {
 	const { setModalContent, userDetails } = useContext(AppContext);
@@ -70,6 +76,22 @@ export default function ManageView() {
 			callAPI<API.Courses.GetHoursPackages.IEndpoint>(
 				"GET",
 				"/api/v1/courses/:courseID/hours-packages",
+				null,
+				{ courseID: course!.id }
+			),
+		retry: true,
+		staleTime: 60000,
+	});
+
+	const { data: courseReviews } = useQuery<
+		API.Reviews.GetReviewsOfCourse.IResponse,
+		API.Reviews.GetReviewsOfCourse.IEndpoint["error"]
+	>({
+		queryKey: baseQueryKey.concat(["reviews"]),
+		queryFn: () =>
+			callAPI<API.Reviews.GetReviewsOfCourse.IEndpoint>(
+				"GET",
+				"/api/v1/courses/:courseID/reviews",
 				null,
 				{ courseID: course!.id }
 			),
@@ -158,6 +180,8 @@ export default function ManageView() {
 		);
 	}, [course, icRequest]);
 
+	console.log(courseReviews);
+
 	return (
 		<div className={classes.Wrapper}>
 			<section>
@@ -214,6 +238,38 @@ export default function ManageView() {
 						/>
 					)}
 				</List>
+			</section>
+
+			<section className={classes.ReviewSection}>
+				<Typography variant="h6">Opinie</Typography>
+				<div>
+					<Typography variant="overline">Instruktor</Typography>
+					{role == "student" ? (
+						<PostReview
+							courseID={course?.id ?? 0}
+							review={courseReviews?.instructor}
+							placeholder="Pomóż innym dokonać świadomego wyboru instruktora. Opisz atmosferę, punktualność, cierpliwość, problemy i zalety."
+							targetType={ReviewTargetType.Instructor}
+						/>
+					) : (
+						<ReviewPresentation
+							review={courseReviews?.instructor}
+						/>
+					)}
+				</div>
+				<div>
+					<Typography variant="overline">Szkoła jazdy</Typography>
+					{role == "student" ? (
+						<PostReview
+							courseID={course?.id ?? 0}
+							review={courseReviews?.school}
+							placeholder="Pomóż innym przy wyborze szkoły. Jaki był stan pojazdów? Czy szkoła jest rzetelna?"
+							targetType={ReviewTargetType.School}
+						/>
+					) : (
+						<ReviewPresentation review={courseReviews?.school} />
+					)}
+				</div>
 			</section>
 
 			{showChangeInstructorAction && (

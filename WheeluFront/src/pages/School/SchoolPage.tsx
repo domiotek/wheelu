@@ -2,7 +2,6 @@ import {
 	Alert,
 	AlertTitle,
 	Button,
-	Rating,
 	Tab,
 	Tabs,
 	Typography,
@@ -27,6 +26,7 @@ import EntityNotFound from "../AdminPanel/components/EntityNotFound/EntityNotFou
 import { DateTime } from "luxon";
 import { AppContext } from "../../App";
 import LazyBackendImage from "../../components/LazyBackendImage/LazyBackendImage";
+import RatingWidget from "../../components/RatingWidget/RatingWidget";
 
 interface IContext {
 	schoolID: number;
@@ -72,9 +72,6 @@ export default function SchoolPage() {
 			case SchoolPageTab.Courses:
 				navigate("courses");
 				break;
-			case SchoolPageTab.Services:
-				navigate("services");
-				break;
 			case SchoolPageTab.Reviews:
 				navigate("reviews");
 				break;
@@ -107,6 +104,9 @@ export default function SchoolPage() {
 				break;
 			case "contact":
 				tab = SchoolPageTab.Contact;
+				break;
+			case "reviews":
+				tab = SchoolPageTab.Reviews;
 				break;
 			case "courses":
 			default:
@@ -193,12 +193,11 @@ export default function SchoolPage() {
 								</Typography>
 							</div>
 						</div>
-						<div>
-							<Rating />
-							<Typography variant="body2">
-								4.0 (14 ocen)
-							</Typography>
-						</div>
+						<RatingWidget
+							grade={schoolData?.grade ?? 0}
+							reviewCount={schoolData?.reviewCount ?? 0}
+							readonly
+						/>
 					</div>
 				</div>
 				<CategoriesWidget
@@ -218,7 +217,6 @@ export default function SchoolPage() {
 						indicatorColor="secondary"
 					>
 						<Tab label="Kursy" />
-						<Tab label="Usługi" />
 						<Tab label="Opinie" />
 						<Tab label="Instruktorzy" />
 						<Tab label="Pojazdy" />
