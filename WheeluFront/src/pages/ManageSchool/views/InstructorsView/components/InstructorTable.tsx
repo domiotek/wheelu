@@ -12,6 +12,7 @@ import { IconButton } from "@mui/material";
 import { Message } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { renderCategoryChips } from "../../../../../modules/features.tsx";
+import { ChatContext } from "../../../../../layouts/MainLayout.tsx";
 
 interface IProps {
 	schoolID: number;
@@ -25,6 +26,7 @@ export default function InstructorTable({ schoolID, limitAccess }: IProps) {
 	});
 
 	const { baseQueryKey: queryKey } = useContext(InstructorsContext);
+	const { openConversationWith } = useContext(ChatContext);
 	const navigate = useNavigate();
 
 	const { data, isFetching } = useQuery<
@@ -86,9 +88,13 @@ export default function InstructorTable({ schoolID, limitAccess }: IProps) {
 				hideable: false,
 				disableColumnMenu: true,
 				resizable: false,
-				renderCell: () => {
+				renderCell: (params) => {
 					return (
-						<IconButton>
+						<IconButton
+							onClick={() =>
+								openConversationWith(params.row.instructor.user)
+							}
+						>
 							<Message />
 						</IconButton>
 					);

@@ -31,6 +31,7 @@ import { AppContext } from "../../App";
 import { AccessLevel } from "../../modules/enums";
 import LazyBackendImage from "../../components/LazyBackendImage/LazyBackendImage";
 import RatingWidget from "../../components/RatingWidget/RatingWidget";
+import { ChatContext } from "../../layouts/MainLayout";
 
 interface IProps {
 	viewPoint: "admin" | "others";
@@ -61,6 +62,7 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 	const navigate = useNavigate();
 
 	const { accessLevel, userDetails } = useContext(AppContext);
+	const { openConversationWith } = useContext(ChatContext);
 
 	const schoolID = useMemo(() => parseInt(params["id"] ?? ""), []);
 
@@ -166,8 +168,14 @@ export default function ManageSchoolPage({ viewPoint }: IProps) {
 							primary="Właściciel"
 							secondary={`${schoolData?.owner.name} ${schoolData?.owner.surname}`}
 						/>
-						{viewPoint == "admin" && (
-							<Button variant="outlined" color="secondary">
+						{access != "owner" && (
+							<Button
+								variant="outlined"
+								color="secondary"
+								onClick={() =>
+									openConversationWith(schoolData!.owner)
+								}
+							>
 								Wyślij wiadomość
 							</Button>
 						)}

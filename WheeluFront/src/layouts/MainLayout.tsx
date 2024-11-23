@@ -71,15 +71,18 @@ export default function MainLayout() {
 
 	const theme = useTheme() as Theme;
 
-	const openConversationWith = useCallback((user: App.Models.IShortUser) => {
-		setChatOpen(true);
-		invoke("CreateConversationWithTarget", user.id).then((res) => {
-			if (res.isSuccess) {
-				setActiveConversation(res.data!.newConversation.id);
-				setConversations(res.data!.allConversations);
-			} else toast.error("Nie udało się otworzyć konwersacji");
-		});
-	}, []);
+	const openConversationWith = useCallback(
+		(user: App.Models.IShortUser) => {
+			setChatOpen(true);
+			invoke("CreateConversationWithTarget", user.id).then((res) => {
+				if (res.isSuccess) {
+					setActiveConversation(res.data!.newConversation.id);
+					setConversations(res.data!.allConversations);
+				} else toast.error("Nie udało się otworzyć konwersacji");
+			});
+		},
+		[connected]
+	);
 
 	useEffect(() => {
 		if (!connected) return;

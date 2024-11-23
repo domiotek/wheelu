@@ -30,6 +30,7 @@ import AuthService from "../../services/Auth";
 import { AppContext } from "../../App";
 import AlertPanel from "./components/AlertPanel";
 import CourseProgressModal from "../../modals/CourseProgressModal/CourseProgressModal";
+import { ChatContext } from "../../layouts/MainLayout";
 
 interface ICoursePageContext {
 	course: App.Models.ICourse | null;
@@ -57,6 +58,7 @@ export default function CoursePage() {
 	);
 
 	const { userDetails, setModalContent } = useContext(AppContext);
+	const { openConversationWith } = useContext(ChatContext);
 
 	const navigate = useNavigate();
 	const params = useParams();
@@ -235,7 +237,12 @@ export default function CoursePage() {
 										data.instructor
 									)}
 								/>
-								<IconButton color="secondary">
+								<IconButton
+									color="secondary"
+									onClick={() =>
+										openConversationWith(data.instructor)
+									}
+								>
 									<Message />
 								</IconButton>
 							</div>
@@ -248,7 +255,12 @@ export default function CoursePage() {
 										data.student
 									)}
 								/>
-								<IconButton color="secondary">
+								<IconButton
+									color="secondary"
+									onClick={() =>
+										openConversationWith(data.student)
+									}
+								>
 									<Message />
 								</IconButton>
 							</div>

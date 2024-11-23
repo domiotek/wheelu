@@ -9,7 +9,14 @@ import {
 } from "@mui/material";
 import AuthService from "../../services/Auth";
 import classes from "./ConversationView.module.css";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import {
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { InternalChatContext } from "../../layouts/MainLayout";
 import { ChatHubContext } from "../ChatHubProvider/ChatHubProvider";
 import { toast } from "react-toastify";
@@ -99,6 +106,15 @@ export default function ConversationView({ conversation }: IProps) {
 		[conversation]
 	);
 
+	const lastSeentText = useMemo(
+		() =>
+			DateTimeFormatter.formatRelativeDiff(
+				conversation.otherPartyLastSeen,
+				["minutes", "hours"]
+			),
+		[conversation.otherPartyLastSeen]
+	);
+
 	return (
 		<div className={classes.Host}>
 			<div className={classes.Header}>
@@ -116,11 +132,9 @@ export default function ConversationView({ conversation }: IProps) {
 						)}
 					>
 						<Typography variant="caption">
-							Aktywny(-a){" "}
-							{DateTimeFormatter.formatRelativeDiff(
-								conversation.otherPartyLastSeen,
-								["minutes", "hours"]
-							)}
+							{lastSeentText == ""
+								? "Nieaktywny(-a)"
+								: `Aktywny(-a) ${lastSeentText}`}
 						</Typography>
 					</Tooltip>
 				</div>

@@ -113,6 +113,7 @@ public class ChatHub(IUserService userService, ChatMapper mapper, ChatService se
         if (requestor.Id == target.Id)
         {
             result.ErrorCode = ConversationCreationErrors.SameParties;
+            return result;
         }
 
         var conversation = await service.CreateConversationBetweenAsync(requestor, target);
