@@ -43,6 +43,10 @@ declare global {
 				event: E,
 				callback: C
 			) => void;
+			off: <E extends keyof T["callbacks"], C extends T["callbacks"][E]>(
+				event: E,
+				callback: C
+			) => void;
 		}
 
 		namespace ExamHub {
@@ -80,6 +84,83 @@ declare global {
 						state: ExamCriteriumState
 					) => ExamHub.ChangeCriteriumState.IResponse;
 					EndExam: (examID: number) => ExamHub.EndExam.IResponse;
+				};
+			}
+		}
+
+		namespace ChatHub {
+			namespace CreateConversationWithTarget {
+				interface NewConversationResponse {
+					newConversation: App.Models.IConversation;
+					allConversations: App.Models.IConversation[];
+				}
+
+				type IResponse = _.HubServiceResponse<
+					| "DbError"
+					| "NotAuthorized"
+					| "InvalidTargetUser"
+					| "SameParties",
+					NewConversationResponse
+				>;
+			}
+
+			namespace GetConversations {
+				type IResponse = App.Models.IConversation[];
+			}
+
+			namespace SendMessageInConversation {
+				type IResponse = _.HubServiceResponse<
+					| "DbError"
+					| "NotAuthorized"
+					| "InvalidConversation"
+					| "AccessDenied",
+					App.Models.IChatMessage
+				>;
+			}
+
+			namespace GetConversationMessages {
+				type IResponse = _.HubServiceResponse<
+					| "DbError"
+					| "NotAuthorized"
+					| "InvalidConversation"
+					| "AccessDenied",
+					App.Models.IChatMessage[]
+				>;
+			}
+
+			namespace ReadMessage {
+				type IResponse = _.HubServiceResponse<
+					| "DbError"
+					| "NotAuthorized"
+					| "InvalidConversation"
+					| "AccessDenied"
+					| "MessageNotFound",
+					Record<string, IChatMessage>
+				>;
+			}
+
+			interface IChatHub extends _.IHub {
+				callbacks: {
+					syncConversation: (
+						conversation: App.Models.IConversation
+					) => void;
+				};
+				methods: {
+					CreateConversationWithTarget: (
+						userID: string
+					) => ChatHub.CreateConversationWithTarget.IResponse;
+					GetConversations: () => ChatHub.GetConversations.IResponse;
+					SendMessageInConversation: (
+						conversationId: string,
+						message: string
+					) => ChatHub.SendMessageInConversation.IResponse;
+					GetConversationMessages: (
+						conversationId: string
+					) => ChatHub.GetConversationMessages.IResponse;
+					ReadMessage: (
+						conversationId: string,
+						messageId: string
+					) => ChatHub.ReadMessage.IResponse;
 				};
 			}
 		}

@@ -113,6 +113,7 @@ builder.Services.AddScoped<ScheduleService>();
 builder.Services.AddScoped<InstructorChangeRequestService>();
 builder.Services.AddScoped<ExamService>();
 builder.Services.AddScoped<ReviewService>();
+builder.Services.AddScoped<ChatService>();
 
 builder.Services.AddScoped<SchoolMapper>();
 builder.Services.AddScoped<CourseOfferDTOMapper>();
@@ -126,6 +127,7 @@ builder.Services.AddScoped<ScheduleMapper>();
 builder.Services.AddScoped<InstructorChangeRequestMapper>();
 builder.Services.AddScoped<ExamMapper>();
 builder.Services.AddScoped<ReviewMapper>();
+builder.Services.AddScoped<ChatMapper>();
 builder.Services.AddHttpClient();
 
 builder.Services.AddCors(options =>
@@ -180,5 +182,6 @@ using (var scope = app.Services.CreateScope())
 app.MapControllers();
 
 app.MapHub<ExamHub>("/hubs/v1/exams");
+app.MapHub<ChatHub>("/hubs/v1/chat");
 
 app.Run();

@@ -1,6 +1,7 @@
 import { Circle } from "@mui/icons-material";
 
 interface IProps {
+	className?: string;
 	color?:
 		| "disabled"
 		| "action"
@@ -13,8 +14,12 @@ interface IProps {
 		| "warning";
 }
 
-export default function InlineDot({ color }: IProps) {
+export default function InlineDot({ className, color }: IProps) {
 	return (
-		<Circle sx={{ fontSize: "0.65em", ml: 0.5, mr: 0.5 }} color={color} />
+		<Circle
+			className={className}
+			sx={{ fontSize: "0.65em", ml: 0.5, mr: 0.5 }}
+			color={color}
+		/>
 	);
 }

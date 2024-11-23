@@ -7,6 +7,7 @@ using WheeluAPI.DTO.User;
 using WheeluAPI.helpers;
 using WheeluAPI.Mail.Templates;
 using WheeluAPI.models;
+using WheeluAPI.Models.Chat;
 
 namespace WheeluAPI.Services;
 
@@ -118,6 +119,15 @@ public class UserService(
         dbContext.Users.Update(user);
 
         return await dbContext.SaveChangesAsync() > 0;
+    }
+
+    public async Task<bool> UpdateUserLastSeenAsync(User user, DateTime dateTime)
+    {
+        user.LastSeen = dateTime;
+
+        dbContext.Users.Update(user);
+
+        return await dbContext.SaveChangesAsync() != 0;
     }
 
     public List<UserResponse> MapToDTO(List<User> source)
@@ -411,6 +421,8 @@ public interface IUserService
     Task<bool> HasRole(User user, UserRole roleName);
 
     Task<bool> UpdateUser(User user, UpdateUserRequest data);
+
+    Task<bool> UpdateUserLastSeenAsync(User user, DateTime dateTime);
 
     List<UserResponse> MapToDTO(List<User> source);
 

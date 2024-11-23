@@ -462,6 +462,22 @@ declare global {
 				created: string;
 				updated: string;
 			}
+
+			interface IConversation {
+				id: string;
+				otherParty: IShortUser;
+				otherPartyLastSeen: string;
+				lastMessage?: IChatMessage;
+				lastReadMessages: Record<string, IChatMessage>;
+			}
+
+			interface IChatMessage {
+				id: string;
+				author: IShortUser;
+				conversationId: string;
+				message: string;
+				created: string;
+			}
 		}
 
 		namespace UI {
@@ -585,6 +601,10 @@ declare global {
 			setHostClassName: (className: string | null) => void;
 			setRenderHost: (state: boolean) => void;
 			hostRef: HTMLElement | null;
+		}
+
+		interface IChatContext {
+			openConversationWith(user: Models.IShortUser);
 		}
 	}
 }

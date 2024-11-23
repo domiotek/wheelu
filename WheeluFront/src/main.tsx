@@ -3,11 +3,11 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import MainLayout from "./layouts/MainLayout.tsx";
 import PortalLayout from "./layouts/PortalLayout.tsx";
 import AnonymousLayout from "./layouts/AnonymousLayout.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Settings } from "luxon";
+import MainLayoutWrapper from "./layouts/MainLayoutWrapper.tsx";
 
 Settings.defaultLocale = "pl-PL";
 
@@ -231,7 +231,7 @@ root.render(
 						</Route>
 					</Route>
 					<Route path="*" element={<App useSplash={true} />}>
-						<Route path="*" element={<MainLayout />}>
+						<Route path="*" element={<MainLayoutWrapper />}>
 							<Route path="home" element={<DashboardPage />} />
 							<Route path="panel" element={<AdminPanelPage />}>
 								<Route index element={<MainAPView />} />

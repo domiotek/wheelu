@@ -1,0 +1,42 @@
+.SearchBox {
+	display: flex;
+	justify-content: center;
+	padding: 0 0.5em;
+}
+
+.SearchBox div {
+	width: 100%;
+}
+
+.ConversationList>p {
+	text-align: center;
+}
+
+.Conversation {
+	padding: 0 !important;
+}
+
+.Conversation button {
+	width: 100%;
+	display: flex;
+	justify-content: flex-start;
+	padding: 1em;
+	text-align: left;
+}
+
+.Conversation .Avatar {
+	align-self: flex-start;
+}
+
+.ConversationText span {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: flex;
+	align-items: center;
+}
+
+.ConversationText span svg {
+	font-size: 1.5em;
+	margin-bottom: 2px;
+}

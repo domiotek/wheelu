@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using WheeluAPI.models;
 using WheeluAPI.Models;
+using WheeluAPI.Models.Chat;
 using WheeluAPI.Models.Vehicle;
 
 namespace WheeluAPI.helpers;
@@ -57,6 +58,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Exam> Exams { get; set; }
 
     public DbSet<Review> Reviews { get; set; }
+
+    public DbSet<Conversation> Conversations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -181,5 +184,22 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                     new VehiclePartType { Id = VehiclePartTypeId.Ligths, LifespanInDays = 1095 },
                 ]
             );
+
+        modelBuilder.Entity<LastReadMessage>(entity =>
+        {
+            entity.HasKey(lrm => new { lrm.ChatMemberId, lrm.ChatMessageId });
+
+            entity
+                .HasOne(lrm => lrm.ChatMember)
+                .WithMany()
+                .HasForeignKey(lrm => lrm.ChatMemberId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity
+                .HasOne(lrm => lrm.ChatMessage)
+                .WithMany()
+                .HasForeignKey(lrm => lrm.ChatMessageId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 }

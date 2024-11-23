@@ -1,0 +1,21 @@
+.Host {
+	position: fixed;
+	top: 15vh;
+	right: -100%;
+	bottom: 20vh;
+	width: 100vw;
+	max-width: 320px;
+	transition: right 0.4s ease-in-out;
+	padding: 1em;
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+}
+
+.Open {
+	right: 0 !important;
+}
+
+.Header {
+	text-align: center;
+}

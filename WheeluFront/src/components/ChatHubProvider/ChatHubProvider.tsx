@@ -1,10 +1,9 @@
-import ExamPortal from "./ExamPortal";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import * as signalR from "@microsoft/signalr";
-import { OutsideContextNotifier } from "../modules/utils";
+import { OutsideContextNotifier } from "../../modules/utils";
 
-export const ExamContext = React.createContext<
-	Hubs.IContext<Hubs.ExamHub.IExamHub>
+export const ChatHubContext = React.createContext<
+	Hubs.IContext<Hubs.ChatHub.IChatHub>
 >({
 	connected: false,
 	established: false,
@@ -14,7 +13,11 @@ export const ExamContext = React.createContext<
 	off: OutsideContextNotifier,
 });
 
-export default function ExamPortalWrapper() {
+interface IProps {
+	children?: ReactNode;
+}
+
+export default function ChatHubProvider({ children }: IProps) {
 	const [connected, setConnected] = useState<boolean>(false);
 	const [established, setEstablished] = useState<boolean>(false);
 
@@ -24,7 +27,7 @@ export default function ExamPortalWrapper() {
 
 	useEffect(() => {
 		const newConn = new signalR.HubConnectionBuilder()
-			.withUrl("https://localhost:9090/hubs/v1/exams", {
+			.withUrl("https://localhost:9090/hubs/v1/chat", {
 				accessTokenFactory: () => localStorage.getItem("token") ?? "",
 			})
 			.withAutomaticReconnect({
@@ -101,7 +104,7 @@ export default function ExamPortalWrapper() {
 	}, [connection]);
 
 	return (
-		<ExamContext.Provider
+		<ChatHubContext.Provider
 			value={{
 				connected,
 				established,
@@ -111,7 +114,7 @@ export default function ExamPortalWrapper() {
 				disconnect: disconnector,
 			}}
 		>
-			<ExamPortal />
-		</ExamContext.Provider>
+			{children}
+		</ChatHubContext.Provider>
 	);
 }

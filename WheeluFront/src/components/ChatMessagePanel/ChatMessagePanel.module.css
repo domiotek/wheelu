@@ -1,0 +1,16 @@
+.Message {
+	margin: 0.5em 0.75em 0 0;
+	padding: 0.5em;
+	max-width: 240px;
+	width: fit-content;
+	border-radius: 0.5em;
+	min-width: 64px;
+	background-color: var(--their-message-bg-color);
+	color: var(--their-message-color);
+}
+
+.My {
+	margin-left: auto;
+	background-color: var(--my-message-bg-color) !important;
+	color: var(--my-message-color) !important;
+}

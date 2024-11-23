@@ -42,6 +42,7 @@ import InstructorService from "../../../../services/Instructor";
 import InstructorScheduleModal from "../../../../modals/ScheduleModal/InstructorScheduleModal";
 import { toast } from "react-toastify";
 import RatingWidget from "../../../../components/RatingWidget/RatingWidget";
+import { ChatContext } from "../../../../layouts/MainLayout";
 
 export default function Instructor() {
 	const [visibilityState, setVisibilityState] = useState<boolean>(false);
@@ -54,6 +55,7 @@ export default function Instructor() {
 	const { schoolData, access, accessorUserID } =
 		useContext(SchoolPageContext);
 	const { setModalContent } = useContext(AppContext);
+	const { openConversationWith } = useContext(ChatContext);
 
 	const params = useParams();
 	const qClient = useQueryClient();
@@ -268,7 +270,12 @@ export default function Instructor() {
 							>
 								<CalendarMonth />
 							</IconButton>
-							<IconButton color="secondary">
+							<IconButton
+								color="secondary"
+								onClick={() =>
+									openConversationWith(data.instructor.user)
+								}
+							>
 								<Message />
 							</IconButton>
 						</ListItem>
